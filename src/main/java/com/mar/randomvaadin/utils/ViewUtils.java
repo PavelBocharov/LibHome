@@ -2,6 +2,7 @@ package com.mar.randomvaadin.utils;
 
 import com.google.common.io.Resources;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.StreamResource;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
@@ -21,6 +22,13 @@ public class ViewUtils {
                         FileUtils.getFile(imgUrl.getFile()).getName(),
                         () -> new ByteArrayInputStream(img)), String.format("Not load image: %s", pathInResource)
         );
+    }
+
+    public static TextField getTextField(String text, boolean enable) {
+        TextField textField = new TextField();
+        textField.setEnabled(enable);
+        textField.setValue(text);
+        return textField;
     }
 
 }
