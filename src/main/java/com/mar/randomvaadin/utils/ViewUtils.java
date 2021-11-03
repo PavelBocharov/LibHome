@@ -26,7 +26,7 @@ public class ViewUtils {
 
     public static TextField getTextField(String text, boolean enable) {
         TextField textField = new TextField();
-        textField.setEnabled(enable);
+        textField.setReadOnly(true);
         textField.setValue(text);
         return textField;
     }

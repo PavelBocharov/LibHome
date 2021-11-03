@@ -12,6 +12,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.springframework.data.domain.Sort;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,21 +36,34 @@ public class RandomTaskView {
         verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         verticalLayout.add(new H1("Чё делать сейчас?"));
 
-        List<RandTask> taskList = appLayout.getRandTaskRepository().findAll();
+        List<RandTask> taskList = appLayout.getRandTaskRepository().findAllOrderById(Sort.Direction.ASC);
         randomData.clear();
+        Integer randTaskNumber = 1;
         for (RandTask task : taskList) {
             final RandTask randTask = task;
             TextField textField = getTextField(task.getText(), false);
-            Button deleteBtn = new Button(new Icon(DEL_A));
+
+            Button deleteBtn = new Button(new Icon(BAN));
+            deleteBtn.getStyle().set("color", "red");
             deleteBtn.addClickListener(delBtn -> {
-                appLayout.getRandTaskRepository().delete(randTask);
-                appLayout.setContent(this.getContent());
+                new DeleteDialogWidget(() -> {
+                    appLayout.getRandTaskRepository().delete(randTask);
+                    appLayout.setContent(this.getContent());
+                });
             });
+
+            // update
+            Button updateBtn = new Button(new Icon(PENCIL));
+            updateBtn.getStyle().set("color", "green");
+            updateBtn.addClickListener(updBtn -> {
+                new UpdateDialogWidget(appLayout, task);
+            });
+
             randomData.put(
-                    task.getNumber(),
+                    randTaskNumber++,
                     new MutablePair<>(
                             textField,
-                            new HorizontalLayout(textField, deleteBtn)
+                            new HorizontalLayout(textField, updateBtn, deleteBtn)
                     )
             );
         }

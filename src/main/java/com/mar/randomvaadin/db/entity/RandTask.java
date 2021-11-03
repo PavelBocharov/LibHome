@@ -15,15 +15,11 @@ public class RandTask {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "number", unique = true, nullable = false)
-    private Integer number;
-
     @Column(name = "text", unique = true, nullable = false)
     private String text;
 
 
-    public RandTask(Integer number, String text) {
-        this.number = number;
+    public RandTask(String text) {
         this.text = text;
     }
 }
