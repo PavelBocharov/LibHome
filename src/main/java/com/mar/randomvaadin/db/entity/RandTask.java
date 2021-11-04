@@ -4,15 +4,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @Entity
 @Table(name = "rand_task")
 @NoArgsConstructor
-public class RandTask {
+public class RandTask implements Serializable {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "rand_task_seq")
     private Long id;
 
     @Column(name = "text", unique = true, nullable = false)
