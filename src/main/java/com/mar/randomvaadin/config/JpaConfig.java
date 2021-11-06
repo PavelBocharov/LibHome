@@ -2,7 +2,6 @@ package com.mar.randomvaadin.config;
 
 import com.mar.randomvaadin.db.entity.RandTask;
 import com.mar.randomvaadin.db.jpa.RandTaskRepository;
-import org.apache.commons.lang3.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -72,7 +71,7 @@ public class JpaConfig {
     public DataSource dataSource() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.driverClassName("org.sqlite.JDBC");
-        String dbPath = SystemUtils.IS_OS_UNIX ? "src\\main\\resources\\static\\db\\normal.db" : "src/main/resources/static/db/normal.db";
+        String dbPath = "src/main/resources/static/db/normal.db";
         dataSourceBuilder.url("jdbc:sqlite:" + dbPath);
         dataSourceBuilder.type(SQLiteDataSource.class);
         return dataSourceBuilder.build();

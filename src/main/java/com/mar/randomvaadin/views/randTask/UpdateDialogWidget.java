@@ -1,12 +1,14 @@
 package com.mar.randomvaadin.views.randTask;
 
 import com.mar.randomvaadin.db.entity.RandTask;
+import com.mar.randomvaadin.utils.ViewUtils;
 import com.mar.randomvaadin.views.MainView;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.PENCIL;
@@ -16,7 +18,7 @@ public class UpdateDialogWidget extends Dialog {
     public UpdateDialogWidget(MainView parentLayout, RandTask task) {
         Dialog updateDialog = new Dialog();
         updateDialog.setCloseOnEsc(true);
-        updateDialog.setCloseOnOutsideClick(true);
+        updateDialog.setCloseOnOutsideClick(false);
 
         TextField idField = new TextField();
         idField.setWidthFull();
@@ -34,7 +36,13 @@ public class UpdateDialogWidget extends Dialog {
         Button updBtn = new Button("Обновить", new Icon(PENCIL));
         updBtn.addClickListener(btnEvent -> {
             task.setText(textField.getValue());
-            parentLayout.getRandTaskRepository().save(task);
+            try {
+                parentLayout.getRandTaskRepository().save(task);
+            } catch (Exception ex) {
+                ViewUtils.showErrorMsg("При обновлении произошла ошибка", ex);
+                updBtn.setEnabled(true);
+                return;
+            }
             updateDialog.close();
             parentLayout.setContent(parentLayout.getRandomTaskView().getContent());
         });
@@ -42,16 +50,11 @@ public class UpdateDialogWidget extends Dialog {
         updBtn.setDisableOnClick(true);
         updBtn.addClickShortcut(Key.ENTER);
 
-//        FormLayout formLayout = new FormLayout();
-//        formLayout.addFormItem(idField, "ID");
-//        formLayout.addFormItem(textField, "Текст");
-//        formLayout.add(updBtn);
-
         updateDialog.add(
                 new Text("Обновить задачу"),
                 idField,
                 textField,
-                updBtn
+                new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
         );
         updateDialog.open();
     }

@@ -1,5 +1,6 @@
 package com.mar.randomvaadin.views.randTask;
 
+import com.mar.randomvaadin.utils.ViewUtils;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -13,14 +14,17 @@ public class DeleteDialogWidget extends Dialog {
 
     public DeleteDialogWidget(Runnable deleteEvent) {
         Dialog deleteDialog = new Dialog();
-
         deleteDialog.setCloseOnEsc(true);
-        deleteDialog.setCloseOnOutsideClick(true);
+        deleteDialog.setCloseOnOutsideClick(false);
 
         Button yesBtn = new Button("Удалить", new Icon(CHECK));
         yesBtn.getStyle().set("color", "red");
         yesBtn.addClickListener(btnEvent -> {
-            deleteEvent.run();
+            try {
+                deleteEvent.run();
+            } catch (Exception ex) {
+                ViewUtils.showErrorMsg("При удалении произошла ошибка", ex);
+            }
             deleteDialog.close();
         });
 

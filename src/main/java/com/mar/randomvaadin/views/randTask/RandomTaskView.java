@@ -1,6 +1,7 @@
 package com.mar.randomvaadin.views.randTask;
 
 import com.mar.randomvaadin.db.entity.RandTask;
+import com.mar.randomvaadin.utils.ViewUtils;
 import com.mar.randomvaadin.views.MainView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -36,7 +37,12 @@ public class RandomTaskView {
         verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         verticalLayout.add(new H1("Чё делать сейчас?"));
 
-        List<RandTask> taskList = appLayout.getRandTaskRepository().findAllOrderById(Sort.Direction.ASC);
+        List<RandTask> taskList = Collections.emptyList();
+        try {
+            taskList = appLayout.getRandTaskRepository().findAllOrderById(Sort.Direction.ASC);
+        } catch (Exception ex) {
+            ViewUtils.showErrorMsg("При получении списка задач произошла ошибка", ex, 0);
+        }
         randomData.clear();
         Integer randTaskNumber = 1;
         for (RandTask task : taskList) {
