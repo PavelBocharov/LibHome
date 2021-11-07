@@ -1,8 +1,7 @@
-package com.mar.randomvaadin.views.randTask;
+package com.mar.randomvaadin.views.product;
 
-import com.mar.randomvaadin.db.entity.RandTask;
+import com.mar.randomvaadin.db.entity.Product;
 import com.mar.randomvaadin.utils.ViewUtils;
-import com.mar.randomvaadin.views.MainView;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -13,9 +12,9 @@ import com.vaadin.flow.component.textfield.TextField;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
 
-public class CreateDialogWidget {
+public class CreateProductView {
 
-    public CreateDialogWidget(MainView parentLayout) {
+    public CreateProductView(ProductViewDialog productView) {
         Dialog createDialog = new Dialog();
         createDialog.setCloseOnEsc(true);
         createDialog.setCloseOnOutsideClick(false);
@@ -23,30 +22,31 @@ public class CreateDialogWidget {
         TextField textField = new TextField();
         textField.setWidthFull();
         textField.setAutofocus(true);
-        textField.setLabel("Текст");
+        textField.setLabel("Наименование группы товара");
 
         Button createBtn = new Button("Создать", new Icon(PLUS));
         createBtn.addClickListener(btnEvent -> {
-            String text = textField.getValue();
+            String name = textField.getValue();
             try {
-                parentLayout.getRepositoryService().getRandTaskRepository().save(new RandTask(text));
+                productView.getRepository().save(Product.builder().name(name).build());
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("При создании произошла ошибка", ex);
                 createBtn.setEnabled(true);
                 return;
             }
             createDialog.close();
-            parentLayout.setContent(parentLayout.getRandomTaskView().getContent());
+            productView.reloadData();
         });
         createBtn.setWidthFull();
         createBtn.setDisableOnClick(true);
         createBtn.addClickShortcut(Key.ENTER);
 
         createDialog.add(
-                new Label("Создать новую задачу"),
+                new Label("Создать новую группу"),
                 textField,
                 new HorizontalLayout(createBtn, ViewUtils.getCloseButton(createDialog))
         );
+
         createDialog.open();
     }
 

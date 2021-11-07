@@ -1,7 +1,8 @@
 package com.mar.randomvaadin.views;
 
-import com.mar.randomvaadin.db.jpa.RandTaskRepository;
+import com.mar.randomvaadin.service.RepositoryService;
 import com.mar.randomvaadin.views.randTask.RandomTaskView;
+import com.mar.randomvaadin.views.receipt.ReceiptView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
@@ -16,22 +17,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
-import static com.vaadin.flow.component.icon.VaadinIcon.HOME;
-import static com.vaadin.flow.component.icon.VaadinIcon.RANDOM;
+import static com.vaadin.flow.component.icon.VaadinIcon.*;
 
 @Route("")
 public class MainView extends AppLayout {
 
     @Getter
     @Autowired
-    private RandTaskRepository randTaskRepository;
+    private RepositoryService repositoryService;
 
     @Getter
     private final RandomTaskView randomTaskView;
+    @Getter
+    private final ReceiptView receiptView;
     private final StartPageView startPageView;
 
     public MainView() throws IOException {
         randomTaskView = new RandomTaskView(this);
+        receiptView = new ReceiptView(this);
         startPageView = new StartPageView();
 
         DrawerToggle toggle = new DrawerToggle();
@@ -44,6 +47,7 @@ public class MainView extends AppLayout {
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         tabs.add(new Tab(getStartPageBtn()));
         tabs.add(new Tab(getRandomTaskButton()));
+        tabs.add(new Tab(getReceiptsBtn()));
 
         addToDrawer(tabs);
         addToNavbar(toggle, title);
@@ -59,6 +63,17 @@ public class MainView extends AppLayout {
         });
         rndBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         return rndBtn;
+    }
+
+    private Button getReceiptsBtn() {
+        Button receiptBtn = new Button("Чеки", new Icon(MONEY));
+        receiptBtn.setHeightFull();
+        receiptBtn.addClickListener(buttonClickEvent -> {
+            setContent(receiptView.getContent());
+            this.setDrawerOpened(false);
+        });
+        receiptBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        return receiptBtn;
     }
 
     private Button getStartPageBtn() {

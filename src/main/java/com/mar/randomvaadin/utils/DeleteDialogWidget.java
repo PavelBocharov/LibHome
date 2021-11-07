@@ -1,6 +1,5 @@
-package com.mar.randomvaadin.views.randTask;
+package com.mar.randomvaadin.utils;
 
-import com.mar.randomvaadin.utils.ViewUtils;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;

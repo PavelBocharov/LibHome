@@ -1,6 +1,7 @@
 package com.mar.randomvaadin.views.randTask;
 
 import com.mar.randomvaadin.db.entity.RandTask;
+import com.mar.randomvaadin.utils.DeleteDialogWidget;
 import com.mar.randomvaadin.utils.ViewUtils;
 import com.mar.randomvaadin.views.MainView;
 import com.vaadin.flow.component.Component;
@@ -39,7 +40,7 @@ public class RandomTaskView {
 
         List<RandTask> taskList = Collections.emptyList();
         try {
-            taskList = appLayout.getRandTaskRepository().findAllOrderById(Sort.Direction.ASC);
+            taskList = appLayout.getRepositoryService().getRandTaskRepository().findAllOrderById(Sort.Direction.ASC);
         } catch (Exception ex) {
             ViewUtils.showErrorMsg("При получении списка задач произошла ошибка", ex, 0);
         }
@@ -53,7 +54,7 @@ public class RandomTaskView {
             deleteBtn.getStyle().set("color", "red");
             deleteBtn.addClickListener(delBtn -> {
                 new DeleteDialogWidget(() -> {
-                    appLayout.getRandTaskRepository().delete(randTask);
+                    appLayout.getRepositoryService().getRandTaskRepository().delete(randTask);
                     appLayout.setContent(this.getContent());
                 });
             });
