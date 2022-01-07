@@ -10,10 +10,10 @@
 	</parent>
 
 	<groupId>com.mar</groupId>
-	<artifactId>random-vaadin</artifactId>
+	<artifactId>dark-sun</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>random-vaadin</name>
-	<description>Test Vaadin</description>
+	<name>dark-sun</name>
+	<description>Dark sun</description>
 
 	<properties>
 		<java.version>1.8</java.version>
