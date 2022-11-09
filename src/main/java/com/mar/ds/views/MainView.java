@@ -1,6 +1,7 @@
 package com.mar.ds.views;
 
 import com.mar.ds.service.RepositoryService;
+import com.mar.ds.views.item.ItemView;
 import com.mar.ds.views.randTask.RandomTaskView;
 import com.mar.ds.views.receipt.ReceiptView;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -30,15 +31,18 @@ public class MainView extends AppLayout {
     private final RandomTaskView randomTaskView;
     @Getter
     private final ReceiptView receiptView;
+    @Getter
+    private final ItemView itemView;
     private final StartPageView startPageView;
 
     public MainView() throws IOException {
         randomTaskView = new RandomTaskView(this);
         receiptView = new ReceiptView(this);
+        itemView = new ItemView(this);
         startPageView = new StartPageView();
 
         DrawerToggle toggle = new DrawerToggle();
-        H1 title = new H1("Dark Sun");
+        H1 title = new H1("'Dark Sun' by MarGS");
         title.getStyle()
                 .set("font-size", "var(--lumo-font-size-l)")
                 .set("margin", "0");
@@ -48,6 +52,7 @@ public class MainView extends AppLayout {
         tabs.add(new Tab(getStartPageBtn()));
         tabs.add(new Tab(getRandomTaskButton()));
         tabs.add(new Tab(getReceiptsBtn()));
+        tabs.add(new Tab(getItemListBtn()));
 
         addToDrawer(tabs);
         addToNavbar(toggle, title);
@@ -55,7 +60,7 @@ public class MainView extends AppLayout {
     }
 
     private Button getRandomTaskButton() {
-        Button rndBtn = new Button("Чё делать сейчас?", new Icon(RANDOM));
+        Button rndBtn = new Button("Список дел", new Icon(RANDOM));
         rndBtn.setHeightFull();
         rndBtn.addClickListener(buttonClickEvent -> {
             setContent(randomTaskView.getContent());
@@ -66,10 +71,21 @@ public class MainView extends AppLayout {
     }
 
     private Button getReceiptsBtn() {
-        Button receiptBtn = new Button("Чеки", new Icon(MONEY));
+        Button receiptBtn = new Button("Схемы", new Icon(MONEY));
         receiptBtn.setHeightFull();
         receiptBtn.addClickListener(buttonClickEvent -> {
             setContent(receiptView.getContent());
+            this.setDrawerOpened(false);
+        });
+        receiptBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        return receiptBtn;
+    }
+
+    private Button getItemListBtn() {
+        Button receiptBtn = new Button("[GAME] Предметы", new Icon(FLASK));
+        receiptBtn.setHeightFull();
+        receiptBtn.addClickListener(buttonClickEvent -> {
+            setContent(itemView.getContent());
             this.setDrawerOpened(false);
         });
         receiptBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);

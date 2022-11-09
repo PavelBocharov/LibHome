@@ -53,7 +53,6 @@ public class UpdateReceiptDialog {
         productSelect.setValue(receipt.getProduct());
 
         BigDecimalField numberField = new BigDecimalField();
-        numberField.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
         numberField.setLabel("Цена");
         numberField.setWidthFull();
         numberField.setValue(BigDecimal.valueOf(receipt.getPrice()));

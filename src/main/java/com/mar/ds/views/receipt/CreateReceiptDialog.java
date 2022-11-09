@@ -44,7 +44,6 @@ public class CreateReceiptDialog {
         productSelect.setWidthFull();
 
         BigDecimalField numberField = new BigDecimalField();
-        numberField.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
         numberField.setLabel("Цена");
         numberField.setWidthFull();
 
@@ -74,7 +73,7 @@ public class CreateReceiptDialog {
         crtBtn.addClickShortcut(Key.ENTER);
 
         createDialog.add(
-                new Label("Создать новый запись"),
+                new Label("Создать новую запись"),
                 textField,
                 productSelect,
                 numberField,
