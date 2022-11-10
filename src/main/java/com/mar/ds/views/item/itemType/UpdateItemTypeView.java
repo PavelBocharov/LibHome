@@ -1,4 +1,4 @@
-package com.mar.ds.views.itemType;
+package com.mar.ds.views.item.itemType;
 
 import com.mar.ds.db.entity.ItemType;
 import com.mar.ds.utils.ViewUtils;

@@ -18,5 +18,6 @@ public class RepositoryService {
     private final ItemTypeRepository itemTypeRepository;
     private final CharacterRepository characterRepository;
     private final TaskRepository taskRepository;
+    private final MissionRepository missionRepository;
 
 }

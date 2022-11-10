@@ -1,7 +1,7 @@
-package com.mar.ds.views.itemType;
+package com.mar.ds.views.item.itemStatus;
 
-import com.mar.ds.db.entity.ItemType;
-import com.mar.ds.db.jpa.ItemTypeRepository;
+import com.mar.ds.db.entity.ItemStatus;
+import com.mar.ds.db.jpa.ItemStatusRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
@@ -16,22 +16,20 @@ import com.vaadin.flow.component.textfield.TextField;
 
 import java.util.List;
 
-public class ItemTypeViewDialog {
-
+public class ItemStatusViewDialog {
     private final MainView appLayout;
-
     private Dialog dialog;
-    private VerticalLayout itemTypes;
+    private VerticalLayout itemStatusList;
     private Button crtBtn;
 
-    public ItemTypeViewDialog(MainView appLayout) {
+    public ItemStatusViewDialog(MainView appLayout) {
         this.appLayout = appLayout;
 
         dialog = new Dialog();
 
-        crtBtn = new Button("Создать тип предмета", new Icon(VaadinIcon.PLUS));
+        crtBtn = new Button("Создать статус предмета", new Icon(VaadinIcon.PLUS));
         crtBtn.setWidthFull();
-        crtBtn.addClickListener(btnClick -> new CreateItemTypeView(this));
+        crtBtn.addClickListener(btnClick -> new CreateItemStatusView(this));
 
         reloadData();
 
@@ -40,21 +38,21 @@ public class ItemTypeViewDialog {
 
 
     private void initProducts() {
-        itemTypes = new VerticalLayout();
+        itemStatusList = new VerticalLayout();
 
-        List<ItemType> itemTypeList = getRepository().findAll();
+        List<ItemStatus> itemStatusList = getRepository().findAll();
 
-        for (ItemType itemType : itemTypeList) {
+        for (ItemStatus itemStatus : itemStatusList) {
             TextField name = new TextField();
             name.setTitle("Name");
             name.setEnabled(false);
             name.setWidthFull();
-            name.setValue(itemType.getName());
+            name.setValue(itemStatus.getName());
 
             Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> {
                 try {
                     new DeleteDialogWidget(() -> {
-                        getRepository().delete(itemType);
+                        getRepository().delete(itemStatus);
                         reloadData();
                     });
                 } catch (Exception ex) {
@@ -66,9 +64,9 @@ public class ItemTypeViewDialog {
 
             Button uptBtn = new Button(
                     new Icon(VaadinIcon.PENCIL),
-                    buttonClickEvent -> new UpdateItemTypeView(this, itemType)
+                    buttonClickEvent -> new UpdateItemStatusView(this, itemStatus)
             );
-            itemTypes.add(new HorizontalLayout(name, uptBtn, dltBtn));
+            this.itemStatusList.add(new HorizontalLayout(name, uptBtn, dltBtn));
         }
     }
 
@@ -83,13 +81,13 @@ public class ItemTypeViewDialog {
         appLayout.setContent(appLayout.getItemView().getContent());
         dialog.removeAll();
         dialog.add(
-                new Label("Список типов предметов"),
-                itemTypes,
+                new Label("Список статусов предметов"),
+                itemStatusList,
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(dialog))
         );
     }
 
-    public ItemTypeRepository getRepository() {
-        return appLayout.getRepositoryService().getItemTypeRepository();
+    public ItemStatusRepository getRepository() {
+        return appLayout.getRepositoryService().getItemStatusRepository();
     }
 }

@@ -4,6 +4,7 @@ import com.mar.ds.service.MapperService;
 import com.mar.ds.service.RepositoryService;
 import com.mar.ds.views.character.CharacterView;
 import com.mar.ds.views.item.ItemView;
+import com.mar.ds.views.mission.MissionView;
 import com.mar.ds.views.randTask.RandomTaskView;
 import com.mar.ds.views.receipt.ReceiptView;
 import com.mar.ds.views.task.TaskView;
@@ -44,6 +45,8 @@ public class MainView extends AppLayout {
     private final CharacterView characterView;
     @Getter
     private final TaskView taskView;
+    @Getter
+    private final MissionView missionView;
     private final StartPageView startPageView;
 
     public MainView() throws IOException {
@@ -52,6 +55,7 @@ public class MainView extends AppLayout {
         itemView = new ItemView(this);
         characterView = new CharacterView(this);
         taskView = new TaskView(this);
+        missionView = new MissionView(this);
         startPageView = new StartPageView();
 
         DrawerToggle toggle = new DrawerToggle();
@@ -68,6 +72,7 @@ public class MainView extends AppLayout {
         tabs.add(new Tab(getItemListBtn()));
         tabs.add(new Tab(getCharacterListBtn()));
         tabs.add(new Tab(getTaskListBtn()));
+        tabs.add(new Tab(getMissionListBtn()));
 
         addToDrawer(tabs);
         addToNavbar(toggle, title);
@@ -97,7 +102,7 @@ public class MainView extends AppLayout {
     }
 
     private Button getItemListBtn() {
-        Button receiptBtn = new Button("[GAME] Предметы", new Icon(FLASK));
+        Button receiptBtn = new Button("[DEV] Предметы", new Icon(FLASK));
         receiptBtn.setHeightFull();
         receiptBtn.addClickListener(buttonClickEvent -> {
             setContent(itemView.getContent());
@@ -108,7 +113,7 @@ public class MainView extends AppLayout {
     }
 
     private Button getCharacterListBtn() {
-        Button button = new Button("[GAME] Пресонажи", new Icon(CHILD));
+        Button button = new Button("[DEV] Пресонажи", new Icon(CHILD));
         button.setHeightFull();
         button.addClickListener(buttonClickEvent -> {
             setContent(characterView.getContent());
@@ -119,10 +124,21 @@ public class MainView extends AppLayout {
     }
 
     private Button getTaskListBtn() {
-        Button button = new Button("[GAME] Задачи", new Icon(TASKS));
+        Button button = new Button("[DEV] Задачи", new Icon(TASKS));
         button.setHeightFull();
         button.addClickListener(buttonClickEvent -> {
             setContent(taskView.getContent());
+            this.setDrawerOpened(false);
+        });
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        return button;
+    }
+
+    private Button getMissionListBtn() {
+        Button button = new Button("[DEV] Миссии", new Icon(DIPLOMA_SCROLL));
+        button.setHeightFull();
+        button.addClickListener(buttonClickEvent -> {
+            setContent(missionView.getContent());
             this.setDrawerOpened(false);
         });
         button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);

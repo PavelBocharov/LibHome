@@ -1,9 +1,7 @@
-package com.mar.ds.views.itemStatus;
+package com.mar.ds.views.item.itemStatus;
 
 import com.mar.ds.db.entity.ItemStatus;
-import com.mar.ds.db.entity.ItemType;
 import com.mar.ds.utils.ViewUtils;
-import com.mar.ds.views.itemType.ItemTypeViewDialog;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
