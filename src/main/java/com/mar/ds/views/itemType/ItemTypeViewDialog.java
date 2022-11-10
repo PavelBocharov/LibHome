@@ -1,14 +1,10 @@
 package com.mar.ds.views.itemType;
 
 import com.mar.ds.db.entity.ItemType;
-import com.mar.ds.db.entity.Product;
 import com.mar.ds.db.jpa.ItemTypeRepository;
-import com.mar.ds.db.jpa.ProductRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
-import com.mar.ds.views.product.CreateProductView;
-import com.mar.ds.views.product.UpdateProductView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
@@ -25,7 +21,7 @@ public class ItemTypeViewDialog {
     private final MainView appLayout;
 
     private Dialog dialog;
-    private VerticalLayout products;
+    private VerticalLayout itemTypes;
     private Button crtBtn;
 
     public ItemTypeViewDialog(MainView appLayout) {
@@ -44,7 +40,7 @@ public class ItemTypeViewDialog {
 
 
     private void initProducts() {
-        products = new VerticalLayout();
+        itemTypes = new VerticalLayout();
 
         List<ItemType> itemTypeList = getRepository().findAll();
 
@@ -72,7 +68,7 @@ public class ItemTypeViewDialog {
                     new Icon(VaadinIcon.PENCIL),
                     buttonClickEvent -> new UpdateItemTypeView(this, itemType)
             );
-            products.add(new HorizontalLayout(name, uptBtn, dltBtn));
+            itemTypes.add(new HorizontalLayout(name, uptBtn, dltBtn));
         }
     }
 
@@ -88,7 +84,7 @@ public class ItemTypeViewDialog {
         dialog.removeAll();
         dialog.add(
                 new Label("Список типов предметов"),
-                products,
+                itemTypes,
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(dialog))
         );
     }

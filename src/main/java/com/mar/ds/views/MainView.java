@@ -1,5 +1,6 @@
 package com.mar.ds.views;
 
+import com.mar.ds.service.MapperService;
 import com.mar.ds.service.RepositoryService;
 import com.mar.ds.views.item.ItemView;
 import com.mar.ds.views.randTask.RandomTaskView;
@@ -26,6 +27,10 @@ public class MainView extends AppLayout {
     @Getter
     @Autowired
     private RepositoryService repositoryService;
+
+    @Getter
+    @Autowired
+    private MapperService mapperService;
 
     @Getter
     private final RandomTaskView randomTaskView;

@@ -1,9 +1,7 @@
 package com.mar.ds.views.itemType;
 
 import com.mar.ds.db.entity.ItemType;
-import com.mar.ds.db.entity.Product;
 import com.mar.ds.utils.ViewUtils;
-import com.mar.ds.views.product.ProductViewDialog;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;

@@ -5,9 +5,10 @@ import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.views.MainView;
 import com.mar.ds.views.itemStatus.ItemStatusViewDialog;
 import com.mar.ds.views.itemType.ItemTypeViewDialog;
+import com.mar.ds.views.jsonDialog.JSONViewDialog;
+import com.mar.ds.views.jsonDialog.jsonData.ItemData;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -87,9 +88,16 @@ public class ItemView {
         Button itemStatusListBtn = new Button("Статус предметов", new Icon(COG), click -> new ItemStatusViewDialog(appLayout));
         itemStatusListBtn.setWidthFull();
 
-        Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD));
+        Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD),
+                click -> {
+                    List<Item> itemList = appLayout.getRepositoryService().getItemRepository().findAll();
+                    List<ItemData> itemDataList = appLayout.getMapperService().getItemMapper().getItemDataList(itemList);
+                    new JSONViewDialog(appLayout, itemDataList);
+                }
+        );
         downloadJson.setWidthFull();
         downloadJson.getStyle().set("color", "pink");
+
 
         HorizontalLayout btns = new HorizontalLayout(
                 crtBtn,
