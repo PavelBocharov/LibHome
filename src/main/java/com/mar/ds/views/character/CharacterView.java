@@ -4,6 +4,7 @@ import com.mar.ds.db.entity.Character;
 import com.mar.ds.db.jpa.CharacterRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.views.MainView;
+import com.mar.ds.views.jsonDialog.JSONViewDialog;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -16,8 +17,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
-import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
-import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
+import static com.vaadin.flow.component.icon.VaadinIcon.*;
 
 @RequiredArgsConstructor
 public class CharacterView {
@@ -35,13 +35,12 @@ public class CharacterView {
         grid.addColumn(Character::getPortrait).setHeader("Portrait").setAutoWidth(true);
         // settings
         grid.setWidthFull();
-//        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         // edit
         grid.addComponentColumn(character -> {
-//            Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> {
-//                new UpdateItemDialog(appLayout, item);
-//            });
-//            edtBtn.addThemeVariants(LUMO_TERTIARY);
+            Button edtBtn = new Button(new Icon(PENCIL), clk -> {
+                new UpdateCharacterView(appLayout, character);
+            });
+            edtBtn.addThemeVariants(LUMO_TERTIARY);
             Button dltBtn = new Button(new Icon(BAN), clk -> {
                 new DeleteDialogWidget(() -> {
                     appLayout.getRepositoryService().getCharacterRepository().delete(character);
@@ -50,10 +49,7 @@ public class CharacterView {
             });
             dltBtn.addThemeVariants(LUMO_TERTIARY);
             dltBtn.getStyle().set("color", "red");
-            return new HorizontalLayout(
-//                    edtBtn,
-                    dltBtn
-            );
+            return new HorizontalLayout(edtBtn, dltBtn);
         });
 
         // value
@@ -65,24 +61,17 @@ public class CharacterView {
         crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
 
-//        Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD),
-//                click -> {
-//                    List<Item> itemList = appLayout.getRepositoryService().getItemRepository().findAll();
-//                    List<ItemData> itemDataList = appLayout.getMapperService().getItemMapper().getItemDataList(itemList);
-//                    new JSONViewDialog(appLayout, itemDataList);
-//                }
-//        );
-//        downloadJson.setWidthFull();
-//        downloadJson.getStyle().set("color", "pink");
-
-
-        HorizontalLayout btns = new HorizontalLayout(
-                crtBtn
-//                ,
-//                itemTypeListBtn,
-//                itemStatusListBtn,
-//                downloadJson
+        Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD),
+                click -> {
+                    List<Character> characters = appLayout.getRepositoryService().getCharacterRepository().findAll();
+                    new JSONViewDialog(appLayout, characters);
+                }
         );
+        downloadJson.setWidthFull();
+        downloadJson.getStyle().set("color", "pink");
+
+
+        HorizontalLayout btns = new HorizontalLayout(crtBtn, downloadJson);
         btns.setWidthFull();
 
         // create view

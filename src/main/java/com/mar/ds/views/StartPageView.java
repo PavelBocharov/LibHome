@@ -27,7 +27,7 @@ public class StartPageView extends VerticalLayout {
 //                .collect(Collectors.toList());
 
         VerticalLayout verticalLayout = new VerticalLayout(
-                new H3("Тут всякий хлам который должен упростить жЫзнЪ"),
+                new H3("Тут всякий хлам и утилиты"),
                 image
         );
         verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);

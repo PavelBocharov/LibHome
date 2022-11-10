@@ -6,6 +6,7 @@ import com.mar.ds.views.character.CharacterView;
 import com.mar.ds.views.item.ItemView;
 import com.mar.ds.views.randTask.RandomTaskView;
 import com.mar.ds.views.receipt.ReceiptView;
+import com.mar.ds.views.task.TaskView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
@@ -41,6 +42,8 @@ public class MainView extends AppLayout {
     private final ItemView itemView;
     @Getter
     private final CharacterView characterView;
+    @Getter
+    private final TaskView taskView;
     private final StartPageView startPageView;
 
     public MainView() throws IOException {
@@ -48,6 +51,7 @@ public class MainView extends AppLayout {
         receiptView = new ReceiptView(this);
         itemView = new ItemView(this);
         characterView = new CharacterView(this);
+        taskView = new TaskView(this);
         startPageView = new StartPageView();
 
         DrawerToggle toggle = new DrawerToggle();
@@ -63,7 +67,7 @@ public class MainView extends AppLayout {
         tabs.add(new Tab(getReceiptsBtn()));
         tabs.add(new Tab(getItemListBtn()));
         tabs.add(new Tab(getCharacterListBtn()));
-//        tabs.setWidth(25, Unit.PERCENTAGE);
+        tabs.add(new Tab(getTaskListBtn()));
 
         addToDrawer(tabs);
         addToNavbar(toggle, title);
@@ -108,6 +112,17 @@ public class MainView extends AppLayout {
         button.setHeightFull();
         button.addClickListener(buttonClickEvent -> {
             setContent(characterView.getContent());
+            this.setDrawerOpened(false);
+        });
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        return button;
+    }
+
+    private Button getTaskListBtn() {
+        Button button = new Button("[GAME] Задачи", new Icon(TASKS));
+        button.setHeightFull();
+        button.addClickListener(buttonClickEvent -> {
+            setContent(taskView.getContent());
             this.setDrawerOpened(false);
         });
         button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);

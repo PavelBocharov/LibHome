@@ -2,7 +2,6 @@ package com.mar.ds.views.jsonDialog;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.mar.ds.db.jpa.ItemTypeRepository;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Unit;
@@ -23,10 +22,8 @@ public class JSONViewDialog {
         dialog.setMinWidth(50, Unit.PERCENTAGE);
         dialog.setMinHeight(80, Unit.PERCENTAGE);
         try {
-            appLayout.setContent(appLayout.getItemView().getContent());
-
             TextArea jsonArea = new TextArea();
-            jsonArea.setSizeFull();
+            jsonArea.setWidthFull();
             jsonArea.setValue(new JsonMapper().writeValueAsString(objToJson));
 
             Label label = new Label("JSON предметов");
@@ -39,9 +36,5 @@ public class JSONViewDialog {
         } catch (JsonProcessingException ex) {
             ViewUtils.showErrorMsg("При загрузки JSON-а", ex);
         }
-    }
-
-    public ItemTypeRepository getRepository() {
-        return appLayout.getRepositoryService().getItemTypeRepository();
     }
 }
