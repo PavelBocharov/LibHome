@@ -11,6 +11,8 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.BigDecimalField;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.StreamResource;
 import lombok.experimental.UtilityClass;
@@ -19,6 +21,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.CLOSE_SMALL;
@@ -76,6 +79,34 @@ public class ViewUtils {
         clsBtn.getStyle().set("color", "red");
         clsBtn.addClickListener(btnClick -> closeDialog.close());
         return clsBtn;
+    }
+
+
+    public static float getFloatValue(BigDecimalField field) {
+        if (field == null || field.getValue() == null) return 0;
+        return field.getValue().floatValue();
+    }
+
+    public static void setBigDecimalFieldValue(BigDecimalField field, Float value) {
+        field.setValue(value == null ? BigDecimal.ZERO : BigDecimal.valueOf(value));
+    }
+
+    public static String getTextFieldValue(TextField field) {
+        if (field == null || field.getValue() == null || field.getValue().length() == 0) return null;
+        return field.getValue();
+    }
+
+    public static void setTextFieldValue(TextField field, String text) {
+        field.setValue(text == null ? "" : text);
+    }
+
+    public static void setTextFieldValue(TextArea field, String text) {
+        field.setValue(text == null ? "" : text);
+    }
+
+    public static String getTextFieldValue(TextArea field) {
+        if (field == null || field.getValue() == null || field.getValue().length() == 0) return null;
+        return field.getValue();
     }
 
 }

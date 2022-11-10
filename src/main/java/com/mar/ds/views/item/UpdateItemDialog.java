@@ -18,8 +18,9 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 
-import java.math.BigDecimal;
 import java.util.List;
+
+import static com.mar.ds.utils.ViewUtils.*;
 
 public class UpdateItemDialog {
 
@@ -178,31 +179,5 @@ public class UpdateItemDialog {
         );
         createDialog.open();
     }
-    
-    private float getFloatValue(BigDecimalField field) {
-        if (field == null || field.getValue() == null) return 0;
-        return field.getValue().floatValue();
-    }
 
-    private void setBigDecimalFieldValue(BigDecimalField field, Float value) {
-        field.setValue(value == null ? BigDecimal.ZERO : BigDecimal.valueOf(value));
-    }
-
-    private String getTextFieldValue(TextField field) {
-        if (field == null || field.getValue() == null || field.getValue().length() == 0) return null;
-        return field.getValue();
-    }
-
-    private void setTextFieldValue(TextField field, String text) {
-        field.setValue(text == null ? "" : text);
-    }
-
-    private void setTextFieldValue(TextArea field, String text) {
-        field.setValue(text == null ? "" : text);
-    }
-
-    private String getTextFieldValue(TextArea field) {
-        if (field == null || field.getValue() == null || field.getValue().length() == 0) return null;
-        return field.getValue();
-    }
 }

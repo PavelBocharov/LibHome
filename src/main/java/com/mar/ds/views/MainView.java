@@ -2,6 +2,7 @@ package com.mar.ds.views;
 
 import com.mar.ds.service.MapperService;
 import com.mar.ds.service.RepositoryService;
+import com.mar.ds.views.character.CharacterView;
 import com.mar.ds.views.item.ItemView;
 import com.mar.ds.views.randTask.RandomTaskView;
 import com.mar.ds.views.receipt.ReceiptView;
@@ -38,12 +39,15 @@ public class MainView extends AppLayout {
     private final ReceiptView receiptView;
     @Getter
     private final ItemView itemView;
+    @Getter
+    private final CharacterView characterView;
     private final StartPageView startPageView;
 
     public MainView() throws IOException {
         randomTaskView = new RandomTaskView(this);
         receiptView = new ReceiptView(this);
         itemView = new ItemView(this);
+        characterView = new CharacterView(this);
         startPageView = new StartPageView();
 
         DrawerToggle toggle = new DrawerToggle();
@@ -58,6 +62,8 @@ public class MainView extends AppLayout {
         tabs.add(new Tab(getRandomTaskButton()));
         tabs.add(new Tab(getReceiptsBtn()));
         tabs.add(new Tab(getItemListBtn()));
+        tabs.add(new Tab(getCharacterListBtn()));
+//        tabs.setWidth(25, Unit.PERCENTAGE);
 
         addToDrawer(tabs);
         addToNavbar(toggle, title);
@@ -95,6 +101,17 @@ public class MainView extends AppLayout {
         });
         receiptBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         return receiptBtn;
+    }
+
+    private Button getCharacterListBtn() {
+        Button button = new Button("[GAME] Пресонажи", new Icon(CHILD));
+        button.setHeightFull();
+        button.addClickListener(buttonClickEvent -> {
+            setContent(characterView.getContent());
+            this.setDrawerOpened(false);
+        });
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        return button;
     }
 
     private Button getStartPageBtn() {
