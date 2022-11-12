@@ -3,6 +3,7 @@ package com.mar.ds.views.randTask;
 import com.mar.ds.db.entity.RandTask;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
+import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -27,7 +28,7 @@ import static com.mar.ds.utils.ViewUtils.getTextField;
 import static com.vaadin.flow.component.icon.VaadinIcon.*;
 
 @RequiredArgsConstructor
-public class RandomTaskView {
+public class RandomTaskView implements ContentView {
 
     private final MainView appLayout;
 

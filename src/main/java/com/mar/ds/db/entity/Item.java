@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 
 @Data
 @Entity
@@ -74,4 +73,8 @@ public class Item implements Serializable {
 
     @Column(name = "rotationZ")
     private Float rotationZ;
+
+    @ManyToOne
+    @JoinColumn(name="dialog_id", nullable=true)
+    private Dialog dialog;
 }

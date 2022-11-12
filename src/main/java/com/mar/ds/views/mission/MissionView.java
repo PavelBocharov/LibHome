@@ -4,6 +4,7 @@ import com.mar.ds.db.entity.Mission;
 import com.mar.ds.db.jpa.MissionRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
+import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.mar.ds.views.jsonDialog.JSONViewDialog;
 import com.vaadin.flow.component.button.Button;
@@ -22,7 +23,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.*;
 import static java.util.Objects.nonNull;
 
 @RequiredArgsConstructor
-public class MissionView {
+public class MissionView implements ContentView {
 
     private final MainView appLayout;
 

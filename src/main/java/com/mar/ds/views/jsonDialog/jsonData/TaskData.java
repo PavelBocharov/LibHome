@@ -13,6 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class TaskData implements Serializable {
 
+    private Long id;
     private Integer order;
     private String text;
 

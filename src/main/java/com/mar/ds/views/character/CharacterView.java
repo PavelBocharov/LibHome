@@ -3,6 +3,7 @@ package com.mar.ds.views.character;
 import com.mar.ds.db.entity.Character;
 import com.mar.ds.db.jpa.CharacterRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
+import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.mar.ds.views.jsonDialog.JSONViewDialog;
 import com.vaadin.flow.component.button.Button;
@@ -20,7 +21,7 @@ import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.*;
 
 @RequiredArgsConstructor
-public class CharacterView {
+public class CharacterView implements ContentView {
 
     private final MainView appLayout;
 

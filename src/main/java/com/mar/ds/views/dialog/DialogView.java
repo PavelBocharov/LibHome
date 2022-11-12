@@ -1,9 +1,11 @@
-package com.mar.ds.views.item;
+package com.mar.ds.views.dialog;
 
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
+import com.mar.ds.views.item.CreateItemDialog;
+import com.mar.ds.views.item.UpdateItemDialog;
 import com.mar.ds.views.item.itemStatus.ItemStatusViewDialog;
 import com.mar.ds.views.item.itemType.ItemTypeViewDialog;
 import com.mar.ds.views.jsonDialog.JSONViewDialog;
@@ -24,7 +26,7 @@ import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.*;
 
 @RequiredArgsConstructor
-public class ItemView implements ContentView {
+public class DialogView implements ContentView {
 
     private final MainView appLayout;
 

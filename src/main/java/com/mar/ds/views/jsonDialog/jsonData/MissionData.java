@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MissionData implements Serializable {
 
+    private Long id;
     private String title;
     private String text;
     private List<TaskData> tasks;

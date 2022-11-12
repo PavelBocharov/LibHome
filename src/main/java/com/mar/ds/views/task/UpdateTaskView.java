@@ -74,10 +74,10 @@ public class UpdateTaskView {
         afterTaskSelect.setDataProvider(new ListDataProvider<>(afterTaskList));
         if (afterTask != null) afterTaskSelect.setValue(afterTask);
 
-        Button createBtn = new Button("Обновить", new Icon(ROTATE_RIGHT));
+        Button updBtn = new Button("Обновить", new Icon(ROTATE_RIGHT));
         Task finalBeforeTask = beforeTask;
         Task finalAfterTask = afterTask;
-        createBtn.addClickListener(btnEvent -> {
+        updBtn.addClickListener(btnEvent -> {
             try {
                 Task beforeTaskNew = beforeTaskSelect.getValue();
                 Task afterTaskNew = afterTaskSelect.getValue();
@@ -121,22 +121,22 @@ public class UpdateTaskView {
                 }
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("При обновлении произошла ошибка", ex);
-                createBtn.setEnabled(true);
+                updBtn.setEnabled(true);
                 return;
             }
             createDialog.close();
             mainView.setContent(mainView.getTaskView().getContent());
         });
-        createBtn.setWidthFull();
-        createBtn.setDisableOnClick(true);
-        createBtn.addClickShortcut(Key.ENTER);
+        updBtn.setWidthFull();
+        updBtn.setDisableOnClick(true);
+        updBtn.addClickShortcut(Key.ENTER);
 
         createDialog.add(
                 new Label("Обновить задачу"),
                 textField,
                 beforeTaskSelect,
                 afterTaskSelect,
-                new HorizontalLayout(createBtn, ViewUtils.getCloseButton(createDialog))
+                new HorizontalLayout(updBtn, ViewUtils.getCloseButton(createDialog))
         );
 
         createDialog.open();

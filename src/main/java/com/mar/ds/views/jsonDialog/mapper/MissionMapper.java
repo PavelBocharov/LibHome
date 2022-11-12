@@ -22,7 +22,7 @@ public interface MissionMapper {
     TaskMapper taskMapper = Mappers.getMapper(TaskMapper.class);
 
     @Transactional
-    default List<MissionData> getMissionData(List<Mission> missions, TaskRepository taskRepository){
+    default List<MissionData> getMissionData(List<Mission> missions, TaskRepository taskRepository) {
         if (isNull(missions)) return null;
         List<MissionData> res = new LinkedList<>();
 
@@ -49,6 +49,7 @@ public interface MissionMapper {
             }
 
             res.add(MissionData.builder()
+                    .id(mission.getId())
                     .title(mission.getTitle())
                     .text(mission.getText())
                     .tasks(taskDataList)

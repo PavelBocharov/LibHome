@@ -2,6 +2,7 @@ package com.mar.ds.views.receipt;
 
 import com.mar.ds.db.entity.Receipt;
 import com.mar.ds.utils.DeleteDialogWidget;
+import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.mar.ds.views.product.ProductViewDialog;
 import com.vaadin.flow.component.button.Button;
@@ -23,7 +24,7 @@ import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.*;
 
 @RequiredArgsConstructor
-public class ReceiptView {
+public class ReceiptView implements ContentView {
 
     private final MainView appLayout;
 

@@ -3,6 +3,7 @@ package com.mar.ds.views.task;
 import com.mar.ds.db.entity.Task;
 import com.mar.ds.db.jpa.TaskRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
+import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -20,7 +21,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.*;
 import static java.util.Objects.nonNull;
 
 @RequiredArgsConstructor
-public class TaskView {
+public class TaskView implements ContentView {
 
     private final MainView appLayout;
 
