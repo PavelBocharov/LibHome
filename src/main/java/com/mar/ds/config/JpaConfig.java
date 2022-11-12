@@ -4,6 +4,7 @@ import com.mar.ds.db.entity.RandTask;
 import com.mar.ds.db.jpa.RandTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -29,8 +30,8 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class JpaConfig {
 
-//    @Value("${dbPath}")
-//    private String dbPath;
+    @Value("${dbPath}")
+    private String dbPath;
 
     @Autowired
     @Bean
@@ -74,8 +75,8 @@ public class JpaConfig {
     public DataSource dataSource() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.driverClassName("org.sqlite.JDBC");
-        String dbPath1 = "src/main/resources/static/db/dark_sun1.db";
-        dataSourceBuilder.url("jdbc:sqlite:" + dbPath1);
+//        String dbPath1 = "src/main/resources/static/db/dark_sun1.db";
+        dataSourceBuilder.url("jdbc:sqlite:" + dbPath);
         dataSourceBuilder.type(SQLiteDataSource.class);
         return dataSourceBuilder.build();
     }

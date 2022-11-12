@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemData  implements Serializable {
+public class ItemData implements Serializable {
 
     private Long id;
     private String name;

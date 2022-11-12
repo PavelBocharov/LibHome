@@ -64,7 +64,7 @@ public class CharacterView {
         Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD),
                 click -> {
                     List<Character> characters = appLayout.getRepositoryService().getCharacterRepository().findAll();
-                    new JSONViewDialog(appLayout, characters);
+                    new JSONViewDialog("JSON персонажей", appLayout, characters);
                 }
         );
         downloadJson.setWidthFull();

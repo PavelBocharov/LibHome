@@ -92,7 +92,7 @@ public class ItemView {
                 click -> {
                     List<Item> itemList = appLayout.getRepositoryService().getItemRepository().findAll();
                     List<ItemData> itemDataList = appLayout.getMapperService().getItemMapper().getItemDataList(itemList);
-                    new JSONViewDialog(appLayout, itemDataList);
+                    new JSONViewDialog("JSON предметов", appLayout, itemDataList);
                 }
         );
         downloadJson.setWidthFull();

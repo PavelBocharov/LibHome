@@ -3,7 +3,9 @@ package com.mar.ds.views.mission;
 import com.mar.ds.db.entity.Mission;
 import com.mar.ds.db.jpa.MissionRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
+import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
+import com.mar.ds.views.jsonDialog.JSONViewDialog;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -32,7 +34,7 @@ public class MissionView {
         // column
         grid.addColumn(Mission::getId).setHeader("ID").setAutoWidth(true);
         grid.addColumn(Mission::getTitle).setHeader("Заголовок").setAutoWidth(true);
-        grid.addColumn(Mission::getTitle).setHeader("Описание").setAutoWidth(true);
+        grid.addColumn(Mission::getText).setHeader("Описание").setAutoWidth(true);
         grid.addColumn(mission -> nonNull(mission.getStartTask()) ? mission.getStartTask().getId() : "" )
                 .setHeader("Первое задание").setAutoWidth(true);
         // settings
@@ -64,23 +66,30 @@ public class MissionView {
         crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
 
-//        Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD),
-//                click -> {
-//                    List<Item> itemList = appLayout.getRepositoryService().getItemRepository().findAll();
-//                    List<ItemData> itemDataList = appLayout.getMapperService().getItemMapper().getItemDataList(itemList);
-//                    new JSONViewDialog(appLayout, itemDataList);
-//                }
-//        );
-//        downloadJson.setWidthFull();
-//        downloadJson.getStyle().set("color", "pink");
+        Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD),
+                click -> {
+                    List<Mission> missions = appLayout.getRepositoryService().getMissionRepository().findAll();
+                    try {
+                        new JSONViewDialog(
+                                "JSON миссий",
+                                appLayout,
+                                appLayout.getMapperService().getMissionMapper().getMissionData(
+                                        missions,
+                                        appLayout.getRepositoryService().getTaskRepository()
+                                )
+                        );
+                    } catch (Exception e) {
+                        ViewUtils.showErrorMsg("При создании JSON произошла ошибка", e);
+                        e.printStackTrace();
+                    }
+                }
+        );
+        downloadJson.setWidthFull();
+        downloadJson.getStyle().set("color", "pink");
 
 
         HorizontalLayout btns = new HorizontalLayout(
-                crtBtn
-//                ,
-//                itemTypeListBtn,
-//                itemStatusListBtn,
-//                downloadJson
+                crtBtn, downloadJson
         );
         btns.setWidthFull();
 

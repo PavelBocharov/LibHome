@@ -7,7 +7,7 @@
           <option name="delegateBuildToMaven" value="false" />
           <option name="environmentProperties">
             <map>
-              <entry key="dbPath" value="src/main/resources/static/db/dark_sun1.db" />
+              <entry key="dbPath" value="C:\Users\marol\IdeaProjects\vaadinTest\src\main\resources\static\db\dark_sun1.db" />
             </map>
           </option>
           <option name="jreName" value="#USE_PROJECT_JDK" />

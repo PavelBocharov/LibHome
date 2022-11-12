@@ -1,128 +1,34 @@
 [
   {
-    "id": 56,
-    "name": "~~Item.1.Key.Name",
-    "info": "~~Item.1.Key.Info",
-    "shortInfo": "~~Item.1.Key.ShortInfo",
-    "status": 4,
-    "type": 6,
-    "imgPath": "Objects/Items/1_Key/Golden_key_icon",
-    "needManna": 0.0,
-    "healthDamage": 0.0,
-    "mannaDamage": 0.0,
-    "reloadTick": 0.0,
-    "objPath": "Objects/Items/1_Key/Key",
-    "level": "PrologHub",
-    "positionX": 17.0,
-    "positionY": 1.0,
-    "positionZ": -25.5,
-    "rotationX": -90.0,
-    "rotationY": 0.0,
-    "rotationZ": 0.0
+    "title": "First mission",
+    "text": "Blagh-blagh",
+    "tasks": [
+      {
+        "order": 1,
+        "text": "1.1 Task"
+      },
+      {
+        "order": 2,
+        "text": "1.2 Task"
+      },
+      {
+        "order": 3,
+        "text": "1.3 Task"
+      }
+    ]
   },
   {
-    "id": 102,
-    "name": "~~Item.2.Capsule.Name",
-    "info": "~~Item.2.Capsule.Info",
-    "shortInfo": "~~Item.2.Capsule.ShortInfo",
-    "status": 4,
-    "type": 3,
-    "imgPath": "Objects/Items/2_Capsule_Flower/12_herbal",
-    "needManna": 0.0,
-    "healthDamage": 0.0,
-    "mannaDamage": 0.0,
-    "reloadTick": 0.0,
-    "objPath": "Objects/Items/2_Capsule_Flower/capsule_flower",
-    "level": "PrologHub",
-    "positionX": -10.68,
-    "positionY": 1.0,
-    "positionZ": -19.5,
-    "rotationX": 0.0,
-    "rotationY": 0.0,
-    "rotationZ": 0.0
-  },
-  {
-    "id": 103,
-    "name": "Fireball",
-    "info": "Summons a flaming ball of molten earth that explodes at a targeted location, causing Burn damage to all in the area of effect.",
-    "shortInfo": "A small fireball that burns when touched.",
-    "status": 2,
-    "type": 5,
-    "imgPath": "Objects/Magic/Fireball/Img_Fireball",
-    "needManna": 20.0,
-    "healthDamage": 15.0,
-    "mannaDamage": 0.0,
-    "reloadTick": 5000000.0,
-    "objPath": "Objects/Magic/Fireball/PS_Fireball",
-    "level": null,
-    "positionX": 0.0,
-    "positionY": 0.0,
-    "positionZ": 0.0,
-    "rotationX": 0.0,
-    "rotationY": 0.0,
-    "rotationZ": 0.0
-  },
-  {
-    "id": 104,
-    "name": "Electric ball",
-    "info": "Summons an electric ball that concentrates a small lightning discharge. When hit, it stuns and deals damage.",
-    "shortInfo": "A small electric ball that strikes with a discharge current when touched.",
-    "status": 2,
-    "type": 5,
-    "imgPath": "Objects/Magic/Electroball/Img_ElectroBall",
-    "needManna": 15.0,
-    "healthDamage": 10.0,
-    "mannaDamage": 0.0,
-    "reloadTick": 2500000.0,
-    "objPath": "Objects/Magic/Electroball/PS_Electroball",
-    "level": null,
-    "positionX": 0.0,
-    "positionY": 0.0,
-    "positionZ": 0.0,
-    "rotationX": 0.0,
-    "rotationY": 0.0,
-    "rotationZ": 0.0
-  },
-  {
-    "id": 105,
-    "name": "Rope",
-    "info": "Rope info",
-    "shortInfo": "Rope short info.",
-    "status": 3,
-    "type": 6,
-    "imgPath": "Objects/Items/6_Rope/Rope",
-    "needManna": 0.0,
-    "healthDamage": 0.0,
-    "mannaDamage": 0.0,
-    "reloadTick": 0.0,
-    "objPath": null,
-    "level": null,
-    "positionX": 0.0,
-    "positionY": 0.0,
-    "positionZ": 0.0,
-    "rotationX": 0.0,
-    "rotationY": 0.0,
-    "rotationZ": 0.0
-  },
-  {
-    "id": 106,
-    "name": "Rope 1",
-    "info": "Rope info 1",
-    "shortInfo": "Rope short info (1).",
-    "status": 3,
-    "type": 6,
-    "imgPath": "Objects/Items/6_Rope/Rope",
-    "needManna": 0.0,
-    "healthDamage": 0.0,
-    "mannaDamage": 0.0,
-    "reloadTick": 0.0,
-    "objPath": null,
-    "level": null,
-    "positionX": 0.0,
-    "positionY": 0.0,
-    "positionZ": 0.0,
-    "rotationX": 0.0,
-    "rotationY": 0.0,
-    "rotationZ": 0.0
+    "title": "Second mission",
+    "text": "бла-бла-бла",
+    "tasks": [
+      {
+        "order": 1,
+        "text": "2.1 Task"
+      },
+      {
+        "order": 2,
+        "text": "2.2 Task"
+      }
+    ]
   }
 ]

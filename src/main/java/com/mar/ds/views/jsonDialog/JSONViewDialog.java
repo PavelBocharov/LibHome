@@ -16,7 +16,7 @@ public class JSONViewDialog {
     private final MainView appLayout;
     private Dialog dialog;
 
-    public JSONViewDialog(MainView appLayout, Object objToJson) {
+    public JSONViewDialog(String title, MainView appLayout, Object objToJson) {
         this.appLayout = appLayout;
         dialog = new Dialog();
         dialog.setMinWidth(50, Unit.PERCENTAGE);
@@ -26,7 +26,7 @@ public class JSONViewDialog {
             jsonArea.setWidthFull();
             jsonArea.setValue(new JsonMapper().writeValueAsString(objToJson));
 
-            Label label = new Label("JSON предметов");
+            Label label = new Label(title);
             label.setWidthFull();
             Button clsBtn = ViewUtils.getCloseButton(dialog);
             HorizontalLayout horizontalLayout = new HorizontalLayout(label, clsBtn);
