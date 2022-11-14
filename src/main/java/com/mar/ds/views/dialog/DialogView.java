@@ -31,7 +31,7 @@ public class DialogView implements ContentView {
     private final MainView appLayout;
 
     public VerticalLayout getContent() {
-        H2 label = new H2("Список внутриигровых предметов");
+        H2 label = new H2("Список диалогов");
         // TABLE
         Grid<Dialog> grid = new Grid<>();
 
@@ -41,8 +41,6 @@ public class DialogView implements ContentView {
                 .setHeader("Персонаж").setAutoWidth(true)
         ;
         grid.addColumn(Dialog::getText).setHeader("Реплика").setAutoWidth(true);
-//        grid.addColumn(dialog -> format("[%d] %32s", dialog.getOpeningAction().getId(), dialog.getOpeningAction().getText()))
-//                .setHeader("Открывающая реплика").setAutoWidth(true);
         grid.addColumn(dialog ->
                         isNull(dialog.getItems()) || dialog.getItems().isEmpty()
                                 ? "-"
@@ -115,7 +113,11 @@ public class DialogView implements ContentView {
         Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD),
                 click -> {
                     List<Dialog> dialogList = appLayout.getRepositoryService().getDialogRepository().findAll();
-                    new JSONViewDialog("JSON предметов", appLayout, dialogList);
+                    new JSONViewDialog(
+                            "JSON предметов",
+                            appLayout,
+                            appLayout.getMapperService().getDialogMapper().getDialogDataList(dialogList)
+                    );
                 }
         );
         downloadJson.setWidthFull();

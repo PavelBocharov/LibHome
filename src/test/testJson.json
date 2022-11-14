@@ -1,41 +1,84 @@
 [
   {
-    "id": 152,
-    "title": "First mission",
-    "text": "Blagh-blagh",
-    "tasks": [
-      {
-        "id": 452,
-        "order": 1,
-        "text": "1.1 Task"
-      },
-      {
-        "id": 453,
-        "order": 2,
-        "text": "1.2 Task"
-      },
-      {
-        "id": 454,
-        "order": 3,
-        "text": "1.3 Task"
-      }
+    "id": 553,
+    "characterId": 1,
+    "text": "1 dialog 1",
+    "actions": [],
+    "itemsId": []
+  },
+  {
+    "id": 602,
+    "characterId": 2,
+    "text": "Dialog 2",
+    "actions": [],
+    "itemsId": [
+      56
     ]
   },
   {
-    "id": 153,
-    "title": "Second mission",
-    "text": "бла-бла-бла",
-    "tasks": [
+    "id": 652,
+    "characterId": 1,
+    "text": "3 Dialog 3",
+    "actions": [
       {
-        "id": 502,
-        "order": 1,
-        "text": "2.1 Task"
+        "id": 2,
+        "next": 553,
+        "title": "Action 1",
+        "needItemId": 103,
+        "needMissionId": null,
+        "needTaskId": null,
+        "moveMission": true
+      }
+    ],
+    "itemsId": []
+  },
+  {
+    "id": 702,
+    "characterId": 1,
+    "text": "Dialog 4",
+    "actions": [
+      {
+        "id": 3,
+        "next": 602,
+        "title": "Action 2",
+        "needItemId": 105,
+        "needMissionId": null,
+        "needTaskId": null,
+        "moveMission": true
+      }
+    ],
+    "itemsId": [
+      102
+    ]
+  },
+  {
+    "id": 703,
+    "characterId": 2,
+    "text": "Dialog 5 ",
+    "actions": [
+      {
+        "id": 4,
+        "next": null,
+        "title": "Action 3",
+        "needItemId": null,
+        "needMissionId": 152,
+        "needTaskId": null,
+        "moveMission": false
       },
       {
-        "id": 503,
-        "order": 2,
-        "text": "2.2 Task"
+        "id": 102,
+        "next": 702,
+        "title": "test",
+        "needItemId": null,
+        "needMissionId": null,
+        "needTaskId": null,
+        "moveMission": false
       }
+    ],
+    "itemsId": [
+      103,
+      104,
+      105
     ]
   }
 ]

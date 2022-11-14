@@ -1,8 +1,6 @@
 package com.mar.ds.service;
 
-import com.mar.ds.utils.jsonDialog.mapper.ItemMapper;
-import com.mar.ds.utils.jsonDialog.mapper.MissionMapper;
-import com.mar.ds.utils.jsonDialog.mapper.TaskMapper;
+import com.mar.ds.utils.jsonDialog.mapper.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +13,8 @@ public class MapperService {
     private final ItemMapper itemMapper;
     private final TaskMapper taskMapper;
     private final MissionMapper missionMapper;
+    private final ActionMapper actionMapper;
+    private final DialogMapper dialogMapper;
 
 
 }

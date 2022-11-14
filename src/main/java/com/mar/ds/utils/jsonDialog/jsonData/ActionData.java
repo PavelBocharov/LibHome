@@ -17,5 +17,8 @@ public class ActionData implements Serializable {
     private Long next;
     private String title;
     private Long needItemId;
+    private Long needMissionId;
+    private Long needTaskId;
+    private boolean moveMission;
 
 }

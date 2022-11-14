@@ -3,16 +3,22 @@ package com.mar.ds.utils.jsonDialog.mapper;
 import com.mar.ds.db.entity.Action;
 import com.mar.ds.utils.jsonDialog.jsonData.ActionData;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+
+import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ActionMapper {
 
-//    @Mapping(target = "status", source = "item.status.enumNumber")
-//    @Mapping(target = "type", source = "item.type.enumNumber")
-    ActionData getItemData(Action action);
+    @Mapping(target = "title", source = "action.text")
+    @Mapping(target = "next", source = "action.openedDialog.id")
+    @Mapping(target = "needMissionId", source = "action.needMission.id")
+    @Mapping(target = "needTaskId", source = "action.needTask.id")
+    @Mapping(target = "needItemId", source = "action.needItem.id")
+    ActionData getActionData(Action action);
 
 
-//    List<ItemData> getItemDataList(List<Item> itemList);
+    List<ActionData> getActionDataList(List<Action> itemList);
 
 }
