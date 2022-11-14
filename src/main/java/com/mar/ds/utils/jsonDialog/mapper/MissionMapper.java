@@ -1,10 +1,10 @@
-package com.mar.ds.views.jsonDialog.mapper;
+package com.mar.ds.utils.jsonDialog.mapper;
 
 import com.mar.ds.db.entity.Mission;
 import com.mar.ds.db.entity.Task;
 import com.mar.ds.db.jpa.TaskRepository;
-import com.mar.ds.views.jsonDialog.jsonData.MissionData;
-import com.mar.ds.views.jsonDialog.jsonData.TaskData;
+import com.mar.ds.utils.jsonDialog.jsonData.MissionData;
+import com.mar.ds.utils.jsonDialog.jsonData.TaskData;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.factory.Mappers;

@@ -39,4 +39,6 @@ public class Action implements Serializable {
     @JoinColumn(name="dialog_id", nullable=true)
     private Dialog dialog;
 
+    @OneToOne(optional = true)
+    private Dialog openedDialog;
 }

@@ -27,10 +27,10 @@ public class Dialog implements Serializable {
     @OneToOne(optional = false)
     private Character character;
 
-    @OneToMany(mappedBy = "dialog")
+    @OneToMany(mappedBy = "dialog", fetch = FetchType.EAGER)
     private List<Item> items;
 
-    @OneToMany(mappedBy = "dialog")
+    @OneToMany(mappedBy = "dialog", fetch = FetchType.EAGER)
     private List<Action> actions;
 
 }

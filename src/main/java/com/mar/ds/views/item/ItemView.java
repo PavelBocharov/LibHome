@@ -2,12 +2,12 @@ package com.mar.ds.views.item;
 
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.utils.DeleteDialogWidget;
+import com.mar.ds.utils.jsonDialog.JSONViewDialog;
+import com.mar.ds.utils.jsonDialog.jsonData.ItemData;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.mar.ds.views.item.itemStatus.ItemStatusViewDialog;
 import com.mar.ds.views.item.itemType.ItemTypeViewDialog;
-import com.mar.ds.views.jsonDialog.JSONViewDialog;
-import com.mar.ds.views.jsonDialog.jsonData.ItemData;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;

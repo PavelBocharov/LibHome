@@ -1,4 +1,4 @@
-package com.mar.ds.views.jsonDialog;
+package com.mar.ds.utils.jsonDialog;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;

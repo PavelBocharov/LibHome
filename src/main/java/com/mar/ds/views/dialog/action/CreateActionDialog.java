@@ -34,7 +34,7 @@ public class CreateActionDialog {
         createDialog.setCloseOnOutsideClick(false);
 
         // name
-        TextField textField = new TextField("Тест реплики");
+        TextField textField = new TextField("Текст реплики");
         textField.setWidthFull();
         // items
         List<Item> itemList = mainView.getRepositoryService().getItemRepository().findAll();

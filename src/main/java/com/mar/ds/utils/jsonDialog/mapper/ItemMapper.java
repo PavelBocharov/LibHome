@@ -1,7 +1,7 @@
-package com.mar.ds.views.jsonDialog.mapper;
+package com.mar.ds.utils.jsonDialog.mapper;
 
 import com.mar.ds.db.entity.Item;
-import com.mar.ds.views.jsonDialog.jsonData.ItemData;
+import com.mar.ds.utils.jsonDialog.jsonData.ItemData;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

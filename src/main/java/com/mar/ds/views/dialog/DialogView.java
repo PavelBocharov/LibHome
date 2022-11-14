@@ -1,15 +1,12 @@
 package com.mar.ds.views.dialog;
 
+import com.mar.ds.db.entity.Action;
+import com.mar.ds.db.entity.Dialog;
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.utils.DeleteDialogWidget;
+import com.mar.ds.utils.jsonDialog.JSONViewDialog;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
-import com.mar.ds.views.item.CreateItemDialog;
-import com.mar.ds.views.item.UpdateItemDialog;
-import com.mar.ds.views.item.itemStatus.ItemStatusViewDialog;
-import com.mar.ds.views.item.itemType.ItemTypeViewDialog;
-import com.mar.ds.views.jsonDialog.JSONViewDialog;
-import com.mar.ds.views.jsonDialog.jsonData.ItemData;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
@@ -21,93 +18,111 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.*;
+import static java.lang.String.format;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @RequiredArgsConstructor
 public class DialogView implements ContentView {
-
     private final MainView appLayout;
 
     public VerticalLayout getContent() {
         H2 label = new H2("Список внутриигровых предметов");
         // TABLE
-        Grid<Item> grid = new Grid<>();
+        Grid<Dialog> grid = new Grid<>();
 
         // column
-        grid.addColumn(Item::getId).setHeader("ID").setAutoWidth(true);
-        grid.addColumn(Item::getName).setHeader("Наименование").setAutoWidth(true);
-        grid.addColumn(item -> item.getStatus().getName()).setHeader("Статус").setAutoWidth(true);
-        grid.addColumn(item -> item.getType().getName()).setHeader("Тип").setAutoWidth(true);
-        grid.addColumn(Item::getLevel).setHeader("Уровень").setAutoWidth(true);
-        grid.addColumn(Item::getNeedManna).setHeader("Мин. кол-во манны").setAutoWidth(true);
-        grid.addColumn(Item::getHealthDamage).setHeader("HP DMG").setAutoWidth(true);
-        grid.addColumn(Item::getMannaDamage).setHeader("MP DMG").setAutoWidth(true);
-        grid.addColumn(Item::getReloadTick).setHeader("Время отката").setAutoWidth(true);
-        grid.addColumn(item -> String.format("(%.1f : %.1f : %.1f)", item.getPositionX(), item.getPositionY(), item.getPositionZ()))
-                .setHeader("Spawn point").setAutoWidth(true);
-        grid.addColumn(item -> String.format("(%.1f : %.1f : %.1f)", item.getRotationX(), item.getRotationY(), item.getRotationZ()))
-                .setHeader("Rotation").setAutoWidth(true);
-        grid.addColumn(Item::getImgPath).setHeader("Путь иконки").setAutoWidth(true);
-        grid.addColumn(Item::getObjPath).setHeader("Путь объекта").setAutoWidth(true);
-        grid.addColumn(Item::getShortInfo).setHeader("Краткая информация");
-        grid.addColumn(Item::getInfo).setHeader("Информация");
+        grid.addColumn(Dialog::getId).setHeader("ID").setAutoWidth(true);
+        grid.addColumn(dialog -> format("[%d] %32s", dialog.getCharacter().getId(), dialog.getCharacter().getName()))
+                .setHeader("Персонаж").setAutoWidth(true)
+        ;
+        grid.addColumn(Dialog::getText).setHeader("Реплика").setAutoWidth(true);
+//        grid.addColumn(dialog -> format("[%d] %32s", dialog.getOpeningAction().getId(), dialog.getOpeningAction().getText()))
+//                .setHeader("Открывающая реплика").setAutoWidth(true);
+        grid.addColumn(dialog ->
+                        isNull(dialog.getItems()) || dialog.getItems().isEmpty()
+                                ? "-"
+                                : dialog.getItems()
+                                .stream()
+                                .map(item -> format("[%d] %32s", item.getId(), item.getName()))
+                                .collect(Collectors.joining("; ")))
+                .setHeader("Предметы").setAutoWidth(true);
+
+        grid.addColumn(dialog -> isNull(dialog.getActions()) || dialog.getActions().isEmpty()
+                        ? "-"
+                        : dialog.getActions()
+                        .stream()
+                        .map(action -> format("[%d] %32s", action.getId(), action.getText()))
+                        .collect(Collectors.joining("; "))
+                )
+                .setHeader("Действия").setAutoWidth(true);
         // settings
         grid.setWidthFull();
 //        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         // edit
-        grid.addComponentColumn(item -> {
+        grid.addComponentColumn(dialog -> {
             Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> {
-                new UpdateItemDialog(appLayout, item);
+                new UpdateDialogView(appLayout, dialog);
             });
-            edtBtn.addThemeVariants(LUMO_TERTIARY);
+//            edtBtn.addThemeVariants(LUMO_TERTIARY);
             Button dltBtn = new Button(new Icon(BAN), clk -> {
                 new DeleteDialogWidget(() -> {
-                    appLayout.getRepositoryService().getItemRepository().delete(item);
-                    appLayout.setContent(appLayout.getItemView().getContent());
+                    List<Item> items = dialog.getItems();
+                    List<Action> actions = dialog.getActions();
+                    List<Action> openingActions = appLayout.getRepositoryService().getActionRepository().findAll();
+                    Action openingAction = openingActions.stream()
+                            .filter(action -> nonNull(action)
+                                    && nonNull(action.getOpenedDialog())
+                                    && action.getOpenedDialog().getId().equals(dialog.getId()))
+                            .findFirst().orElse(null);
+                    if (nonNull(items)) {
+                        items.forEach(item -> item.setDialog(null));
+                        appLayout.getRepositoryService().getItemRepository().saveAll(items);
+                    }
+                    if (nonNull(actions)) {
+                        actions.forEach(action -> action.setDialog(null));
+                        appLayout.getRepositoryService().getActionRepository().saveAll(actions);
+                    }
+                    if (nonNull(openingAction)) {
+                        openingAction.setOpenedDialog(null);
+                        appLayout.getRepositoryService().getActionRepository().save(openingAction);
+                    }
+
+                    appLayout.getRepositoryService().getDialogRepository().delete(dialog);
+                    appLayout.setContent(appLayout.getDialogView().getContent());
                 });
             });
             dltBtn.addThemeVariants(LUMO_TERTIARY);
             dltBtn.getStyle().set("color", "red");
             return new HorizontalLayout(
-                    edtBtn,
-                    dltBtn
+                    edtBtn, dltBtn
             );
         });
 
         // value
-        List<Item> items = appLayout.getRepositoryService().getItemRepository().findAll();
-        grid.setItems(items);
+        List<Dialog> dialogs = appLayout.getRepositoryService().getDialogRepository().findAll();
+        grid.setItems(dialogs);
 
         // down buttons
-        Button crtBtn = new Button("Добавить предмет", new Icon(PLUS), click -> new CreateItemDialog(appLayout));
+        Button crtBtn = new Button("Добавить диалог", new Icon(PLUS), click -> new CreateDialogView(appLayout));
         crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
 
-        Button itemTypeListBtn = new Button("Типы предметов", new Icon(COG_O), click -> new ItemTypeViewDialog(appLayout));
-        itemTypeListBtn.setWidthFull();
-
-        Button itemStatusListBtn = new Button("Статус предметов", new Icon(COG), click -> new ItemStatusViewDialog(appLayout));
-        itemStatusListBtn.setWidthFull();
-
         Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD),
                 click -> {
-                    List<Item> itemList = appLayout.getRepositoryService().getItemRepository().findAll();
-                    List<ItemData> itemDataList = appLayout.getMapperService().getItemMapper().getItemDataList(itemList);
-                    new JSONViewDialog("JSON предметов", appLayout, itemDataList);
+                    List<Dialog> dialogList = appLayout.getRepositoryService().getDialogRepository().findAll();
+                    new JSONViewDialog("JSON предметов", appLayout, dialogList);
                 }
         );
         downloadJson.setWidthFull();
         downloadJson.getStyle().set("color", "pink");
 
 
-        HorizontalLayout btns = new HorizontalLayout(
-                crtBtn,
-                itemTypeListBtn,
-                itemStatusListBtn,
-                downloadJson
-        );
+        HorizontalLayout btns = new HorizontalLayout(crtBtn, downloadJson);
         btns.setWidthFull();
 
         // create view

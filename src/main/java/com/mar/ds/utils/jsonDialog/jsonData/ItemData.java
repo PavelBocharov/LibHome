@@ -1,4 +1,4 @@
-package com.mar.ds.views.jsonDialog.jsonData;
+package com.mar.ds.utils.jsonDialog.jsonData;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
