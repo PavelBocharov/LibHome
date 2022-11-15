@@ -28,7 +28,7 @@ public class MissionView implements ContentView {
     private final MainView appLayout;
 
     public VerticalLayout getContent() {
-        H2 label = new H2("Список задач для миссий");
+        H2 label = new H2("Список миссий");
         // TABLE
         Grid<Mission> grid = new Grid<>();
 

@@ -6,6 +6,7 @@ import com.mar.ds.db.entity.ItemType;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static com.mar.ds.utils.ViewUtils.getFloatValue;
 import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
+import static java.lang.String.format;
 
 public class CreateItemDialog {
 
@@ -29,6 +31,7 @@ public class CreateItemDialog {
         Dialog createDialog = new Dialog();
         createDialog.setCloseOnEsc(true);
         createDialog.setCloseOnOutsideClick(false);
+        createDialog.setWidth(80, Unit.PERCENTAGE);
         // name
         TextField name = new TextField("Наименование");
         name.setWidthFull();
@@ -43,7 +46,7 @@ public class CreateItemDialog {
         Select<ItemStatus> itemStatusSelect = new Select<ItemStatus>();
         itemStatusSelect.setLabel("Статус");
         itemStatusSelect.setPlaceholder("Выберите статус...");
-        itemStatusSelect.setTextRenderer(itemStatus -> itemStatus.getName());
+        itemStatusSelect.setTextRenderer(itemStatus -> format("[%d] %s", itemStatus.getEnumNumber(), itemStatus.getName()));
         itemStatusSelect.setDataProvider(new ListDataProvider<>(itemStatusList));
         itemStatusSelect.setWidthFull();
         // type
@@ -51,7 +54,7 @@ public class CreateItemDialog {
         Select<ItemType> itemTypeSelect = new Select<ItemType>();
         itemTypeSelect.setLabel("Тип");
         itemTypeSelect.setPlaceholder("Выберите тип...");
-        itemTypeSelect.setTextRenderer(itemType -> itemType.getName());
+        itemTypeSelect.setTextRenderer(itemType -> format("[%d] %s", itemType.getEnumNumber(), itemType.getName()));
         itemTypeSelect.setDataProvider(new ListDataProvider<>(itemTypeList));
         itemTypeSelect.setWidthFull();
         // image path

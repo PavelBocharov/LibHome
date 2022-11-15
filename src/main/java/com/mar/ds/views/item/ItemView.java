@@ -55,6 +55,9 @@ public class ItemView implements ContentView {
         grid.setWidthFull();
 //        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         // edit
+        grid.addItemDoubleClickListener(
+                itemItemDoubleClickEvent -> new UpdateItemDialog(appLayout, itemItemDoubleClickEvent.getItem())
+        );
         grid.addComponentColumn(item -> {
             Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> {
                 new UpdateItemDialog(appLayout, item);

@@ -13,6 +13,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import org.vaadin.gatanaso.MultiselectComboBox;
@@ -31,8 +32,8 @@ public class CreateDialogView {
         createDialog.setCloseOnOutsideClick(false);
 
         // name
-        TextField textField = new TextField("Текст реплики");
-        textField.setWidthFull();
+        TextArea textArea = new TextArea("Текст реплики");
+        textArea.setWidthFull();
         // character
         List<Character> characters = mainView.getRepositoryService().getCharacterRepository().findAll();
         Select<Character> characterSelect = new Select<>();
@@ -79,7 +80,7 @@ public class CreateDialogView {
                 Action openAction = openingActionsSelect.getValue();
                 com.mar.ds.db.entity.Dialog dialog = mainView.getRepositoryService().getDialogRepository()
                         .save(com.mar.ds.db.entity.Dialog.builder()
-                                .text(ViewUtils.getTextFieldValue(textField))
+                                .text(ViewUtils.getTextFieldValue(textArea))
                                 .character(characterSelect.getValue())
                                 .items(items)
                                 .actions(new ArrayList<>())
@@ -112,7 +113,7 @@ public class CreateDialogView {
 
         createDialog.add(
                 new Label("Создать новый диалог"),
-                textField,
+                textArea,
                 characterSelect,
                 openingActionsSelect,
                 itemSelect,

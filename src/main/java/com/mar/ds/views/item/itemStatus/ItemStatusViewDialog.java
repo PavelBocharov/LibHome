@@ -16,6 +16,8 @@ import com.vaadin.flow.component.textfield.TextField;
 
 import java.util.List;
 
+import static java.lang.String.format;
+
 public class ItemStatusViewDialog {
     private final MainView appLayout;
     private Dialog dialog;
@@ -47,7 +49,7 @@ public class ItemStatusViewDialog {
             name.setTitle("Name");
             name.setEnabled(false);
             name.setWidthFull();
-            name.setValue(itemStatus.getName());
+            name.setValue(format("[%d] %s", itemStatus.getEnumNumber(), itemStatus.getName()));
 
             Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> {
                 try {

@@ -1,5 +1,6 @@
 package com.mar.ds.utils.jsonDialog;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.mar.ds.utils.ViewUtils;
@@ -24,7 +25,9 @@ public class JSONViewDialog {
         try {
             TextArea jsonArea = new TextArea();
             jsonArea.setWidthFull();
-            jsonArea.setValue(new JsonMapper().writeValueAsString(objToJson));
+            jsonArea.setValue(new JsonMapper()
+                    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                    .writeValueAsString(objToJson));
 
             Label label = new Label(title);
             label.setWidthFull();

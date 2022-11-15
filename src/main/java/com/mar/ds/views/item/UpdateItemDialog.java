@@ -6,6 +6,7 @@ import com.mar.ds.db.entity.ItemType;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
@@ -21,13 +22,15 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import java.util.List;
 
 import static com.mar.ds.utils.ViewUtils.*;
+import static java.lang.String.format;
 
 public class UpdateItemDialog {
 
     public UpdateItemDialog(MainView mainView, Item updatedItem) {
-        Dialog createDialog = new Dialog();
-        createDialog.setCloseOnEsc(true);
-        createDialog.setCloseOnOutsideClick(false);
+        Dialog updateDialog = new Dialog();
+        updateDialog.setCloseOnEsc(true);
+        updateDialog.setCloseOnOutsideClick(false);
+        updateDialog.setWidth(80, Unit.PERCENTAGE);
         // name
         TextField name = new TextField("Наименование");
         name.setWidthFull();
@@ -45,7 +48,7 @@ public class UpdateItemDialog {
         Select<ItemStatus> itemStatusSelect = new Select<ItemStatus>();
         itemStatusSelect.setLabel("Статус");
         itemStatusSelect.setPlaceholder("Выберите статус...");
-        itemStatusSelect.setTextRenderer(itemStatus -> itemStatus.getName());
+        itemStatusSelect.setTextRenderer(itemStatus -> format("[%d] %s", itemStatus.getEnumNumber(), itemStatus.getName()));
         itemStatusSelect.setDataProvider(new ListDataProvider<>(itemStatusList));
         itemStatusSelect.setWidthFull();
         itemStatusSelect.setValue(updatedItem.getStatus());
@@ -54,7 +57,7 @@ public class UpdateItemDialog {
         Select<ItemType> itemTypeSelect = new Select<ItemType>();
         itemTypeSelect.setLabel("Тип");
         itemTypeSelect.setPlaceholder("Выберите тип...");
-        itemTypeSelect.setTextRenderer(itemType -> itemType.getName());
+        itemTypeSelect.setTextRenderer(itemType -> format("[%d] %s", itemType.getEnumNumber(), itemType.getName()));
         itemTypeSelect.setDataProvider(new ListDataProvider<>(itemTypeList));
         itemTypeSelect.setWidthFull();
         itemTypeSelect.setValue(updatedItem.getType());
@@ -121,7 +124,7 @@ public class UpdateItemDialog {
         rotationZ.setWidthFull();
         setBigDecimalFieldValue(rotationZ, updatedItem.getRotationZ());
 
-        Button crtBtn = new Button("Обновить", new Icon(VaadinIcon.PLUS));
+        Button crtBtn = new Button("Обновить", new Icon(VaadinIcon.ROTATE_RIGHT));
         crtBtn.addClickListener(click -> {
             try {
                 updatedItem.setName(getTextFieldValue(name));
@@ -149,13 +152,13 @@ public class UpdateItemDialog {
                 return;
             }
             mainView.setContent(mainView.getItemView().getContent());
-            createDialog.close();
+            updateDialog.close();
         });
         crtBtn.setWidthFull();
         crtBtn.setDisableOnClick(true);
         crtBtn.addClickShortcut(Key.ENTER);
 
-        createDialog.add(
+        updateDialog.add(
                 new Label("Обновить запись"),
                 name,
                 info,
@@ -175,9 +178,9 @@ public class UpdateItemDialog {
                 rotationX,
                 rotationY,
                 rotationZ,
-                new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(createDialog))
+                new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(updateDialog))
         );
-        createDialog.open();
+        updateDialog.open();
     }
 
 }

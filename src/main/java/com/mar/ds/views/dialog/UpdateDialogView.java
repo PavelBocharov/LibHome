@@ -13,6 +13,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import org.vaadin.gatanaso.MultiselectComboBox;
@@ -22,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 public class UpdateDialogView {
@@ -32,9 +34,9 @@ public class UpdateDialogView {
         createDialog.setCloseOnOutsideClick(false);
 
         // name
-        TextField textField = new TextField("Текст реплики");
-        textField.setWidthFull();
-        ViewUtils.setTextFieldValue(textField, updatedDialog.getText());
+        TextArea textArea = new TextArea("Текст реплики");
+        textArea.setWidthFull();
+        ViewUtils.setTextFieldValue(textArea, updatedDialog.getText());
         // character
         List<Character> characters = mainView.getRepositoryService().getCharacterRepository().findAll();
         Select<Character> characterSelect = new Select<>();
@@ -91,7 +93,7 @@ public class UpdateDialogView {
                 List<Item> items = new ArrayList<>(itemSelect.getSelectedItems());
                 List<Action> actions = new ArrayList<>(actionSelect.getSelectedItems());
                 Action openAction = openingActionsSelect.getValue();
-                updatedDialog.setText(ViewUtils.getTextFieldValue(textField));
+                updatedDialog.setText(ViewUtils.getTextFieldValue(textArea));
                 updatedDialog.setCharacter(characterSelect.getValue());
                 updatedDialog.setItems(items);
                 updatedDialog.setActions(actions);
@@ -125,13 +127,16 @@ public class UpdateDialogView {
                     openAction.setOpenedDialog(updatedDialog);
                     mainView.getRepositoryService().getActionRepository().save(openAction);
                 }
-                if (!oldOpenAction.getId().equals(openAction.getId())) {
-                    oldOpenAction.setOpenedDialog(null);
-                    mainView.getRepositoryService().getActionRepository().save(oldOpenAction);
+                if (nonNull(oldOpenAction)) {
+                    if (isNull(openAction) || !oldOpenAction.getId().equals(openAction.getId())) {
+                        oldOpenAction.setOpenedDialog(null);
+                        mainView.getRepositoryService().getActionRepository().save(oldOpenAction);
+                    }
                 }
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("При обновлении произошла ошибка", ex);
                 crtBtn.setEnabled(true);
+                ex.printStackTrace();
                 return;
             }
             mainView.setContent(mainView.getDialogView().getContent());
@@ -143,7 +148,7 @@ public class UpdateDialogView {
 
         createDialog.add(
                 new Label("Обновить диалог"),
-                textField,
+                textArea,
                 characterSelect,
                 openingActionsSelect,
                 itemSelect,

@@ -14,6 +14,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import java.math.BigDecimal;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.PENCIL;
+import static com.vaadin.flow.component.icon.VaadinIcon.ROTATE_RIGHT;
 
 public class UpdateItemStatusView {
 
@@ -40,7 +41,7 @@ public class UpdateItemStatusView {
         textField.setLabel("Наименование статуса");
         textField.setValue(itemStatus.getName());
 
-        Button uptBtn = new Button("Обновить", new Icon(PENCIL));
+        Button uptBtn = new Button("Обновить", new Icon(ROTATE_RIGHT));
         uptBtn.addClickListener(btnEvent -> {
             try {
                 Long id = Long.valueOf(idField.getValue());

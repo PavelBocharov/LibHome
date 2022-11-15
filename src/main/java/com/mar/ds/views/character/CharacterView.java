@@ -26,7 +26,7 @@ public class CharacterView implements ContentView {
     private final MainView appLayout;
 
     public VerticalLayout getContent() {
-        H2 label = new H2("Список внутриигровых предметов");
+        H2 label = new H2("Список персонажей");
         // TABLE
         Grid<Character> grid = new Grid<>();
 
@@ -37,6 +37,9 @@ public class CharacterView implements ContentView {
         // settings
         grid.setWidthFull();
         // edit
+        grid.addItemDoubleClickListener(
+                characterItemDoubleClickEvent -> new UpdateCharacterView(appLayout, characterItemDoubleClickEvent.getItem())
+        );
         grid.addComponentColumn(character -> {
             Button edtBtn = new Button(new Icon(PENCIL), clk -> {
                 new UpdateCharacterView(appLayout, character);

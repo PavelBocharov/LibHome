@@ -62,6 +62,9 @@ public class DialogView implements ContentView {
         grid.setWidthFull();
 //        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         // edit
+        grid.addItemDoubleClickListener(
+                dialogItemDoubleClickEvent -> new UpdateDialogView(appLayout, dialogItemDoubleClickEvent.getItem())
+        );
         grid.addComponentColumn(dialog -> {
             Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> {
                 new UpdateDialogView(appLayout, dialog);

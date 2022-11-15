@@ -45,6 +45,9 @@ public class ActionView implements ContentView {
         // settings
         grid.setWidthFull();
         // edit
+        grid.addItemDoubleClickListener(
+                actionItemDoubleClickEvent -> new UpdateActionDialog(appLayout, actionItemDoubleClickEvent.getItem())
+        );
         grid.addComponentColumn(action -> {
             Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> {
                 new UpdateActionDialog(appLayout, action);

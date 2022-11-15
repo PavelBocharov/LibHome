@@ -16,6 +16,8 @@ import com.vaadin.flow.component.textfield.TextField;
 
 import java.util.List;
 
+import static java.lang.String.format;
+
 public class ItemTypeViewDialog {
 
     private final MainView appLayout;
@@ -49,7 +51,7 @@ public class ItemTypeViewDialog {
             name.setTitle("Name");
             name.setEnabled(false);
             name.setWidthFull();
-            name.setValue(itemType.getName());
+            name.setValue(format("[%d] %s", itemType.getEnumNumber(), itemType.getName()));
 
             Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> {
                 try {
