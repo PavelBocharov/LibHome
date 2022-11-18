@@ -14,12 +14,13 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
@@ -44,13 +45,15 @@ public class CreateDialogView {
         characterSelect.setDataProvider(new ListDataProvider<>(characters));
         characterSelect.setWidthFull();
         // opening dialog
-        List<Action> openingActions = mainView.getRepositoryService().getActionRepository().findAll();
-        Select<Action> openingActionsSelect = new Select<>();
+        List<Action> openingActions = mainView.getRepositoryService().getActionRepository().findAll()
+                .stream()
+                .filter(action -> action.getOpenedDialog() == null)
+                .collect(Collectors.toList());
+        MultiselectComboBox<Action> openingActionsSelect = new MultiselectComboBox<>();
         openingActionsSelect.setLabel("Открывающая реплика");
-        openingActionsSelect.setEmptySelectionAllowed(false);
         openingActionsSelect.setPlaceholder("Выберите реплику...");
-        openingActionsSelect.setTextRenderer(action -> format("%d: %32s", action.getId(), action.getText()));
-        openingActionsSelect.setDataProvider(new ListDataProvider<>(openingActions));
+        openingActionsSelect.setItemLabelGenerator(action -> format("%d: %32s", action.getId(), action.getText()));
+        openingActionsSelect.setItems(openingActions);
         openingActionsSelect.setWidthFull();
         // items
         List<Item> itemList = mainView.getRepositoryService().getItemRepository().findByDialogIdIsNull();
@@ -77,7 +80,7 @@ public class CreateDialogView {
             try {
                 List<Item> items = new ArrayList<>(itemSelect.getSelectedItems());
                 List<Action> actions = new ArrayList<>(actionSelect.getSelectedItems());
-                Action openAction = openingActionsSelect.getValue();
+                Set<Action> openActions = openingActionsSelect.getValue();
                 com.mar.ds.db.entity.Dialog dialog = mainView.getRepositoryService().getDialogRepository()
                         .save(com.mar.ds.db.entity.Dialog.builder()
                                 .text(ViewUtils.getTextFieldValue(textArea))
@@ -94,9 +97,11 @@ public class CreateDialogView {
                     actions.forEach(action -> action.setDialog(dialog));
                     mainView.getRepositoryService().getActionRepository().saveAll(actions);
                 }
-                if (nonNull(openAction)) {
-                    openAction.setOpenedDialog(dialog);
-                    mainView.getRepositoryService().getActionRepository().save(openAction);
+                if (nonNull(openActions) && !openActions.isEmpty()) {
+                    for (Action openAction : openActions) {
+                        openAction.setOpenedDialog(dialog);
+                        mainView.getRepositoryService().getActionRepository().save(openAction);
+                    }
                 }
 
             } catch (Exception ex) {

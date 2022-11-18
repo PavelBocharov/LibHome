@@ -14,13 +14,14 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
@@ -49,19 +50,20 @@ public class UpdateDialogView {
         characterSelect.setValue(updatedDialog.getCharacter());
         // opening dialog
         List<Action> openingActions = mainView.getRepositoryService().getActionRepository().findAll();
-        Action oldOpenAction = openingActions.stream()
+        Set<Action> oldOpenActions = openingActions.stream()
                 .filter(action -> nonNull(action)
                         && nonNull(action.getOpenedDialog())
                         && action.getOpenedDialog().getId().equals(updatedDialog.getId()))
-                .findFirst().orElse(null);
-        Select<Action> openingActionsSelect = new Select<>();
+                .collect(Collectors.toSet());
+        openingActions = openingActions.stream().filter(action -> action.getOpenedDialog() == null).collect(Collectors.toList());
+        openingActions.addAll(oldOpenActions);
+        MultiselectComboBox<Action> openingActionsSelect = new MultiselectComboBox<>();
         openingActionsSelect.setLabel("Открывающая реплика");
-        openingActionsSelect.setEmptySelectionAllowed(false);
         openingActionsSelect.setPlaceholder("Выберите реплику...");
-        openingActionsSelect.setTextRenderer(action -> format("%d: %32s", action.getId(), action.getText()));
-        openingActionsSelect.setDataProvider(new ListDataProvider<>(openingActions));
+        openingActionsSelect.setItemLabelGenerator(action -> format("%d: %32s", action.getId(), action.getText()));
+        openingActionsSelect.setItems(openingActions);
         openingActionsSelect.setWidthFull();
-        openingActionsSelect.setValue(oldOpenAction);
+        openingActionsSelect.setValue(oldOpenActions);
         // items
         List<Item> itemList = mainView.getRepositoryService().getItemRepository().findByDialogIdIsNull();
         List<Item> oldItems = updatedDialog.getItems();
@@ -92,7 +94,7 @@ public class UpdateDialogView {
             try {
                 List<Item> items = new ArrayList<>(itemSelect.getSelectedItems());
                 List<Action> actions = new ArrayList<>(actionSelect.getSelectedItems());
-                Action openAction = openingActionsSelect.getValue();
+                Set<Action> openActions = openingActionsSelect.getValue();
                 updatedDialog.setText(ViewUtils.getTextFieldValue(textArea));
                 updatedDialog.setCharacter(characterSelect.getValue());
                 updatedDialog.setItems(items);
@@ -123,14 +125,21 @@ public class UpdateDialogView {
                         }
                     }
                 }
-                if (nonNull(openAction)) {
-                    openAction.setOpenedDialog(updatedDialog);
-                    mainView.getRepositoryService().getActionRepository().save(openAction);
+                if (nonNull(openActions) && !openActions.isEmpty()) {
+                    for (Action openAction : openActions) {
+                        openAction.setOpenedDialog(updatedDialog);
+                        mainView.getRepositoryService().getActionRepository().save(openAction);
+                    }
                 }
-                if (nonNull(oldOpenAction)) {
-                    if (isNull(openAction) || !oldOpenAction.getId().equals(openAction.getId())) {
-                        oldOpenAction.setOpenedDialog(null);
-                        mainView.getRepositoryService().getActionRepository().save(oldOpenAction);
+                if (nonNull(oldOpenActions) && !oldOpenActions.isEmpty()) {
+                    if (nonNull(openActions) && !openActions.isEmpty()) {
+                        Set<Long> newActionIds = oldOpenActions.stream().map(action -> action.getId()).collect(Collectors.toSet());
+                        for (Action oldOpenAction : oldOpenActions) {
+                            if (isNull(oldOpenAction) || !newActionIds.contains(oldOpenAction.getId())) {
+                                oldOpenAction.setOpenedDialog(null);
+                                mainView.getRepositoryService().getActionRepository().save(oldOpenAction);
+                            }
+                        }
                     }
                 }
             } catch (Exception ex) {
