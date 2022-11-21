@@ -42,6 +42,13 @@ public class ActionView implements ContentView {
                 .setHeader("Необходимый задача").setAutoWidth(true);
         grid.addColumn(action -> action.getMoveMission() ? '✓' : '✗')
                 .setHeader("Двигает миссию дальше").setAutoWidth(true);
+        grid.addColumn(action -> action.getIsTeleport() == Boolean.TRUE ? '✓' : '✗')
+                .setHeader("Телепорт").setAutoWidth(true);
+        grid.addColumn(Action::getLevel).setHeader("Уровень").setAutoWidth(true);
+        grid.addColumn(action -> String.format("(%.1f : %.1f : %.1f)", action.getPositionX(), action.getPositionY(), action.getPositionZ()))
+                .setHeader("Позиция").setAutoWidth(true);
+        grid.addColumn(action -> String.format("(%.1f : %.1f : %.1f)", action.getRotationX(), action.getRotationY(), action.getRotationZ()))
+                .setHeader("Поворот").setAutoWidth(true);
         // settings
         grid.setWidthFull();
         // edit

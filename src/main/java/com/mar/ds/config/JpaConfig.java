@@ -66,7 +66,7 @@ public class JpaConfig {
     public JpaVendorAdapter jpaVendorAdapter() {
         HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
         hibernateJpaVendorAdapter.setGenerateDdl(true);
-        hibernateJpaVendorAdapter.setShowSql(true);
+        hibernateJpaVendorAdapter.setShowSql(false);
         hibernateJpaVendorAdapter.setDatabasePlatform("com.enigmabridge.hibernate.dialect.SQLiteDialect");
         return hibernateJpaVendorAdapter;
     }

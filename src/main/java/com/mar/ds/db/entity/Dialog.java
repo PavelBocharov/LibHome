@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "dialog")
-public class Dialog implements Serializable {
+public class Dialog implements Serializable, HasId {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dialog_seq")

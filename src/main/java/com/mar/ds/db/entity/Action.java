@@ -14,7 +14,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "action")
-public class Action implements Serializable {
+public class Action implements Serializable, HasId {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "action_seq")
@@ -41,4 +41,28 @@ public class Action implements Serializable {
 
     @OneToOne(optional = true)
     private Dialog openedDialog;
+
+    @Column(name = "is_teleport")
+    private Boolean isTeleport;
+
+    @Column(name = "level")
+    private String level;
+
+    @Column(name = "position_x")
+    private Float positionX;
+
+    @Column(name = "position_y")
+    private Float positionY;
+
+    @Column(name = "position_z")
+    private Float positionZ;
+
+    @Column(name = "rotation_x")
+    private Float rotationX;
+
+    @Column(name = "rotation_y")
+    private Float rotationY;
+
+    @Column(name = "rotation_z")
+    private Float rotationZ;
 }

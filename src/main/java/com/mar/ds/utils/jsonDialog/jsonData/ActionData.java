@@ -21,4 +21,15 @@ public class ActionData implements Serializable {
     private Long needTaskId;
     private boolean moveMission;
 
+    private Boolean isTeleport;
+    private String level;
+
+    private Float positionX;
+    private Float positionY;
+    private Float positionZ;
+
+    private Float rotationX;
+    private Float rotationY;
+    private Float rotationZ;
+
 }

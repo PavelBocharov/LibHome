@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "rand_task")
 @NoArgsConstructor
-public class RandTask implements Serializable {
+public class RandTask implements Serializable, HasId {
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "rand_task_seq")

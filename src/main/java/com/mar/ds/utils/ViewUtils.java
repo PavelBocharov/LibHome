@@ -1,8 +1,11 @@
 package com.mar.ds.utils;
 
 import com.google.common.io.Resources;
+import com.mar.ds.db.entity.HasId;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
@@ -11,6 +14,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -23,8 +27,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.List;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.CLOSE_SMALL;
+import static java.lang.String.format;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @UtilityClass
 public class ViewUtils {
@@ -81,6 +89,22 @@ public class ViewUtils {
         return clsBtn;
     }
 
+    public static <T extends HasId> void setSelectValue(Select<T> select, T value, List<T> initDataProviderList) {
+        if (isNull(select)
+                || isNull(value)
+                || isNull(initDataProviderList)
+                || initDataProviderList.isEmpty()
+        )
+            return;
+
+        T selectValue = initDataProviderList.stream()
+                .filter(hasId -> hasId.getId().equals(value.getId()))
+                .findFirst()
+                .orElse(null);
+        if (nonNull(selectValue)) {
+            select.setValue(selectValue);
+        }
+    }
 
     public static float getFloatValue(BigDecimalField field) {
         if (field == null || field.getValue() == null) return 0;
@@ -89,6 +113,10 @@ public class ViewUtils {
 
     public static void setBigDecimalFieldValue(BigDecimalField field, Float value) {
         field.setValue(value == null ? BigDecimal.ZERO : BigDecimal.valueOf(value));
+    }
+
+    public static void setCheckbox(Checkbox checkbox, Boolean flag) {
+        checkbox.setValue(flag == Boolean.TRUE);
     }
 
     public static String getTextFieldValue(TextField field) {
@@ -109,4 +137,32 @@ public class ViewUtils {
         return field.getValue();
     }
 
+
+    /**
+     * @param textArea
+     * @param countWorldInLine
+     * @return has error
+     */
+    public static boolean checkString(TextArea textArea, int countWorldInLine) {
+        String str = textArea.getValue();
+
+        String[] arrStr = str.split("\n");
+        for (int i = 0; i < arrStr.length; i++) {
+            if (arrStr[i].length() > countWorldInLine) {
+                textArea.setErrorMessage(format("В %d строке было превышен лимит символов (макс. %d)", i+1, countWorldInLine));
+                textArea.setInvalid(true);
+                return true;
+            }
+        }
+        textArea.setInvalid(false);
+        textArea.setErrorMessage(null);
+        return false;
+    }
+
+    public static VerticalLayout getAccordionContent(Component... components) {
+        VerticalLayout content = new VerticalLayout(components);
+        content.setPadding(false);
+        content.setSpacing(false);
+        return content;
+    }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.mar.ds.utils.ViewUtils.checkString;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 
@@ -78,6 +79,10 @@ public class CreateDialogView {
         Button crtBtn = new Button("Создать", new Icon(VaadinIcon.PLUS));
         crtBtn.addClickListener(click -> {
             try {
+                if (checkString(textArea, 50)) {
+                    throw new Exception("Некорректно заполнены поля");
+                }
+
                 List<Item> items = new ArrayList<>(itemSelect.getSelectedItems());
                 List<Action> actions = new ArrayList<>(actionSelect.getSelectedItems());
                 Set<Action> openActions = openingActionsSelect.getValue();

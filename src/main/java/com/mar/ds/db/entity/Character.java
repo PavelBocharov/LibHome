@@ -14,7 +14,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "character")
-public class Character implements Serializable {
+public class Character implements Serializable, HasId {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "character_seq")

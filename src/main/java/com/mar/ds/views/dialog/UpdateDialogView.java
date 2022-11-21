@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.mar.ds.utils.ViewUtils.checkString;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -92,6 +93,10 @@ public class UpdateDialogView {
         Button crtBtn = new Button("Обновить", new Icon(VaadinIcon.ROTATE_RIGHT));
         crtBtn.addClickListener(click -> {
             try {
+                if (checkString(textArea, 50)) {
+                    throw new RuntimeException("Некорректно заполнены поля");
+                }
+
                 List<Item> items = new ArrayList<>(itemSelect.getSelectedItems());
                 List<Action> actions = new ArrayList<>(actionSelect.getSelectedItems());
                 Set<Action> openActions = openingActionsSelect.getValue();

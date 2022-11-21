@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "receipt")
-public class Receipt implements Serializable {
+public class Receipt implements Serializable, HasId {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "receipt_seq")

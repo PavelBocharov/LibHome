@@ -7,6 +7,8 @@ import com.mar.ds.db.entity.Task;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -15,6 +17,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 
@@ -22,7 +25,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
+import static com.mar.ds.utils.ViewUtils.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -30,8 +33,12 @@ public class CreateActionDialog {
 
     public CreateActionDialog(MainView mainView) {
         Dialog createDialog = new Dialog();
+        createDialog.setWidth(50, Unit.PERCENTAGE);
         createDialog.setCloseOnEsc(true);
         createDialog.setCloseOnOutsideClick(false);
+
+        Accordion accordion = new Accordion();
+        accordion.setWidthFull();
 
         // name
         TextField textField = new TextField("Текст реплики");
@@ -65,12 +72,46 @@ public class CreateActionDialog {
 
         missionSelect.addValueChangeListener(selectMissionComponentValueChangeEvent -> {
             Mission selectedMission = selectMissionComponentValueChangeEvent.getValue();
-
             taskSelect.setDataProvider(new ListDataProvider<>(getTaskListByMission(selectedMission, taskList)));
         });
 
         // info
         Checkbox moveMission = new Checkbox("Двигает миссию вперед");
+
+        // isTeleport
+        Checkbox isTeleport = new Checkbox("Действие телепортирует в другую локацию");
+        // level
+        TextField level = new TextField("Уровень");
+        level.setWidthFull();
+        // position X
+        BigDecimalField positionX = new BigDecimalField();
+        positionX.setLabel("Position X");
+        positionX.setWidthFull();
+        // position Y
+        BigDecimalField positionY = new BigDecimalField();
+        positionY.setLabel("Position Y");
+        positionY.setWidthFull();
+        // position Z
+        BigDecimalField positionZ = new BigDecimalField();
+        positionZ.setLabel("Position Z");
+        positionZ.setWidthFull();
+        // rotation X
+        BigDecimalField rotationX = new BigDecimalField();
+        rotationX.setLabel("Rotation X");
+        rotationX.setWidthFull();
+        // rotation X
+        BigDecimalField rotationY = new BigDecimalField();
+        rotationY.setLabel("Rotation Y");
+        rotationY.setWidthFull();
+        // rotation X
+        BigDecimalField rotationZ = new BigDecimalField();
+        rotationZ.setLabel("Rotation Z");
+        rotationZ.setWidthFull();
+
+        accordion.add("Основное", getAccordionContent(textField));
+        accordion.add("Предметы", getAccordionContent(itemSelect));
+        accordion.add("Миссии и задачи", getAccordionContent(missionSelect, taskSelect, moveMission));
+        accordion.add("Телепорт", getAccordionContent(isTeleport,  level, positionX, positionY, positionZ, rotationX, rotationY, rotationZ));
 
         Button crtBtn = new Button("Создать", new Icon(VaadinIcon.PLUS));
         crtBtn.addClickListener(click -> {
@@ -81,6 +122,14 @@ public class CreateActionDialog {
                         .needMission(missionSelect.getValue())
                         .needTask(taskSelect.getValue())
                         .moveMission(moveMission.getValue())
+                        .isTeleport(isTeleport.getValue())
+                        .level(getTextFieldValue(level))
+                        .positionX(getFloatValue(positionX))
+                        .positionY(getFloatValue(positionY))
+                        .positionZ(getFloatValue(positionZ))
+                        .rotationX(getFloatValue(rotationX))
+                        .rotationY(getFloatValue(rotationY))
+                        .rotationZ(getFloatValue(rotationZ))
                         .build();
                 mainView.getRepositoryService().getActionRepository().save(action);
             } catch (Exception ex) {
@@ -97,11 +146,7 @@ public class CreateActionDialog {
 
         createDialog.add(
                 new Label("Создать новый ответ/реплику"),
-                textField,
-                itemSelect,
-                missionSelect,
-                taskSelect,
-                moveMission,
+                accordion,
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(createDialog))
         );
         createDialog.open();

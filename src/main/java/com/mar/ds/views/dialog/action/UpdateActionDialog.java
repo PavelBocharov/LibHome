@@ -7,6 +7,8 @@ import com.mar.ds.db.entity.Task;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -15,24 +17,27 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import lombok.extern.java.Log;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
-import static com.mar.ds.utils.ViewUtils.setTextFieldValue;
+import static com.mar.ds.utils.ViewUtils.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+@Log
 public class UpdateActionDialog {
 
     public UpdateActionDialog(MainView mainView, Action updatedAction) {
         Dialog updateDialog = new Dialog();
         updateDialog.setCloseOnEsc(true);
         updateDialog.setCloseOnOutsideClick(false);
+        updateDialog.setWidth(50, Unit.PERCENTAGE);
 
         // name
         TextField textField = new TextField("Тест реплики");
@@ -47,7 +52,7 @@ public class UpdateActionDialog {
         itemSelect.setTextRenderer(item -> String.format("%d: %s", item.getId(), item.getName()));
         itemSelect.setDataProvider(new ListDataProvider<>(itemList));
         itemSelect.setWidthFull();
-        itemSelect.setValue(updatedAction.getNeedItem());
+        setSelectValue(itemSelect, updatedAction.getNeedItem(), itemList);
         // mission
         List<Mission> missionList = mainView.getRepositoryService().getMissionRepository().findAll();
         Select<Mission> missionSelect = new Select<Mission>();
@@ -57,7 +62,7 @@ public class UpdateActionDialog {
         missionSelect.setTextRenderer(mission -> String.format("%d: %s", mission.getId(), mission.getTitle()));
         missionSelect.setDataProvider(new ListDataProvider<>(missionList));
         missionSelect.setWidthFull();
-        missionSelect.setValue(updatedAction.getNeedMission());
+        setSelectValue(missionSelect, updatedAction.getNeedMission(), missionList);
         // task
         List<Task> taskList = mainView.getTaskView().getRepository().findAll();
         Select<Task> taskSelect = new Select<Task>();
@@ -70,13 +75,7 @@ public class UpdateActionDialog {
         if (nonNull(updatedAction.getNeedMission())) {
             List<Task> tempTask = getTaskListByMission(updatedAction.getNeedMission(), taskList);
             taskSelect.setDataProvider(new ListDataProvider<>(tempTask));
-            if (nonNull(updatedAction.getNeedTask())) {
-                Task selectedTask = tempTask.stream()
-                        .filter(task -> task.getId().equals(updatedAction.getNeedTask().getId()))
-                        .findFirst()
-                        .get();
-                taskSelect.setValue(selectedTask);
-            }
+            setSelectValue(taskSelect, updatedAction.getNeedTask(), taskList);
         }
 
         missionSelect.addValueChangeListener(selectMissionComponentValueChangeEvent -> {
@@ -86,7 +85,47 @@ public class UpdateActionDialog {
 
         // info
         Checkbox moveMission = new Checkbox("Двигает миссию вперед");
-        moveMission.setValue(updatedAction.getMoveMission());
+        setCheckbox(moveMission, updatedAction.getMoveMission());
+
+        // isTeleport
+        Checkbox isTeleport = new Checkbox("Действие телепортирует в другу локацию");
+        setCheckbox(isTeleport, updatedAction.getIsTeleport());
+        // level
+        TextField level = new TextField("Уровень");
+        level.setWidthFull();
+        setTextFieldValue(level, updatedAction.getLevel());
+        // position X
+        BigDecimalField positionX = new BigDecimalField();
+        positionX.setLabel("Position X");
+        positionX.setWidthFull();
+        setBigDecimalFieldValue(positionX, updatedAction.getPositionX());
+        // position Y
+        BigDecimalField positionY = new BigDecimalField();
+        positionY.setLabel("Position Y");
+        positionY.setWidthFull();
+        setBigDecimalFieldValue(positionY, updatedAction.getPositionY());
+        // position Z
+        BigDecimalField positionZ = new BigDecimalField();
+        positionZ.setLabel("Position Z");
+        positionZ.setWidthFull();
+        setBigDecimalFieldValue(positionZ, updatedAction.getPositionZ());
+        // rotation X
+        BigDecimalField rotationX = new BigDecimalField();
+        rotationX.setLabel("Rotation X");
+        rotationX.setWidthFull();
+        setBigDecimalFieldValue(rotationX, updatedAction.getRotationX());
+        // rotation X
+        BigDecimalField rotationY = new BigDecimalField();
+        rotationY.setLabel("Rotation Y");
+        rotationY.setWidthFull();
+        setBigDecimalFieldValue(rotationY, updatedAction.getRotationY());
+        // rotation X
+        BigDecimalField rotationZ = new BigDecimalField();
+        rotationZ.setLabel("Rotation Z");
+        rotationZ.setWidthFull();
+        setBigDecimalFieldValue(rotationZ, updatedAction.getRotationZ());
+
+
 
         Button updBtn = new Button("Обновить", new Icon(VaadinIcon.ROTATE_RIGHT));
         updBtn.addClickListener(click -> {
@@ -96,6 +135,16 @@ public class UpdateActionDialog {
                 updatedAction.setNeedMission(missionSelect.getValue());
                 updatedAction.setNeedTask(taskSelect.getValue());
                 updatedAction.setMoveMission(moveMission.getValue());
+
+                updatedAction.setIsTeleport(isTeleport.getValue());
+                updatedAction.setLevel(getTextFieldValue(level));
+                updatedAction.setPositionX(getFloatValue(positionX));
+                updatedAction.setPositionY(getFloatValue(positionY));
+                updatedAction.setPositionZ(getFloatValue(positionZ));
+                updatedAction.setRotationX(getFloatValue(rotationX));
+                updatedAction.setRotationY(getFloatValue(rotationY));
+                updatedAction.setRotationZ(getFloatValue(rotationZ));
+
                 mainView.getRepositoryService().getActionRepository().save(updatedAction);
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("При обновлении произошла ошибка", ex);
@@ -109,13 +158,17 @@ public class UpdateActionDialog {
         updBtn.setDisableOnClick(true);
         updBtn.addClickShortcut(Key.ENTER);
 
+        Accordion accordion = new Accordion();
+        accordion.setWidthFull();
+
+        accordion.add("Основное", getAccordionContent(textField));
+        accordion.add("Предметы", getAccordionContent(itemSelect));
+        accordion.add("Миссии и задачи", getAccordionContent(missionSelect, taskSelect, moveMission));
+        accordion.add("Телепорт", getAccordionContent(isTeleport, level, positionX, positionY, positionZ, rotationX, rotationY, rotationZ));
+
         updateDialog.add(
                 new Label("Обновить ответ/реплику"),
-                textField,
-                itemSelect,
-                missionSelect,
-                taskSelect,
-                moveMission,
+                accordion,
                 new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
         );
         updateDialog.open();
