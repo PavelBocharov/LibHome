@@ -111,7 +111,17 @@ public class ViewUtils {
         return field.getValue().floatValue();
     }
 
+
+    public static long getLongValue(BigDecimalField field) {
+        if (field == null || field.getValue() == null) return 0;
+        return field.getValue().longValue();
+    }
+
     public static void setBigDecimalFieldValue(BigDecimalField field, Float value) {
+        field.setValue(value == null ? BigDecimal.ZERO : BigDecimal.valueOf(value));
+    }
+
+    public static void setBigDecimalFieldValue(BigDecimalField field, Long value) {
         field.setValue(value == null ? BigDecimal.ZERO : BigDecimal.valueOf(value));
     }
 

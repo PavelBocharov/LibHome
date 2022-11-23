@@ -21,5 +21,7 @@ public class RepositoryService {
     private final MissionRepository missionRepository;
     private final ActionRepository actionRepository;
     private final DialogRepository dialogRepository;
+    private final DocumentRepository documentRepository;
+    private final DocumentStatusRepository documentStatusRepository;
 
 }

@@ -22,6 +22,7 @@ public class ActionData implements Serializable {
     private boolean moveMission;
 
     private Boolean isTeleport;
+    private Boolean saveGame;
     private String level;
 
     private Float positionX;

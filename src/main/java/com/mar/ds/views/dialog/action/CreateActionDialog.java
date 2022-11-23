@@ -80,6 +80,8 @@ public class CreateActionDialog {
 
         // isTeleport
         Checkbox isTeleport = new Checkbox("Действие телепортирует в другую локацию");
+        // saveGame
+        Checkbox saveGame = new Checkbox("Автосохрание");
         // level
         TextField level = new TextField("Уровень");
         level.setWidthFull();
@@ -111,7 +113,7 @@ public class CreateActionDialog {
         accordion.add("Основное", getAccordionContent(textField));
         accordion.add("Предметы", getAccordionContent(itemSelect));
         accordion.add("Миссии и задачи", getAccordionContent(missionSelect, taskSelect, moveMission));
-        accordion.add("Телепорт", getAccordionContent(isTeleport,  level, positionX, positionY, positionZ, rotationX, rotationY, rotationZ));
+        accordion.add("Телепорт", getAccordionContent(isTeleport, saveGame, level, positionX, positionY, positionZ, rotationX, rotationY, rotationZ));
 
         Button crtBtn = new Button("Создать", new Icon(VaadinIcon.PLUS));
         crtBtn.addClickListener(click -> {
@@ -123,6 +125,7 @@ public class CreateActionDialog {
                         .needTask(taskSelect.getValue())
                         .moveMission(moveMission.getValue())
                         .isTeleport(isTeleport.getValue())
+                        .saveGame(saveGame.getValue())
                         .level(getTextFieldValue(level))
                         .positionX(getFloatValue(positionX))
                         .positionY(getFloatValue(positionY))

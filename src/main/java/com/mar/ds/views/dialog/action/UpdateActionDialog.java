@@ -90,6 +90,9 @@ public class UpdateActionDialog {
         // isTeleport
         Checkbox isTeleport = new Checkbox("Действие телепортирует в другу локацию");
         setCheckbox(isTeleport, updatedAction.getIsTeleport());
+        // saveGame
+        Checkbox saveGame = new Checkbox("Автосохрание");
+        setCheckbox(saveGame, updatedAction.getSaveGame());
         // level
         TextField level = new TextField("Уровень");
         level.setWidthFull();
@@ -137,6 +140,7 @@ public class UpdateActionDialog {
                 updatedAction.setMoveMission(moveMission.getValue());
 
                 updatedAction.setIsTeleport(isTeleport.getValue());
+                updatedAction.setSaveGame(saveGame.getValue());
                 updatedAction.setLevel(getTextFieldValue(level));
                 updatedAction.setPositionX(getFloatValue(positionX));
                 updatedAction.setPositionY(getFloatValue(positionY));
@@ -164,7 +168,7 @@ public class UpdateActionDialog {
         accordion.add("Основное", getAccordionContent(textField));
         accordion.add("Предметы", getAccordionContent(itemSelect));
         accordion.add("Миссии и задачи", getAccordionContent(missionSelect, taskSelect, moveMission));
-        accordion.add("Телепорт", getAccordionContent(isTeleport, level, positionX, positionY, positionZ, rotationX, rotationY, rotationZ));
+        accordion.add("Телепорт", getAccordionContent(isTeleport, saveGame, level, positionX, positionY, positionZ, rotationX, rotationY, rotationZ));
 
         updateDialog.add(
                 new Label("Обновить ответ/реплику"),

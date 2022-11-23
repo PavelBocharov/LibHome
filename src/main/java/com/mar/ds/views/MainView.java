@@ -5,6 +5,7 @@ import com.mar.ds.service.RepositoryService;
 import com.mar.ds.views.character.CharacterView;
 import com.mar.ds.views.dialog.DialogView;
 import com.mar.ds.views.dialog.action.ActionView;
+import com.mar.ds.views.document.DocumentView;
 import com.mar.ds.views.item.ItemView;
 import com.mar.ds.views.mission.MissionView;
 import com.mar.ds.views.randTask.RandomTaskView;
@@ -56,6 +57,8 @@ public class MainView extends AppLayout {
     private final ActionView actionView;
     @Getter
     private final DialogView dialogView;
+    @Getter
+    private final DocumentView documentView;
     private final StartPageView startPageView;
 
     public MainView() throws IOException {
@@ -67,6 +70,7 @@ public class MainView extends AppLayout {
         missionView = new MissionView(this);
         actionView = new ActionView(this);
         dialogView = new DialogView(this);
+        documentView = new DocumentView(this);
         startPageView = new StartPageView();
 
         DrawerToggle toggle = new DrawerToggle();
@@ -86,6 +90,7 @@ public class MainView extends AppLayout {
         tabs.add(getTab("[DEV] Миссии", DIPLOMA_SCROLL, missionView));
         tabs.add(getTab("[DEV] Ответы/реплики", COMMENT, actionView));
         tabs.add(getTab("[DEV] Диалоги", CHAT, dialogView));
+        tabs.add(getTab("[DEV] Документы", BOOK, documentView));
 
         addToDrawer(tabs);
         addToNavbar(toggle, title);

@@ -45,6 +45,9 @@ public class Action implements Serializable, HasId {
     @Column(name = "is_teleport")
     private Boolean isTeleport;
 
+    @Column(name = "save_game")
+    private Boolean saveGame;
+
     @Column(name = "level")
     private String level;
 
