@@ -2,8 +2,7 @@ package com.mar.ds.views.item;
 
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.utils.DeleteDialogWidget;
-import com.mar.ds.utils.jsonDialog.JSONViewDialog;
-import com.mar.ds.utils.jsonDialog.jsonData.ItemData;
+import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.mar.ds.views.item.itemStatus.ItemStatusViewDialog;
@@ -92,22 +91,16 @@ public class ItemView implements ContentView {
         Button itemStatusListBtn = new Button("Статус предметов", new Icon(COG), click -> new ItemStatusViewDialog(appLayout));
         itemStatusListBtn.setWidthFull();
 
-        Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD),
-                click -> {
-                    List<Item> itemList = appLayout.getRepositoryService().getItemRepository().findAll();
-                    List<ItemData> itemDataList = appLayout.getMapperService().getItemMapper().getItemDataList(itemList);
-                    new JSONViewDialog("JSON предметов", appLayout, itemDataList);
-                }
-        );
-        downloadJson.setWidthFull();
-        downloadJson.getStyle().set("color", "pink");
-
-
         HorizontalLayout btns = new HorizontalLayout(
                 crtBtn,
                 itemTypeListBtn,
                 itemStatusListBtn,
-                downloadJson
+                ViewUtils.getDownloadFileButton(
+                        "Items.json",
+                        appLayout.getMapperService().getItemMapper().getItemDataList(
+                                appLayout.getRepositoryService().getItemRepository().findAll()
+                        )
+                )
         );
         btns.setWidthFull();
 

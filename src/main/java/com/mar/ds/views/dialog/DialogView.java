@@ -4,7 +4,7 @@ import com.mar.ds.db.entity.Action;
 import com.mar.ds.db.entity.Dialog;
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.utils.DeleteDialogWidget;
-import com.mar.ds.utils.jsonDialog.JSONViewDialog;
+import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.button.Button;
@@ -21,7 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
-import static com.vaadin.flow.component.icon.VaadinIcon.*;
+import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
+import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -113,21 +114,15 @@ public class DialogView implements ContentView {
         crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
 
-        Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD),
-                click -> {
-                    List<Dialog> dialogList = appLayout.getRepositoryService().getDialogRepository().findAll();
-                    new JSONViewDialog(
-                            "JSON предметов",
-                            appLayout,
-                            appLayout.getMapperService().getDialogMapper().getDialogDataList(dialogList)
-                    );
-                }
+        HorizontalLayout btns = new HorizontalLayout(
+                crtBtn,
+                ViewUtils.getDownloadFileButton(
+                        "Dialogs.json",
+                        appLayout.getMapperService().getDialogMapper().getDialogDataList(
+                                appLayout.getRepositoryService().getDialogRepository().findAll()
+                        )
+                )
         );
-        downloadJson.setWidthFull();
-        downloadJson.getStyle().set("color", "pink");
-
-
-        HorizontalLayout btns = new HorizontalLayout(crtBtn, downloadJson);
         btns.setWidthFull();
 
         // create view

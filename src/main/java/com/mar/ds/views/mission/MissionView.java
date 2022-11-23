@@ -36,7 +36,7 @@ public class MissionView implements ContentView {
         grid.addColumn(Mission::getId).setHeader("ID").setAutoWidth(true);
         grid.addColumn(Mission::getTitle).setHeader("Заголовок").setAutoWidth(true);
         grid.addColumn(Mission::getText).setHeader("Описание").setAutoWidth(true);
-        grid.addColumn(mission -> nonNull(mission.getStartTask()) ? mission.getStartTask().getId() : "" )
+        grid.addColumn(mission -> nonNull(mission.getStartTask()) ? mission.getStartTask().getId() : "")
                 .setHeader("Первое задание").setAutoWidth(true);
         // settings
         grid.setWidthFull();
@@ -88,9 +88,15 @@ public class MissionView implements ContentView {
         downloadJson.setWidthFull();
         downloadJson.getStyle().set("color", "pink");
 
-
         HorizontalLayout btns = new HorizontalLayout(
-                crtBtn, downloadJson
+                crtBtn,
+                ViewUtils.getDownloadFileButton(
+                        "Mission.json",
+                        appLayout.getMapperService().getMissionMapper().getMissionData(
+                                appLayout.getRepositoryService().getMissionRepository().findAll(),
+                                appLayout.getRepositoryService().getTaskRepository()
+                        )
+                )
         );
         btns.setWidthFull();
 

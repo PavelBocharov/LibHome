@@ -2,6 +2,7 @@ package com.mar.ds.views.document;
 
 import com.mar.ds.db.entity.Document;
 import com.mar.ds.utils.DeleteDialogWidget;
+import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.mar.ds.views.document.status.DocumentStatusViewDialog;
@@ -17,6 +18,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.*;
@@ -24,6 +26,9 @@ import static java.lang.String.format;
 
 @RequiredArgsConstructor
 public class DocumentView implements ContentView {
+
+    private Logger logger = Logger.getLogger(DocumentView.class.getSimpleName());
+
     private final MainView appLayout;
 
     public VerticalLayout getContent() {
@@ -76,24 +81,14 @@ public class DocumentView implements ContentView {
         crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
 
-//        Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD),
-//                click -> {
-//                    List<Dialog> dialogList = appLayout.getRepositoryService().getDialogRepository().findAll();
-//                    new JSONViewDialog(
-//                            "JSON предметов",
-//                            appLayout,
-//                            appLayout.getMapperService().getDialogMapper().getDialogDataList(dialogList)
-//                    );
-//                }
-//        );
-//        downloadJson.setWidthFull();
-//        downloadJson.getStyle().set("color", "pink");
 
         Button documentStatusView = new Button("Статус документов", new Icon(COG), click -> new DocumentStatusViewDialog(appLayout));
         documentStatusView.setWidthFull();
 
-        HorizontalLayout btns = new HorizontalLayout(crtBtn, documentStatusView
-//                , downloadJson
+        HorizontalLayout btns = new HorizontalLayout(
+                crtBtn,
+                documentStatusView,
+                ViewUtils.getDownloadFileButton("Documents.json", appLayout.getRepositoryService().getDocumentRepository().findAll())
         );
         btns.setWidthFull();
 

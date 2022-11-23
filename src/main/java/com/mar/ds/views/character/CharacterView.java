@@ -3,7 +3,6 @@ package com.mar.ds.views.character;
 import com.mar.ds.db.entity.Character;
 import com.mar.ds.db.jpa.CharacterRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
-import com.mar.ds.utils.jsonDialog.JSONViewDialog;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.button.Button;
@@ -17,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static com.mar.ds.utils.ViewUtils.getDownloadFileButton;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.*;
 
@@ -65,17 +65,12 @@ public class CharacterView implements ContentView {
         crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
 
-        Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD),
-                click -> {
-                    List<Character> characters = appLayout.getRepositoryService().getCharacterRepository().findAll();
-                    new JSONViewDialog("JSON персонажей", appLayout, characters);
-                }
+        HorizontalLayout btns = new HorizontalLayout(crtBtn,
+                getDownloadFileButton(
+                        "Character.json",
+                        appLayout.getRepositoryService().getCharacterRepository().findAll()
+                )
         );
-        downloadJson.setWidthFull();
-        downloadJson.getStyle().set("color", "pink");
-
-
-        HorizontalLayout btns = new HorizontalLayout(crtBtn, downloadJson);
         btns.setWidthFull();
 
         // create view

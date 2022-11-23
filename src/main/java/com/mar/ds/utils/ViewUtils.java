@@ -1,5 +1,9 @@
 package com.mar.ds.utils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.common.io.Resources;
 import com.mar.ds.db.entity.HasId;
 import com.vaadin.flow.component.Component;
@@ -22,14 +26,17 @@ import com.vaadin.flow.server.StreamResource;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.CLOSE_SMALL;
+import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -174,5 +181,26 @@ public class ViewUtils {
         content.setPadding(false);
         content.setSpacing(false);
         return content;
+    }
+
+    public static FileDownloadWrapper getDownloadFileButton(String fileName, Object objToJson) {
+        try {
+            String json = new JsonMapper()
+                    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                    .enable(SerializationFeature.INDENT_OUTPUT)
+                    .writeValueAsString(objToJson);
+            return getDownloadFileButton(fileName, new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static FileDownloadWrapper getDownloadFileButton(String fileName, ByteArrayInputStream fileBody) {
+        Button downloadJson = new Button("Выгрузить JSON", new Icon(DOWNLOAD));
+        downloadJson.setWidthFull();
+        downloadJson.getStyle().set("color", "black");
+        FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(new StreamResource(fileName, () -> fileBody));
+        buttonWrapper.wrapComponent(downloadJson);
+        return buttonWrapper;
     }
 }
