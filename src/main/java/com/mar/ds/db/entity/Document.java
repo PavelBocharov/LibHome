@@ -35,4 +35,7 @@ public class Document implements Serializable, HasId {
     @OneToOne(optional = false)
     private DocumentStatus documentStatus;
 
+    @ManyToOne
+    @JoinColumn(name="dialog_id", nullable=true)
+    private Dialog dialog;
 }

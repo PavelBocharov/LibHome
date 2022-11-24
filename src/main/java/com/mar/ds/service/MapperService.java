@@ -15,6 +15,6 @@ public class MapperService {
     private final MissionMapper missionMapper;
     private final ActionMapper actionMapper;
     private final DialogMapper dialogMapper;
-
+    private final DocumentMapper documentMapper;
 
 }

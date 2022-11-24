@@ -2,6 +2,7 @@ package com.mar.ds.views.dialog;
 
 import com.mar.ds.db.entity.Action;
 import com.mar.ds.db.entity.Character;
+import com.mar.ds.db.entity.Document;
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
@@ -77,6 +78,18 @@ public class UpdateDialogView {
         itemSelect.setItems(itemList);
         itemSelect.setWidthFull();
         itemSelect.setValue(new HashSet<>(oldItems));
+        // documents
+        List<Document> documentList = mainView.getRepositoryService().getDocumentRepository().findByDialogIdIsNull();
+        List<Document> oldDocs = updatedDialog.getDocuments();
+        documentList.addAll(oldDocs);
+        MultiselectComboBox<Document> documentSelect = new MultiselectComboBox<>();
+        documentSelect.setLabel("Документы, которые появятся в инвентаре");
+        documentSelect.setPlaceholder("Выберите документы...");
+        documentSelect.setClearButtonVisible(true);
+        documentSelect.setItemLabelGenerator(document -> format("%d: %32s", document.getId(), document.getTitle()));
+        documentSelect.setItems(documentList);
+        documentSelect.setWidthFull();
+        documentSelect.setValue(new HashSet<>(oldDocs));
         // action
         List<Action> actionList = mainView.getRepositoryService().getActionRepository().findByDialogIdIsNull();
         List<Action> oldActions = updatedDialog.getActions();
@@ -98,11 +111,13 @@ public class UpdateDialogView {
                 }
 
                 List<Item> items = new ArrayList<>(itemSelect.getSelectedItems());
+                List<Document> documents = new ArrayList<>(documentSelect.getSelectedItems());
                 List<Action> actions = new ArrayList<>(actionSelect.getSelectedItems());
                 Set<Action> openActions = openingActionsSelect.getValue();
                 updatedDialog.setText(ViewUtils.getTextFieldValue(textArea));
                 updatedDialog.setCharacter(characterSelect.getValue());
                 updatedDialog.setItems(items);
+                updatedDialog.setDocuments(documents);
                 updatedDialog.setActions(actions);
                 mainView.getRepositoryService().getDialogRepository().save(updatedDialog);
 
@@ -115,6 +130,18 @@ public class UpdateDialogView {
                         if (!items.contains(oldItem)) {
                             oldItem.setDialog(null);
                             mainView.getRepositoryService().getItemRepository().save(oldItem);
+                        }
+                    }
+                }
+                if (nonNull(documents) && !documents.isEmpty()) {
+                    documents.forEach(document -> document.setDialog(updatedDialog));
+                    mainView.getRepositoryService().getDocumentRepository().saveAll(documents);
+                }
+                if (nonNull(oldDocs) && !oldDocs.isEmpty()) {
+                    for (Document oldDoc : oldDocs) {
+                        if (!documents.contains(oldDoc)) {
+                            oldDoc.setDialog(null);
+                            mainView.getRepositoryService().getDocumentRepository().save(oldDoc);
                         }
                     }
                 }
@@ -166,6 +193,7 @@ public class UpdateDialogView {
                 characterSelect,
                 openingActionsSelect,
                 itemSelect,
+                documentSelect,
                 actionSelect,
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(createDialog))
         );

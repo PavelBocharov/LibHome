@@ -2,6 +2,7 @@ package com.mar.ds.views.dialog;
 
 import com.mar.ds.db.entity.Action;
 import com.mar.ds.db.entity.Dialog;
+import com.mar.ds.db.entity.Document;
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
@@ -75,6 +76,7 @@ public class DialogView implements ContentView {
                 new DeleteDialogWidget(() -> {
                     List<Item> items = dialog.getItems();
                     List<Action> actions = dialog.getActions();
+                    List<Document> documents = dialog.getDocuments();
                     List<Action> openingActions = appLayout.getRepositoryService().getActionRepository().findAll();
                     Action openingAction = openingActions.stream()
                             .filter(action -> nonNull(action)
@@ -84,6 +86,10 @@ public class DialogView implements ContentView {
                     if (nonNull(items)) {
                         items.forEach(item -> item.setDialog(null));
                         appLayout.getRepositoryService().getItemRepository().saveAll(items);
+                    }
+                    if (nonNull(documents)) {
+                        documents.forEach(document -> document.setDialog(null));
+                        appLayout.getRepositoryService().getDocumentRepository().saveAll(documents);
                     }
                     if (nonNull(actions)) {
                         actions.forEach(action -> action.setDialog(null));

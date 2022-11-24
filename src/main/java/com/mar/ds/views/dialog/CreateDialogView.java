@@ -2,6 +2,7 @@ package com.mar.ds.views.dialog;
 
 import com.mar.ds.db.entity.Action;
 import com.mar.ds.db.entity.Character;
+import com.mar.ds.db.entity.Document;
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
@@ -18,6 +19,7 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,6 +67,15 @@ public class CreateDialogView {
         itemSelect.setItemLabelGenerator(item -> format("%d: %32s", item.getId(), item.getName()));
         itemSelect.setItems(itemList);
         itemSelect.setWidthFull();
+        // documents
+        List<Document> documentList = mainView.getRepositoryService().getDocumentRepository().findByDialogIdIsNull();
+        MultiselectComboBox<Document> documentSelect = new MultiselectComboBox<>();
+        documentSelect.setLabel("Документы, которые появятся в инвентаре");
+        documentSelect.setPlaceholder("Выберите документы...");
+        documentSelect.setClearButtonVisible(true);
+        documentSelect.setItemLabelGenerator(document -> format("%d: %32s", document.getId(), document.getTitle()));
+        documentSelect.setItems(documentList);
+        documentSelect.setWidthFull();
         // action
         List<Action> actionList = mainView.getRepositoryService().getActionRepository().findByDialogIdIsNull();
         MultiselectComboBox<Action> actionSelect = new MultiselectComboBox<>();
@@ -84,6 +95,7 @@ public class CreateDialogView {
                 }
 
                 List<Item> items = new ArrayList<>(itemSelect.getSelectedItems());
+                List<Document> documents = new ArrayList<>(documentSelect.getSelectedItems());
                 List<Action> actions = new ArrayList<>(actionSelect.getSelectedItems());
                 Set<Action> openActions = openingActionsSelect.getValue();
                 com.mar.ds.db.entity.Dialog dialog = mainView.getRepositoryService().getDialogRepository()
@@ -91,12 +103,17 @@ public class CreateDialogView {
                                 .text(ViewUtils.getTextFieldValue(textArea))
                                 .character(characterSelect.getValue())
                                 .items(items)
-                                .actions(new ArrayList<>())
+                                .documents(documents)
+                                .actions(Collections.emptyList())
                                 .build());
 
                 if (nonNull(items) && !items.isEmpty()) {
                     items.forEach(item -> item.setDialog(dialog));
                     mainView.getRepositoryService().getItemRepository().saveAll(items);
+                }
+                if (nonNull(documents) && !documents.isEmpty()) {
+                    documents.forEach(document -> document.setDialog(dialog));
+                    mainView.getRepositoryService().getDocumentRepository().saveAll(documents);
                 }
                 if (nonNull(actions) && !actions.isEmpty()) {
                     actions.forEach(action -> action.setDialog(dialog));
@@ -127,6 +144,7 @@ public class CreateDialogView {
                 characterSelect,
                 openingActionsSelect,
                 itemSelect,
+                documentSelect,
                 actionSelect,
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(createDialog))
         );

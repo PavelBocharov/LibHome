@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -27,10 +29,16 @@ public class Dialog implements Serializable, HasId {
     @OneToOne(optional = false)
     private Character character;
 
-    @OneToMany(mappedBy = "dialog", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "dialog")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Item> items;
 
-    @OneToMany(mappedBy = "dialog", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "dialog")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Document> documents;
+
+    @OneToMany(mappedBy = "dialog")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Action> actions;
 
 }

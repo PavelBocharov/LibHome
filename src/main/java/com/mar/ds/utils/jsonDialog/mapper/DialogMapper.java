@@ -1,6 +1,7 @@
 package com.mar.ds.utils.jsonDialog.mapper;
 
 import com.mar.ds.db.entity.Dialog;
+import com.mar.ds.db.entity.Document;
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.utils.jsonDialog.jsonData.DialogData;
 import org.mapstruct.Mapper;
@@ -19,6 +20,7 @@ public interface DialogMapper {
 
     @Mapping(target = "characterId", source = "dialog.character.id")
     @Mapping(target = "itemsId", source = "dialog.items")
+    @Mapping(target = "documentsId", source = "dialog.documents")
     DialogData getDialogData(Dialog dialog);
 
     List<DialogData> getDialogDataList(List<Dialog> itemList);
@@ -27,6 +29,13 @@ public interface DialogMapper {
         if (itemList == null || itemList.isEmpty()) return Collections.emptyList();
         return itemList.stream()
                 .map(item -> item.getId())
+                .collect(Collectors.toList());
+    }
+
+    default List<Long> getDocuments(List<Document> documents) {
+        if (documents == null || documents.isEmpty()) return Collections.emptyList();
+        return documents.stream()
+                .map(document -> document.getId())
                 .collect(Collectors.toList());
     }
 

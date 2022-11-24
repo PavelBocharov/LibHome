@@ -88,7 +88,11 @@ public class DocumentView implements ContentView {
         HorizontalLayout btns = new HorizontalLayout(
                 crtBtn,
                 documentStatusView,
-                ViewUtils.getDownloadFileButton("Documents.json", appLayout.getRepositoryService().getDocumentRepository().findAll())
+                ViewUtils.getDownloadFileButton("Documents.json",
+                        appLayout.getMapperService().getDocumentMapper().mappingDocuments(
+                                appLayout.getRepositoryService().getDocumentRepository().findAll()
+                        )
+                )
         );
         btns.setWidthFull();
 

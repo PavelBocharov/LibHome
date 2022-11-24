@@ -21,7 +21,7 @@ public class DocumentStatus implements Serializable, HasId {
     private Long id;
 
     @Column(name = "enum_id", nullable = false, unique = true)
-    private  Long enumId;
+    private Long enumId;
 
     @Column(name = "title", nullable = false, unique = true)
     private String title;
