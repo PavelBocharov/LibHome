@@ -1,5 +1,6 @@
 package com.mar.ds.utils.jsonDialog.jsonData;
 
+import com.mar.ds.db.entity.ArtifactEffect;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,4 +33,5 @@ public class ItemData implements Serializable {
     private Float rotationX;
     private Float rotationY;
     private Float rotationZ;
+    private ArtifactEffect artifactEffect;
 }

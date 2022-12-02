@@ -83,7 +83,7 @@ public class MainView extends AppLayout {
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         tabs.add(getTab("Стартовая страница", HOME, startPageView));
         tabs.add(getTab("Список дел", RANDOM, randomTaskView));
-        tabs.add(getTab("Схемы", MONEY, receiptView));
+//        tabs.add(getTab("Схемы", MONEY, receiptView));
         tabs.add(getTab("[DEV] Предметы", FLASK, itemView));
         tabs.add(getTab("[DEV] Пресонажи", CHILD, characterView));
         tabs.add(getTab("[DEV] Задачи", TASKS, taskView));

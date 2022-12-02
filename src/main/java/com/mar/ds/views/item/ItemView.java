@@ -5,6 +5,7 @@ import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
+import com.mar.ds.views.item.atifactEffect.ArtifactEffectViewDialog;
 import com.mar.ds.views.item.itemStatus.ItemStatusViewDialog;
 import com.mar.ds.views.item.itemType.ItemTypeViewDialog;
 import com.vaadin.flow.component.button.Button;
@@ -21,6 +22,7 @@ import java.util.List;
 
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.*;
+import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
 public class ItemView implements ContentView {
@@ -37,6 +39,10 @@ public class ItemView implements ContentView {
         grid.addColumn(Item::getName).setHeader("Наименование").setAutoWidth(true);
         grid.addColumn(item -> item.getStatus().getName()).setHeader("Статус").setAutoWidth(true);
         grid.addColumn(item -> item.getType().getName()).setHeader("Тип").setAutoWidth(true);
+        grid.addColumn(item -> isNull(item.getArtifactEffect())
+                ? "-"
+                : item.getArtifactEffect().getTitle()
+        ).setHeader("Эффект").setAutoWidth(true);
         grid.addColumn(Item::getLevel).setHeader("Уровень").setAutoWidth(true);
         grid.addColumn(Item::getNeedManna).setHeader("Мин. кол-во манны").setAutoWidth(true);
         grid.addColumn(Item::getHealthDamage).setHeader("HP DMG").setAutoWidth(true);
@@ -91,10 +97,14 @@ public class ItemView implements ContentView {
         Button itemStatusListBtn = new Button("Статус предметов", new Icon(COG), click -> new ItemStatusViewDialog(appLayout));
         itemStatusListBtn.setWidthFull();
 
+        Button artifactEffectBtn = new Button("Эффекты артeфактов", new Icon(MAGIC), click -> new ArtifactEffectViewDialog(appLayout));
+        artifactEffectBtn.setWidthFull();
+
         HorizontalLayout btns = new HorizontalLayout(
                 crtBtn,
                 itemTypeListBtn,
                 itemStatusListBtn,
+                artifactEffectBtn,
                 ViewUtils.getDownloadFileButton(
                         "Items.json",
                         appLayout.getMapperService().getItemMapper().getItemDataList(

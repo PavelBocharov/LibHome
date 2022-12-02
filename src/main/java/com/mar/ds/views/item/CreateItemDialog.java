@@ -1,5 +1,6 @@
 package com.mar.ds.views.item;
 
+import com.mar.ds.db.entity.ArtifactEffect;
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.db.entity.ItemStatus;
 import com.mar.ds.db.entity.ItemType;
@@ -28,10 +29,10 @@ import static java.lang.String.format;
 public class CreateItemDialog {
 
     public CreateItemDialog(MainView mainView) {
-        Dialog createDialog = new Dialog();
-        createDialog.setCloseOnEsc(true);
-        createDialog.setCloseOnOutsideClick(false);
-        createDialog.setWidth(80, Unit.PERCENTAGE);
+        Dialog dialog = new Dialog();
+        dialog.setCloseOnEsc(true);
+        dialog.setCloseOnOutsideClick(false);
+        dialog.setWidth(80, Unit.PERCENTAGE);
         // name
         TextField name = new TextField("Наименование");
         name.setWidthFull();
@@ -57,6 +58,15 @@ public class CreateItemDialog {
         itemTypeSelect.setTextRenderer(itemType -> format("[%d] %s", itemType.getEnumNumber(), itemType.getName()));
         itemTypeSelect.setDataProvider(new ListDataProvider<>(itemTypeList));
         itemTypeSelect.setWidthFull();
+        // artifactEffect
+        List<ArtifactEffect> artifactEffectList = mainView.getRepositoryService().getArtifactEffectRepository().findAll();
+        Select<ArtifactEffect> artifactEffectSelect = new Select<ArtifactEffect>();
+        artifactEffectSelect.setLabel("Эффект артефакта");
+        artifactEffectSelect.setPlaceholder("Выберите эффект...");
+        artifactEffectSelect.setTextRenderer(effect -> format("[%d] %s", effect.getEnumNumber(), effect.getTitle()));
+        artifactEffectSelect.setDataProvider(new ListDataProvider<>(artifactEffectList));
+        artifactEffectSelect.setWidthFull();
+        artifactEffectSelect.setEmptySelectionAllowed(true);
         // image path
         TextField imgPath = new TextField("Путь иконки");
         imgPath.setWidthFull();
@@ -117,6 +127,7 @@ public class CreateItemDialog {
                         .shortInfo(getTextFieldValue(shortInfo))
                         .status(itemStatusSelect.getValue())
                         .type(itemTypeSelect.getValue())
+                        .artifactEffect(artifactEffectSelect.getValue())
                         .imgPath(getTextFieldValue(imgPath))
                         .needManna(getFloatValue(minManna))
                         .healthDamage(getFloatValue(hpDmg))
@@ -138,19 +149,20 @@ public class CreateItemDialog {
                 return;
             }
             mainView.setContent(mainView.getItemView().getContent());
-            createDialog.close();
+            dialog.close();
         });
         crtBtn.setWidthFull();
         crtBtn.setDisableOnClick(true);
         crtBtn.addClickShortcut(Key.ENTER);
 
-        createDialog.add(
+        dialog.add(
                 new Label("Создать новый предмет"),
                 name,
                 info,
                 shortInfo,
                 itemStatusSelect,
                 itemTypeSelect,
+                artifactEffectSelect,
                 imgPath,
                 minManna,
                 hpDmg,
@@ -164,9 +176,9 @@ public class CreateItemDialog {
                 rotationX,
                 rotationY,
                 rotationZ,
-                new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(createDialog))
+                new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(dialog))
         );
-        createDialog.open();
+        dialog.open();
     }
     
 }

@@ -77,4 +77,7 @@ public class Item implements Serializable, HasId {
     @ManyToOne
     @JoinColumn(name="dialog_id", nullable=true)
     private Dialog dialog;
+
+    @OneToOne(optional = true)
+    private ArtifactEffect artifactEffect;
 }

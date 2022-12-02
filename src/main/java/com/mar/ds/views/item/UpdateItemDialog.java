@@ -1,5 +1,6 @@
 package com.mar.ds.views.item;
 
+import com.mar.ds.db.entity.ArtifactEffect;
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.db.entity.ItemStatus;
 import com.mar.ds.db.entity.ItemType;
@@ -27,10 +28,10 @@ import static java.lang.String.format;
 public class UpdateItemDialog {
 
     public UpdateItemDialog(MainView mainView, Item updatedItem) {
-        Dialog updateDialog = new Dialog();
-        updateDialog.setCloseOnEsc(true);
-        updateDialog.setCloseOnOutsideClick(false);
-        updateDialog.setWidth(80, Unit.PERCENTAGE);
+        Dialog dialog = new Dialog();
+        dialog.setCloseOnEsc(true);
+        dialog.setCloseOnOutsideClick(false);
+        dialog.setWidth(80, Unit.PERCENTAGE);
         // name
         TextField name = new TextField("Наименование");
         name.setWidthFull();
@@ -61,6 +62,16 @@ public class UpdateItemDialog {
         itemTypeSelect.setDataProvider(new ListDataProvider<>(itemTypeList));
         itemTypeSelect.setWidthFull();
         itemTypeSelect.setValue(updatedItem.getType());
+        // artifactEffect
+        List<ArtifactEffect> artifactEffectList = mainView.getRepositoryService().getArtifactEffectRepository().findAll();
+        Select<ArtifactEffect> artifactEffectSelect = new Select<ArtifactEffect>();
+        artifactEffectSelect.setLabel("Эффект артефакта");
+        artifactEffectSelect.setPlaceholder("Выберите эффект...");
+        artifactEffectSelect.setTextRenderer(effect -> format("[%d] %s", effect.getEnumNumber(), effect.getTitle()));
+        artifactEffectSelect.setDataProvider(new ListDataProvider<>(artifactEffectList));
+        artifactEffectSelect.setWidthFull();
+        artifactEffectSelect.setEmptySelectionAllowed(true);
+        artifactEffectSelect.setValue(updatedItem.getArtifactEffect());
         // image path
         TextField imgPath = new TextField("Путь иконки");
         imgPath.setWidthFull();
@@ -124,14 +135,15 @@ public class UpdateItemDialog {
         rotationZ.setWidthFull();
         setBigDecimalFieldValue(rotationZ, updatedItem.getRotationZ());
 
-        Button crtBtn = new Button("Обновить", new Icon(VaadinIcon.ROTATE_RIGHT));
-        crtBtn.addClickListener(click -> {
+        Button updBtn = new Button("Обновить", new Icon(VaadinIcon.ROTATE_RIGHT));
+        updBtn.addClickListener(click -> {
             try {
                 updatedItem.setName(getTextFieldValue(name));
                 updatedItem.setInfo(getTextFieldValue(info));
                 updatedItem.setShortInfo(getTextFieldValue(shortInfo));
                 updatedItem.setStatus(itemStatusSelect.getValue());
                 updatedItem.setType(itemTypeSelect.getValue());
+                updatedItem.setArtifactEffect(artifactEffectSelect.getValue());
                 updatedItem.setImgPath(getTextFieldValue(imgPath));
                 updatedItem.setNeedManna(getFloatValue(minManna));
                 updatedItem.setHealthDamage(getFloatValue(hpDmg));
@@ -148,23 +160,24 @@ public class UpdateItemDialog {
                 mainView.getRepositoryService().getItemRepository().save(updatedItem);
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("При обновлении произошла ошибка", ex);
-                crtBtn.setEnabled(true);
+                updBtn.setEnabled(true);
                 return;
             }
             mainView.setContent(mainView.getItemView().getContent());
-            updateDialog.close();
+            dialog.close();
         });
-        crtBtn.setWidthFull();
-        crtBtn.setDisableOnClick(true);
-        crtBtn.addClickShortcut(Key.ENTER);
+        updBtn.setWidthFull();
+        updBtn.setDisableOnClick(true);
+        updBtn.addClickShortcut(Key.ENTER);
 
-        updateDialog.add(
+        dialog.add(
                 new Label("Обновить запись"),
                 name,
                 info,
                 shortInfo,
                 itemStatusSelect,
                 itemTypeSelect,
+                artifactEffectSelect,
                 imgPath,
                 minManna,
                 hpDmg,
@@ -178,9 +191,9 @@ public class UpdateItemDialog {
                 rotationX,
                 rotationY,
                 rotationZ,
-                new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(updateDialog))
+                new HorizontalLayout(updBtn, ViewUtils.getCloseButton(dialog))
         );
-        updateDialog.open();
+        dialog.open();
     }
 
 }
