@@ -16,5 +16,6 @@ public class MapperService {
     private final ActionMapper actionMapper;
     private final DialogMapper dialogMapper;
     private final DocumentMapper documentMapper;
+    private final LocalizationMapper localizationMapper;
 
 }

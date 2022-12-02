@@ -24,5 +24,6 @@ public class RepositoryService {
     private final DocumentRepository documentRepository;
     private final DocumentStatusRepository documentStatusRepository;
     private final ArtifactEffectRepository artifactEffectRepository;
+    private final LocalizationRepository localizationRepository;
 
 }

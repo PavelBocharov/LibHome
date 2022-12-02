@@ -7,6 +7,7 @@ import com.mar.ds.views.dialog.DialogView;
 import com.mar.ds.views.dialog.action.ActionView;
 import com.mar.ds.views.document.DocumentView;
 import com.mar.ds.views.item.ItemView;
+import com.mar.ds.views.localization.LocalizationView;
 import com.mar.ds.views.mission.MissionView;
 import com.mar.ds.views.randTask.RandomTaskView;
 import com.mar.ds.views.receipt.ReceiptView;
@@ -59,6 +60,8 @@ public class MainView extends AppLayout {
     private final DialogView dialogView;
     @Getter
     private final DocumentView documentView;
+    @Getter
+    private final LocalizationView localizationView;
     private final StartPageView startPageView;
 
     public MainView() throws IOException {
@@ -71,6 +74,7 @@ public class MainView extends AppLayout {
         actionView = new ActionView(this);
         dialogView = new DialogView(this);
         documentView = new DocumentView(this);
+        localizationView = new LocalizationView(this);
         startPageView = new StartPageView();
 
         DrawerToggle toggle = new DrawerToggle();
@@ -91,6 +95,7 @@ public class MainView extends AppLayout {
         tabs.add(getTab("[DEV] Ответы/реплики", COMMENT, actionView));
         tabs.add(getTab("[DEV] Диалоги", CHAT, dialogView));
         tabs.add(getTab("[DEV] Документы", BOOK, documentView));
+        tabs.add(getTab("[DEV] Локализация", TEXT_LABEL, localizationView));
 
         addToDrawer(tabs);
         addToNavbar(toggle, title);
