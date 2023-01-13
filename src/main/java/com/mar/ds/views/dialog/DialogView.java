@@ -4,6 +4,7 @@ import com.mar.ds.db.entity.Action;
 import com.mar.ds.db.entity.Dialog;
 import com.mar.ds.db.entity.Document;
 import com.mar.ds.db.entity.Item;
+import com.mar.ds.db.jpa.LocalizationRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
@@ -33,22 +34,24 @@ public class DialogView implements ContentView {
     private final MainView appLayout;
 
     public VerticalLayout getContent() {
+        LocalizationRepository localRepo = appLayout.getRepositoryService().getLocalizationRepository();
+
         H2 label = new H2("Список диалогов");
         // TABLE
         Grid<Dialog> grid = new Grid<>();
 
         // column
         grid.addColumn(Dialog::getId).setHeader("ID").setAutoWidth(true);
-        grid.addColumn(dialog -> format("[%d] %32s", dialog.getCharacter().getId(), dialog.getCharacter().getName()))
+        grid.addColumn(dialog -> format("[%d] %.32s", dialog.getCharacter().getId(), localRepo.saveFindRuLocalByKey(dialog.getCharacter().getName())))
                 .setHeader("Персонаж").setAutoWidth(true)
         ;
-        grid.addColumn(Dialog::getText).setHeader("Реплика").setAutoWidth(true);
+        grid.addColumn(dialog -> format("%.32s", localRepo.saveFindRuLocalByKey(dialog.getText()))).setHeader("Реплика").setAutoWidth(true);
         grid.addColumn(dialog ->
                         isNull(dialog.getItems()) || dialog.getItems().isEmpty()
                                 ? "-"
                                 : dialog.getItems()
                                 .stream()
-                                .map(item -> format("[%d] %32s", item.getId(), item.getName()))
+                                .map(item -> format("[%d] %.32s", item.getId(), localRepo.saveFindRuLocalByKey(item.getName())))
                                 .collect(Collectors.joining("; ")))
                 .setHeader("Предметы").setAutoWidth(true);
 
@@ -56,7 +59,7 @@ public class DialogView implements ContentView {
                         ? "-"
                         : dialog.getActions()
                         .stream()
-                        .map(action -> format("[%d] %32s", action.getId(), action.getText()))
+                        .map(action -> format("[%d] %.32s", action.getId(), localRepo.saveFindRuLocalByKey(action.getText())))
                         .collect(Collectors.joining("; "))
                 )
                 .setHeader("Действия").setAutoWidth(true);

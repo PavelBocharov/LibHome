@@ -1,6 +1,7 @@
 package com.mar.ds.views.task;
 
 import com.mar.ds.db.entity.Task;
+import com.mar.ds.db.jpa.LocalizationRepository;
 import com.mar.ds.db.jpa.TaskRepository;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
@@ -25,6 +26,7 @@ public class UpdateTaskView {
 
     public UpdateTaskView(MainView mainView, Task updatedTask) {
         TaskRepository repository = mainView.getTaskView().getRepository();
+        LocalizationRepository localRepo = mainView.getRepositoryService().getLocalizationRepository();
 
         Dialog createDialog = new Dialog();
         createDialog.setCloseOnEsc(true);
@@ -42,7 +44,7 @@ public class UpdateTaskView {
         Select<Task> beforeTaskSelect = new Select<>();
         beforeTaskSelect.setLabel("Before task");
         beforeTaskSelect.setPlaceholder("Предыдущая задача...");
-        beforeTaskSelect.setTextRenderer(task -> String.format("%d: %50s", task.getId(), task.getText()));
+        beforeTaskSelect.setTextRenderer(task -> String.format("%d: %50s", task.getId(), localRepo.saveFindRuLocalByKey(task.getText())));
         beforeTaskSelect.setEmptySelectionAllowed(true);
         beforeTaskSelect.setWidthFull();
 
@@ -62,7 +64,7 @@ public class UpdateTaskView {
         Select<Task> afterTaskSelect = new Select<>();
         afterTaskSelect.setLabel("After task");
         afterTaskSelect.setPlaceholder("Слудующая задача...");
-        afterTaskSelect.setTextRenderer(task -> String.format("%d: %50s", task.getId(), task.getText()));
+        afterTaskSelect.setTextRenderer(task -> String.format("%d: %50s", task.getId(), localRepo.saveFindRuLocalByKey(task.getText())));
         afterTaskSelect.setEmptySelectionAllowed(true);
         afterTaskSelect.setWidthFull();
 

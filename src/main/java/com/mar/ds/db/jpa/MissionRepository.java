@@ -9,5 +9,6 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
 
 
     List<Mission> findByStartTaskIsNotNull();
+    List<Mission> findByStartTaskIsNull();
 
 }

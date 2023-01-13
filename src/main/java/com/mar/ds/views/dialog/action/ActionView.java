@@ -33,7 +33,8 @@ public class ActionView implements ContentView {
 
         // column
         grid.addColumn(Action::getId).setHeader("ID").setAutoWidth(true);
-        grid.addColumn(Action::getText).setHeader("Текст").setAutoWidth(true);
+        grid.addColumn(action -> appLayout.getRepositoryService().getLocalizationRepository().saveFindRuLocalByKey(action.getText()))
+                .setHeader("Текст").setAutoWidth(true);
         grid.addColumn(action -> isNull(action.getNeedItem()) ? "-" : action.getNeedItem().getId() )
                 .setHeader("Необходимый предмет").setAutoWidth(true);
         grid.addColumn(action -> isNull(action.getNeedMission()) ? "-" : action.getNeedMission().getId() )

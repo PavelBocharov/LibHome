@@ -9,6 +9,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByBeforeIdIsNull();
     List<Task> findByAfterIdIsNull();
-    List<Task> findBy();
 
 }

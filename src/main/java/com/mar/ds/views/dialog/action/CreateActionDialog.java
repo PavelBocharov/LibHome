@@ -4,6 +4,7 @@ import com.mar.ds.db.entity.Action;
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.db.entity.Mission;
 import com.mar.ds.db.entity.Task;
+import com.mar.ds.db.jpa.LocalizationRepository;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
@@ -37,6 +38,8 @@ public class CreateActionDialog {
         createDialog.setCloseOnEsc(true);
         createDialog.setCloseOnOutsideClick(false);
 
+        LocalizationRepository localRepo = mainView.getRepositoryService().getLocalizationRepository();
+
         Accordion accordion = new Accordion();
         accordion.setWidthFull();
 
@@ -49,7 +52,7 @@ public class CreateActionDialog {
         itemSelect.setLabel("Необходимый предмет");
         itemSelect.setEmptySelectionAllowed(true);
         itemSelect.setPlaceholder("Выберите предмет...");
-        itemSelect.setTextRenderer(item -> String.format("%d: %s", item.getId(), item.getName()));
+        itemSelect.setTextRenderer(item -> String.format("%d: %s", item.getId(), localRepo.saveFindRuLocalByKey(item.getName())));
         itemSelect.setDataProvider(new ListDataProvider<>(itemList));
         itemSelect.setWidthFull();
         // mission
@@ -58,7 +61,7 @@ public class CreateActionDialog {
         missionSelect.setLabel("Необходимая миссия");
         missionSelect.setEmptySelectionAllowed(true);
         missionSelect.setPlaceholder("Выберите миссию...");
-        missionSelect.setTextRenderer(mission -> String.format("%d: %s", mission.getId(), mission.getTitle()));
+        missionSelect.setTextRenderer(mission -> String.format("%d: %s", mission.getId(), localRepo.saveFindRuLocalByKey(mission.getTitle())));
         missionSelect.setDataProvider(new ListDataProvider<>(missionList));
         missionSelect.setWidthFull();
         // task
@@ -67,7 +70,7 @@ public class CreateActionDialog {
         taskSelect.setLabel("Необходимая задача");
         taskSelect.setEmptySelectionAllowed(true);
         taskSelect.setPlaceholder("Выберите задачу...");
-        taskSelect.setTextRenderer(task -> String.format("%d: %s", task.getId(), task.getText()));
+        taskSelect.setTextRenderer(task -> String.format("%d: %s", task.getId(), localRepo.saveFindRuLocalByKey(task.getText())));
         taskSelect.setWidthFull();
 
         missionSelect.addValueChangeListener(selectMissionComponentValueChangeEvent -> {

@@ -1,6 +1,7 @@
 package com.mar.ds.views.item;
 
 import com.mar.ds.db.entity.Item;
+import com.mar.ds.db.jpa.LocalizationRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.*;
+import static java.lang.String.format;
 import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
@@ -34,9 +36,12 @@ public class ItemView implements ContentView {
         // TABLE
         Grid<Item> grid = new Grid<>();
 
+        LocalizationRepository localRepo = appLayout.getRepositoryService().getLocalizationRepository();
+
         // column
         grid.addColumn(Item::getId).setHeader("ID").setAutoWidth(true);
-        grid.addColumn(Item::getName).setHeader("Наименование").setAutoWidth(true);
+        grid.addColumn(item -> localRepo.saveFindRuLocalByKey(item.getName()))
+                .setHeader("Наименование").setAutoWidth(true);
         grid.addColumn(item -> item.getStatus().getName()).setHeader("Статус").setAutoWidth(true);
         grid.addColumn(item -> item.getType().getName()).setHeader("Тип").setAutoWidth(true);
         grid.addColumn(item -> isNull(item.getArtifactEffect())
@@ -48,14 +53,14 @@ public class ItemView implements ContentView {
         grid.addColumn(Item::getHealthDamage).setHeader("HP DMG").setAutoWidth(true);
         grid.addColumn(Item::getMannaDamage).setHeader("MP DMG").setAutoWidth(true);
         grid.addColumn(Item::getReloadTick).setHeader("Время отката").setAutoWidth(true);
-        grid.addColumn(item -> String.format("(%.1f : %.1f : %.1f)", item.getPositionX(), item.getPositionY(), item.getPositionZ()))
+        grid.addColumn(item -> format("(%.1f : %.1f : %.1f)", item.getPositionX(), item.getPositionY(), item.getPositionZ()))
                 .setHeader("Spawn point").setAutoWidth(true);
-        grid.addColumn(item -> String.format("(%.1f : %.1f : %.1f)", item.getRotationX(), item.getRotationY(), item.getRotationZ()))
+        grid.addColumn(item -> format("(%.1f : %.1f : %.1f)", item.getRotationX(), item.getRotationY(), item.getRotationZ()))
                 .setHeader("Rotation").setAutoWidth(true);
         grid.addColumn(Item::getImgPath).setHeader("Путь иконки").setAutoWidth(true);
         grid.addColumn(Item::getObjPath).setHeader("Путь объекта").setAutoWidth(true);
-        grid.addColumn(Item::getShortInfo).setHeader("Краткая информация");
-        grid.addColumn(Item::getInfo).setHeader("Информация");
+        grid.addColumn(item -> format("%.32s", localRepo.saveFindRuLocalByKey(item.getShortInfo()))).setAutoWidth(true).setHeader("Краткая информация");
+        grid.addColumn(item -> format("%.32s", localRepo.saveFindRuLocalByKey(item.getInfo()))).setAutoWidth(true).setHeader("Информация");
         // settings
         grid.setWidthFull();
 //        grid.addThemeVariants(GridVariant.LUMO_COMPACT);

@@ -15,7 +15,9 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
@@ -35,10 +37,24 @@ public class CreateMissionView {
         textArea.setWidthFull();
         textArea.setLabel("Описание");
 
-        List<Task> taskList = mainView.getTaskView().getRepository().findByBeforeIdIsNull();
+
+        List<Long> missionsIds = mainView.getRepositoryService().getMissionRepository()
+                .findByStartTaskIsNotNull()
+                .stream()
+                .map(value -> value.getId())
+                .collect(Collectors.toList());
+        List<Task> taskListTemp = mainView.getTaskView().getRepository().findByBeforeIdIsNull();
+        List<Task> taskList = taskListTemp.stream().filter(task -> !missionsIds.contains(task.getId())).collect(Collectors.toList());
+
         Select<Task> taskSelect = new Select<>();
         taskSelect.setLabel("Стартовая задача");
-        taskSelect.setTextRenderer(task -> String.format("%d: %50s", task.getId(), task.getText()));
+        taskSelect.setTextRenderer(
+                task -> String.format(
+                        "%d: %50s",
+                        task.getId(),
+                        mainView.getRepositoryService().getLocalizationRepository().saveFindRuLocalByKey(task.getText())
+                )
+        );
         taskSelect.setDataProvider(new ListDataProvider<>(taskList));
         taskSelect.setEmptySelectionAllowed(true);
         taskSelect.setWidthFull();

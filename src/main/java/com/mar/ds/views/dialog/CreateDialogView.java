@@ -4,6 +4,7 @@ import com.mar.ds.db.entity.Action;
 import com.mar.ds.db.entity.Character;
 import com.mar.ds.db.entity.Document;
 import com.mar.ds.db.entity.Item;
+import com.mar.ds.db.jpa.LocalizationRepository;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
@@ -35,6 +36,8 @@ public class CreateDialogView {
         createDialog.setCloseOnEsc(true);
         createDialog.setCloseOnOutsideClick(false);
 
+        LocalizationRepository localRepo = mainView.getRepositoryService().getLocalizationRepository();
+
         // name
         TextArea textArea = new TextArea("Текст реплики");
         textArea.setWidthFull();
@@ -44,7 +47,7 @@ public class CreateDialogView {
         characterSelect.setLabel("Персонаж");
         characterSelect.setEmptySelectionAllowed(false);
         characterSelect.setPlaceholder("Кто говорит реплику...");
-        characterSelect.setTextRenderer(character -> format("%d: %32s", character.getId(), character.getName()));
+        characterSelect.setTextRenderer(character -> format("%d: %32s", character.getId(), localRepo.saveFindRuLocalByKey(character.getName())));
         characterSelect.setDataProvider(new ListDataProvider<>(characters));
         characterSelect.setWidthFull();
         // opening dialog
@@ -55,7 +58,7 @@ public class CreateDialogView {
         MultiselectComboBox<Action> openingActionsSelect = new MultiselectComboBox<>();
         openingActionsSelect.setLabel("Открывающая реплика");
         openingActionsSelect.setPlaceholder("Выберите реплику...");
-        openingActionsSelect.setItemLabelGenerator(action -> format("%d: %32s", action.getId(), action.getText()));
+        openingActionsSelect.setItemLabelGenerator(action -> format("%d: %32s", action.getId(), localRepo.saveFindRuLocalByKey(action.getText())));
         openingActionsSelect.setItems(openingActions);
         openingActionsSelect.setWidthFull();
         // items
@@ -64,7 +67,7 @@ public class CreateDialogView {
         itemSelect.setLabel("Предметы, которые получит ГГ");
         itemSelect.setPlaceholder("Выберите предметы...");
         itemSelect.setClearButtonVisible(true);
-        itemSelect.setItemLabelGenerator(item -> format("%d: %32s", item.getId(), item.getName()));
+        itemSelect.setItemLabelGenerator(item -> format("%d: %32s", item.getId(), localRepo.saveFindRuLocalByKey( item.getName())));
         itemSelect.setItems(itemList);
         itemSelect.setWidthFull();
         // documents
@@ -73,7 +76,7 @@ public class CreateDialogView {
         documentSelect.setLabel("Документы, которые появятся в инвентаре");
         documentSelect.setPlaceholder("Выберите документы...");
         documentSelect.setClearButtonVisible(true);
-        documentSelect.setItemLabelGenerator(document -> format("%d: %32s", document.getId(), document.getTitle()));
+        documentSelect.setItemLabelGenerator(document -> format("%d: %32s", document.getId(), localRepo.saveFindRuLocalByKey(document.getTitle())));
         documentSelect.setItems(documentList);
         documentSelect.setWidthFull();
         // action
@@ -82,7 +85,7 @@ public class CreateDialogView {
         actionSelect.setLabel("Список реплик");
         actionSelect.setPlaceholder("Выберите реплики...");
         actionSelect.setClearButtonVisible(true);
-        actionSelect.setItemLabelGenerator(action -> format("%d: %32s", action.getId(), action.getText()));
+        actionSelect.setItemLabelGenerator(action -> format("%d: %32s", action.getId(), localRepo.saveFindRuLocalByKey(action.getText())));
         actionSelect.setItems(actionList);
         actionSelect.setWidthFull();
 

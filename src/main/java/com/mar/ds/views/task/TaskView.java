@@ -32,12 +32,17 @@ public class TaskView implements ContentView {
 
         // column
         grid.addColumn(Task::getId).setHeader("ID").setAutoWidth(true);
-        grid.addColumn(Task::getText).setHeader("Text").setAutoWidth(true);
+        grid.addColumn(task -> appLayout
+                .getRepositoryService()
+                .getLocalizationRepository()
+                .saveFindRuLocalByKey(task.getText())
+        ).setHeader("Text").setAutoWidth(true);
         grid.addColumn(Task::getBeforeId).setHeader("Before").setAutoWidth(true);
         grid.addColumn(Task::getAfterId).setHeader("After").setAutoWidth(true);
         // settings
         grid.setWidthFull();
         // edit
+        grid.addItemDoubleClickListener(event -> new UpdateTaskView(appLayout, event.getItem()));
         grid.addComponentColumn(task -> {
             Button edtBtn = new Button(new Icon(PENCIL), clk -> {
                 new UpdateTaskView(appLayout, task);

@@ -1,6 +1,7 @@
 package com.mar.ds.views.task;
 
 import com.mar.ds.db.entity.Task;
+import com.mar.ds.db.jpa.LocalizationRepository;
 import com.mar.ds.db.jpa.TaskRepository;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
@@ -22,6 +23,8 @@ import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
 public class CreateTaskView {
 
     public CreateTaskView(MainView mainView) {
+        LocalizationRepository localRepo = mainView.getRepositoryService().getLocalizationRepository();
+
         Dialog createDialog = new Dialog();
         createDialog.setCloseOnEsc(true);
         createDialog.setCloseOnOutsideClick(false);
@@ -34,7 +37,7 @@ public class CreateTaskView {
         Select<Task> beforeTaskSelect = new Select<>();
         beforeTaskSelect.setLabel("Before task");
         beforeTaskSelect.setPlaceholder("Предыдущая задача...");
-        beforeTaskSelect.setTextRenderer(task -> String.format("%d: %50s", task.getId(), task.getText()));
+        beforeTaskSelect.setTextRenderer(task -> String.format("%d: %50s", task.getId(), localRepo.saveFindRuLocalByKey(task.getText())));
         beforeTaskSelect.setDataProvider(new ListDataProvider<>(beforeTaskList));
         beforeTaskSelect.setWidthFull();
 
@@ -42,7 +45,7 @@ public class CreateTaskView {
         Select<Task> afterTaskSelect = new Select<>();
         afterTaskSelect.setLabel("After task");
         afterTaskSelect.setPlaceholder("Слудующая задача...");
-        afterTaskSelect.setTextRenderer(task -> String.format("%d: %50s", task.getId(), task.getText()));
+        afterTaskSelect.setTextRenderer(task -> String.format("%d: %50s", task.getId(), localRepo.saveFindRuLocalByKey(task.getText())));
         afterTaskSelect.setDataProvider(new ListDataProvider<>(afterTaskList));
         afterTaskSelect.setWidthFull();
 

@@ -1,6 +1,7 @@
 package com.mar.ds.views.document;
 
 import com.mar.ds.db.entity.Document;
+import com.mar.ds.db.jpa.LocalizationRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
@@ -32,18 +33,20 @@ public class DocumentView implements ContentView {
     private final MainView appLayout;
 
     public VerticalLayout getContent() {
+        LocalizationRepository localRepo = appLayout.getRepositoryService().getLocalizationRepository();
+
         H2 label = new H2("Список книг и документов");
         // TABLE
         Grid<Document> grid = new Grid<>();
 
         // column
         grid.addColumn(Document::getId).setHeader("ID").setAutoWidth(true);
-        grid.addColumn(Document::getTitle).setHeader("Заголовок").setAutoWidth(true);
-        grid.addColumn(document -> format("%32s", document.getText())).setHeader("Текст").setAutoWidth(true);
-        grid.addColumn(document -> format("%32s", document.getBtnTitle())).setHeader("Заголовок кнопки").setAutoWidth(true);
-        grid.addColumn(document -> format("%32s", document.getImage())).setHeader("Путь изображения").setAutoWidth(true);
+        grid.addColumn(doc -> format("%.32s", localRepo.saveFindRuLocalByKey(doc.getTitle()))).setHeader("Заголовок").setAutoWidth(true);
+        grid.addColumn(doc -> format("%.32s", localRepo.saveFindRuLocalByKey(doc.getText()))).setHeader("Текст").setAutoWidth(true);
+        grid.addColumn(doc -> format("%.32s", localRepo.saveFindRuLocalByKey(doc.getBtnTitle()))).setHeader("Заголовок кнопки").setAutoWidth(true);
+        grid.addColumn(doc -> format("%.32s", doc.getImage())).setHeader("Путь изображения").setAutoWidth(true);
         grid.addColumn(
-                        document -> format("[%d] %32s", document.getDocumentStatus().getEnumId(), document.getDocumentStatus().getTitle())
+                        doc -> format("[%d] %.32s", doc.getDocumentStatus().getEnumId(), doc.getDocumentStatus().getTitle())
                 )
                 .setHeader("Статус").setAutoWidth(true)
         ;

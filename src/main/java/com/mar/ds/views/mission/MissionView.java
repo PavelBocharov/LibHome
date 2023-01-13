@@ -1,6 +1,7 @@
 package com.mar.ds.views.mission;
 
 import com.mar.ds.db.entity.Mission;
+import com.mar.ds.db.jpa.LocalizationRepository;
 import com.mar.ds.db.jpa.MissionRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
@@ -32,15 +33,17 @@ public class MissionView implements ContentView {
         // TABLE
         Grid<Mission> grid = new Grid<>();
 
+        LocalizationRepository localRepo = appLayout.getRepositoryService().getLocalizationRepository();
         // column
         grid.addColumn(Mission::getId).setHeader("ID").setAutoWidth(true);
-        grid.addColumn(Mission::getTitle).setHeader("Заголовок").setAutoWidth(true);
-        grid.addColumn(Mission::getText).setHeader("Описание").setAutoWidth(true);
+        grid.addColumn(mission -> localRepo.saveFindRuLocalByKey(mission.getTitle())).setHeader("Заголовок").setAutoWidth(true);
+        grid.addColumn(mission -> localRepo.saveFindRuLocalByKey(mission.getText())).setHeader("Описание").setAutoWidth(true);
         grid.addColumn(mission -> nonNull(mission.getStartTask()) ? mission.getStartTask().getId() : "")
                 .setHeader("Первое задание").setAutoWidth(true);
         // settings
         grid.setWidthFull();
         // edit
+        grid.addItemDoubleClickListener(event -> new UpdateMissionView(appLayout, event.getItem()));
         grid.addComponentColumn(mission -> {
             Button edtBtn = new Button(new Icon(PENCIL), clk -> {
                 new UpdateMissionView(appLayout, mission);

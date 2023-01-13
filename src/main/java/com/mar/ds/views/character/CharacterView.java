@@ -32,7 +32,11 @@ public class CharacterView implements ContentView {
 
         // column
         grid.addColumn(Character::getId).setHeader("ID").setAutoWidth(true);
-        grid.addColumn(Character::getName).setHeader("Name").setAutoWidth(true);
+        grid.addColumn(character -> appLayout
+                        .getRepositoryService()
+                        .getLocalizationRepository()
+                        .saveFindRuLocalByKey(character.getName())
+                ).setHeader("Name").setAutoWidth(true);
         grid.addColumn(Character::getPortrait).setHeader("Portrait").setAutoWidth(true);
         // settings
         grid.setWidthFull();

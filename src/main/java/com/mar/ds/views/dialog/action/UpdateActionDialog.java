@@ -4,6 +4,7 @@ import com.mar.ds.db.entity.Action;
 import com.mar.ds.db.entity.Item;
 import com.mar.ds.db.entity.Mission;
 import com.mar.ds.db.entity.Task;
+import com.mar.ds.db.jpa.LocalizationRepository;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
@@ -39,8 +40,10 @@ public class UpdateActionDialog {
         updateDialog.setCloseOnOutsideClick(false);
         updateDialog.setWidth(50, Unit.PERCENTAGE);
 
+        LocalizationRepository localRepo = mainView.getRepositoryService().getLocalizationRepository();
+
         // name
-        TextField textField = new TextField("Тест реплики");
+        TextField textField = new TextField("Текст реплики");
         textField.setWidthFull();
         setTextFieldValue(textField, updatedAction.getText());
         // items
@@ -49,7 +52,7 @@ public class UpdateActionDialog {
         itemSelect.setLabel("Необходимый предмет");
         itemSelect.setEmptySelectionAllowed(true);
         itemSelect.setPlaceholder("Выберите предмет...");
-        itemSelect.setTextRenderer(item -> String.format("%d: %s", item.getId(), item.getName()));
+        itemSelect.setTextRenderer(item -> String.format("%d: %s", item.getId(), localRepo.saveFindRuLocalByKey(item.getName())));
         itemSelect.setDataProvider(new ListDataProvider<>(itemList));
         itemSelect.setWidthFull();
         setSelectValue(itemSelect, updatedAction.getNeedItem(), itemList);
@@ -59,7 +62,7 @@ public class UpdateActionDialog {
         missionSelect.setLabel("Необходимая миссия");
         missionSelect.setEmptySelectionAllowed(true);
         missionSelect.setPlaceholder("Выберите миссию...");
-        missionSelect.setTextRenderer(mission -> String.format("%d: %s", mission.getId(), mission.getTitle()));
+        missionSelect.setTextRenderer(mission -> String.format("%d: %s", mission.getId(), localRepo.saveFindRuLocalByKey(mission.getTitle())));
         missionSelect.setDataProvider(new ListDataProvider<>(missionList));
         missionSelect.setWidthFull();
         setSelectValue(missionSelect, updatedAction.getNeedMission(), missionList);
@@ -69,7 +72,7 @@ public class UpdateActionDialog {
         taskSelect.setLabel("Необходимая задача");
         taskSelect.setEmptySelectionAllowed(true);
         taskSelect.setPlaceholder("Выберите задачу...");
-        taskSelect.setTextRenderer(task -> String.format("%d: %s", task.getId(), task.getText()));
+        taskSelect.setTextRenderer(task -> String.format("%d: %s", task.getId(), localRepo.saveFindRuLocalByKey(task.getText())));
         taskSelect.setWidthFull();
 
         if (nonNull(updatedAction.getNeedMission())) {
