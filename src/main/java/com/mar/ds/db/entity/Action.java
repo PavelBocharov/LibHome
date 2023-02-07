@@ -23,23 +23,23 @@ public class Action implements Serializable, HasId {
     @Column(name = "text", nullable = false)
     private String text;
 
-    @OneToOne(optional = true)
+    @OneToOne()
     private Item needItem;
 
-    @OneToOne(optional = true)
+    @OneToOne()
     private Mission needMission;
 
-    @OneToOne(optional = true)
+    @OneToOne()
     private Task needTask;
 
     @Column(name = "move_mission", nullable = false)
     private Boolean moveMission;
 
     @ManyToOne
-    @JoinColumn(name="dialog_id", nullable=true)
+    @JoinColumn(name="dialog_id")
     private Dialog dialog;
 
-    @OneToOne(optional = true)
+    @OneToOne()
     private Dialog openedDialog;
 
     @Column(name = "is_teleport")
@@ -68,4 +68,7 @@ public class Action implements Serializable, HasId {
 
     @Column(name = "rotation_z")
     private Float rotationZ;
+
+    @OneToOne()
+    private GenerateType generateType;
 }

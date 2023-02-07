@@ -33,4 +33,6 @@ public class ActionData implements Serializable {
     private Float rotationY;
     private Float rotationZ;
 
+    private Long generateType;
+
 }

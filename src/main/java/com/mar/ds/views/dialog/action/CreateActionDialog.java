@@ -1,9 +1,6 @@
 package com.mar.ds.views.dialog.action;
 
-import com.mar.ds.db.entity.Action;
-import com.mar.ds.db.entity.Item;
-import com.mar.ds.db.entity.Mission;
-import com.mar.ds.db.entity.Task;
+import com.mar.ds.db.entity.*;
 import com.mar.ds.db.jpa.LocalizationRepository;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
@@ -48,7 +45,7 @@ public class CreateActionDialog {
         textField.setWidthFull();
         // items
         List<Item> itemList = mainView.getRepositoryService().getItemRepository().findAll();
-        Select<Item> itemSelect = new Select<Item>();
+        Select<Item> itemSelect = new Select<>();
         itemSelect.setLabel("Необходимый предмет");
         itemSelect.setEmptySelectionAllowed(true);
         itemSelect.setPlaceholder("Выберите предмет...");
@@ -57,7 +54,7 @@ public class CreateActionDialog {
         itemSelect.setWidthFull();
         // mission
         List<Mission> missionList = mainView.getRepositoryService().getMissionRepository().findAll();
-        Select<Mission> missionSelect = new Select<Mission>();
+        Select<Mission> missionSelect = new Select<>();
         missionSelect.setLabel("Необходимая миссия");
         missionSelect.setEmptySelectionAllowed(true);
         missionSelect.setPlaceholder("Выберите миссию...");
@@ -66,7 +63,7 @@ public class CreateActionDialog {
         missionSelect.setWidthFull();
         // task
         List<Task> taskList = mainView.getTaskView().getRepository().findAll();
-        Select<Task> taskSelect = new Select<Task>();
+        Select<Task> taskSelect = new Select<>();
         taskSelect.setLabel("Необходимая задача");
         taskSelect.setEmptySelectionAllowed(true);
         taskSelect.setPlaceholder("Выберите задачу...");
@@ -85,6 +82,16 @@ public class CreateActionDialog {
         Checkbox isTeleport = new Checkbox("Действие телепортирует в другую локацию");
         // saveGame
         Checkbox saveGame = new Checkbox("Автосохрание");
+        // generate level
+        List<GenerateType> generateTypes = mainView.getRepositoryService().getGenerateTypeRepository().findAll();
+        Select<GenerateType> generateTypesSelect = new Select<>();
+        generateTypesSelect.setLabel("Генерируемая локация");
+        generateTypesSelect.setEmptySelectionAllowed(true);
+        generateTypesSelect.setPlaceholder("Тип локации...");
+        generateTypesSelect.setTextRenderer(type -> String.format("%d: %s", type.getEnumNumber(), type.getName()));
+        generateTypesSelect.setDataProvider(new ListDataProvider<>(generateTypes));
+        generateTypesSelect.setWidthFull();
+
         // level
         TextField level = new TextField("Уровень");
         level.setWidthFull();
@@ -116,7 +123,7 @@ public class CreateActionDialog {
         accordion.add("Основное", getAccordionContent(textField));
         accordion.add("Предметы", getAccordionContent(itemSelect));
         accordion.add("Миссии и задачи", getAccordionContent(missionSelect, taskSelect, moveMission));
-        accordion.add("Телепорт", getAccordionContent(isTeleport, saveGame, level, positionX, positionY, positionZ, rotationX, rotationY, rotationZ));
+        accordion.add("Телепорт", getAccordionContent(isTeleport, saveGame, generateTypesSelect, level, positionX, positionY, positionZ, rotationX, rotationY, rotationZ));
 
         Button crtBtn = new Button("Создать", new Icon(VaadinIcon.PLUS));
         crtBtn.addClickListener(click -> {
@@ -136,6 +143,7 @@ public class CreateActionDialog {
                         .rotationX(getFloatValue(rotationX))
                         .rotationY(getFloatValue(rotationY))
                         .rotationZ(getFloatValue(rotationZ))
+                        .generateType(generateTypesSelect.getValue())
                         .build();
                 mainView.getRepositoryService().getActionRepository().save(action);
             } catch (Exception ex) {

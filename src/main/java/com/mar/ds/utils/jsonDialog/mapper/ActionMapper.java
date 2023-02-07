@@ -16,6 +16,7 @@ public interface ActionMapper {
     @Mapping(target = "needMissionId", source = "action.needMission.id")
     @Mapping(target = "needTaskId", source = "action.needTask.id")
     @Mapping(target = "needItemId", source = "action.needItem.id")
+    @Mapping(target = "generateType", source = "action.generateType.enumNumber")
     ActionData getActionData(Action action);
 
 
