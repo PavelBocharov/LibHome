@@ -23,6 +23,7 @@ public class RepositoryService {
     private final DialogRepository dialogRepository;
     private final DocumentRepository documentRepository;
     private final DocumentStatusRepository documentStatusRepository;
+    private final DocumentTypeRepository documentTypeRepository;
     private final ArtifactEffectRepository artifactEffectRepository;
     private final LocalizationRepository localizationRepository;
     private final GenerateTypeRepository generateTypeRepository;

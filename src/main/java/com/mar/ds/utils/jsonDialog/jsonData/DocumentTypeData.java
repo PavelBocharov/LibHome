@@ -11,14 +11,9 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DocumentData implements Serializable {
+public class DocumentTypeData implements Serializable {
 
     private Long id;
-    private String btnTitle;
     private String title;
-    private String text;
-    private String image;
-    private Long documentStatus;
-    private Long documentType;
 
 }

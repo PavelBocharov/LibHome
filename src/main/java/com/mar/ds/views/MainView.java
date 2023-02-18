@@ -1,5 +1,6 @@
 package com.mar.ds.views;
 
+import com.mar.ds.db.jpa.LocalizationRepository;
 import com.mar.ds.service.MapperService;
 import com.mar.ds.service.RepositoryService;
 import com.mar.ds.views.character.CharacterView;
@@ -112,6 +113,10 @@ public class MainView extends AppLayout {
         button.addClickListener(listener);
         button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         return button;
+    }
+
+    public LocalizationRepository getLocalRepo() {
+        return this.getRepositoryService().getLocalizationRepository();
     }
 
 }

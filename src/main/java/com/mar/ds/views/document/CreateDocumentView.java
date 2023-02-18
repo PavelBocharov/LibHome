@@ -2,6 +2,7 @@ package com.mar.ds.views.document;
 
 import com.mar.ds.db.entity.Document;
 import com.mar.ds.db.entity.DocumentStatus;
+import com.mar.ds.db.entity.DocumentType;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
@@ -51,7 +52,15 @@ public class CreateDocumentView {
         documentStatusSelect.setEmptySelectionAllowed(false);
         documentStatusSelect.setTextRenderer(documentStatus -> format("[%d] %32s", documentStatus.getEnumId(), documentStatus.getTitle()));
         documentStatusSelect.setDataProvider(new ListDataProvider<>(documentStatusList));
-        documentStatusSelect.setWidthFull();;
+        documentStatusSelect.setWidthFull();
+        // type
+        List<DocumentType> documentTypeList = mainView.getRepositoryService().getDocumentTypeRepository().findAll();
+        Select<DocumentType> documentTypeSelect = new Select<>();
+        documentTypeSelect.setLabel("Тип");
+        documentTypeSelect.setEmptySelectionAllowed(false);
+        documentTypeSelect.setTextRenderer(documentStatus -> mainView.getLocalRepo().saveFindRuLocalByKey(documentStatus.getTitle()));
+        documentTypeSelect.setDataProvider(new ListDataProvider<>(documentTypeList));
+        documentTypeSelect.setWidthFull();
 
         Button crtBtn = new Button("Создать", new Icon(VaadinIcon.PLUS));
         crtBtn.addClickListener(click -> {
@@ -67,6 +76,7 @@ public class CreateDocumentView {
                                         .btnTitle(getTextFieldValue(btnTitle))
                                         .image(getTextFieldValue(imagePath))
                                         .documentStatus(documentStatusSelect.getValue())
+                                        .documentType(documentTypeSelect.getValue())
                                         .build()
                         );
             } catch (Exception ex) {
@@ -88,6 +98,7 @@ public class CreateDocumentView {
                 btnTitle,
                 imagePath,
                 documentStatusSelect,
+                documentTypeSelect,
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(createDialog))
         );
         createDialog.open();

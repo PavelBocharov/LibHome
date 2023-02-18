@@ -7,6 +7,7 @@ import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.mar.ds.views.document.status.DocumentStatusViewDialog;
+import com.mar.ds.views.document.type.DocumentTypeViewDialog;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -33,7 +34,7 @@ public class DocumentView implements ContentView {
     private final MainView appLayout;
 
     public VerticalLayout getContent() {
-        LocalizationRepository localRepo = appLayout.getRepositoryService().getLocalizationRepository();
+        LocalizationRepository localRepo = appLayout.getLocalRepo();
 
         H2 label = new H2("Список книг и документов");
         // TABLE
@@ -50,6 +51,9 @@ public class DocumentView implements ContentView {
                 )
                 .setHeader("Статус").setAutoWidth(true)
         ;
+        grid.addColumn(doc -> doc != null && doc.getDocumentType() != null
+                        ? localRepo.saveFindRuLocalByKey(doc.getDocumentType().getTitle()) : "-")
+                .setHeader("Тип").setAutoWidth(true);
         // settings
         grid.setWidthFull();
         grid.addThemeVariants(GridVariant.LUMO_COMPACT);
@@ -88,12 +92,21 @@ public class DocumentView implements ContentView {
         Button documentStatusView = new Button("Статус документов", new Icon(COG), click -> new DocumentStatusViewDialog(appLayout));
         documentStatusView.setWidthFull();
 
+        Button documentTypeView = new Button(
+                "Тип документов",
+                new Icon(COG),
+                click -> new DocumentTypeViewDialog(appLayout)
+        );
+        documentTypeView.setWidthFull();
+
         HorizontalLayout btns = new HorizontalLayout(
                 crtBtn,
                 documentStatusView,
+                documentTypeView,
                 ViewUtils.getDownloadFileButton("Documents.json",
                         appLayout.getMapperService().getDocumentMapper().mappingDocuments(
-                                appLayout.getRepositoryService().getDocumentRepository().findAll()
+                                appLayout.getRepositoryService().getDocumentRepository().findAll(),
+                                appLayout.getRepositoryService().getDocumentTypeRepository().findAll()
                         )
                 )
         );

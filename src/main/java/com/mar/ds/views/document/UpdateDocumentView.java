@@ -2,6 +2,7 @@ package com.mar.ds.views.document;
 
 import com.mar.ds.db.entity.Document;
 import com.mar.ds.db.entity.DocumentStatus;
+import com.mar.ds.db.entity.DocumentType;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
@@ -56,6 +57,15 @@ public class UpdateDocumentView {
         documentStatusSelect.setDataProvider(new ListDataProvider<>(documentStatusList));
         documentStatusSelect.setWidthFull();
         ViewUtils.setSelectValue(documentStatusSelect, updDoc.getDocumentStatus(), documentStatusList);
+        // type
+        List<DocumentType> documentTypeList = mainView.getRepositoryService().getDocumentTypeRepository().findAll();
+        Select<DocumentType> documentTypeSelect = new Select<>();
+        documentTypeSelect.setLabel("Тип");
+        documentTypeSelect.setEmptySelectionAllowed(false);
+        documentTypeSelect.setTextRenderer(documentStatus -> mainView.getLocalRepo().saveFindRuLocalByKey(documentStatus.getTitle()));
+        documentTypeSelect.setDataProvider(new ListDataProvider<>(documentTypeList));
+        documentTypeSelect.setWidthFull();
+        ViewUtils.setSelectValue(documentTypeSelect, updDoc.getDocumentType(), documentTypeList);
 
         Button updBtn = new Button("Обновить", new Icon(VaadinIcon.ROTATE_RIGHT));
         updBtn.addClickListener(click -> {
@@ -69,6 +79,7 @@ public class UpdateDocumentView {
                 updDoc.setBtnTitle(getTextFieldValue(btnTitle));
                 updDoc.setImage(getTextFieldValue(imagePath));
                 updDoc.setDocumentStatus(documentStatusSelect.getValue());
+                updDoc.setDocumentType(documentTypeSelect.getValue());
 
                 mainView.getRepositoryService().getDocumentRepository()
                         .save(updDoc);
@@ -91,6 +102,7 @@ public class UpdateDocumentView {
                 btnTitle,
                 imagePath,
                 documentStatusSelect,
+                documentTypeSelect,
                 new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
         );
         updateDialog.open();
