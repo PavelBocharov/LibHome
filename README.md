@@ -1,6 +1,6 @@
 # <img src="src/main/resources/static/img/icon/database.svg" width="30"/> Dark sun
 
-<img alt="Dar Sun screen" src="src/main/resources/static/img/readmeFiles/dar_sun_screen.png" height="512"/>
+![](src/main/resources/static/img/readmeFiles/dar_sun_screen.png)
 
 ## Build and run
 ### <img src="src/main/resources/static/img/icon/arrow-right.png" width="16"/> Start application local 
@@ -23,7 +23,7 @@
 ## Problem and fix
 
 1) NodeJS code `ERR_OSSL_EVP_UNSUPPORTED`
-   * Problem: <img alt="cripto_problem" height="512" src="src/main/resources/static/img/readmeFiles/criptoProblems.png"/>
+   * Problem: ![](src/main/resources/static/img/readmeFiles/criptoProblems.png)
    * Solution: Set NodeJS v16:
      * `nvm install 16.13.1 64` (64 it is bit mode)
      * `nvm use 16.13.1`
