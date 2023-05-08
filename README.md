@@ -2,6 +2,10 @@
 
 ![](src/main/resources/static/img/readmeFiles/dar_sun_screen.png)
 
+## Links
+* [Docker HUB](https://hub.docker.com/repository/docker/marolok/dark_sun/general)
+* [GitHub](https://github.com/PavelBocharov/DarkSun)
+
 ## Build and run
 ### <img src="src/main/resources/static/img/icon/arrow-right.png" width="16"/> Start application local 
 1) Install JDK8 - https://adoptopenjdk.net/
