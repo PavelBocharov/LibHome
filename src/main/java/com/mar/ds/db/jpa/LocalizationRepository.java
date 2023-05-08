@@ -1,6 +1,7 @@
 package com.mar.ds.db.jpa;
 
 import com.mar.ds.db.entity.Localization;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.logging.Level;
@@ -20,7 +21,7 @@ public interface LocalizationRepository extends JpaRepository<Localization, Long
                 return "*" + findByKeyIs(key).getRu();
             }
         } catch (Exception ex) {
-            log.log(Level.WARNING, String.format("Key: %s. Msg: %s", key, ex.getMessage()));
+            log.log(Level.WARNING, String.format("Key: %s. Msg: %s", key, ExceptionUtils.getRootCauseMessage(ex)));
         }
         return key;
     }

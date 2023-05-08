@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  dark_sun:
+    image: marolok/dark_sun:1.0.0
+    env_file:
+      - .env
+    volumes:
+      - "${PC_DB_PATH}:${dbPath}"
+    tty: true
+    restart: always
+    networks:
+      - bridge
+    ports:
+      - '8080:8080'
+networks:
+  bridge:
+    driver: bridge

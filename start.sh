@@ -1,0 +1,1 @@
+/opt/app/java/jdk8u372-b07/bin/java -jar -Dspring.profiles.active=production /opt/app/japp.jar
