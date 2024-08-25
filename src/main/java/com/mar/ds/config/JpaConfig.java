@@ -1,7 +1,7 @@
 package com.mar.ds.config;
 
-import com.mar.ds.db.entity.RandTask;
-import com.mar.ds.db.jpa.RandTaskRepository;
+import com.mar.ds.db.entity.Card;
+import com.mar.ds.db.jpa.CardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,9 +21,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Configuration
-@EntityScan(basePackageClasses = {RandTask.class})
+@EntityScan(basePackageClasses = {Card.class})
 @EnableJpaRepositories(
-        basePackageClasses = {RandTaskRepository.class},
+        basePackageClasses = {CardRepository.class},
         transactionManagerRef = "jpaTransactionManager",
         entityManagerFactoryRef = "localContainerEntityManagerFactoryBean"
 )

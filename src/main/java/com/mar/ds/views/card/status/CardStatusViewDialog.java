@@ -1,5 +1,7 @@
-package com.mar.ds.views._build.popup;
+package com.mar.ds.views.card.status;
 
+import com.mar.ds.db.entity.CardStatus;
+import com.mar.ds.db.jpa.CardStatusRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
@@ -11,59 +13,46 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaRepository<E, Long>, CVD extends CreateViewDialog, UVD extends UpdateViewDialog> {
-
-    protected final MainView appLayout;
-    private String nameEntity;
+public class CardStatusViewDialog {
+    private final MainView appLayout;
     private Dialog dialog;
-    private VerticalLayout docTypeList;
+    private VerticalLayout cardStatusList;
     private Button crtBtn;
 
-    public ViewDialog(MainView appLayout) {
+    public CardStatusViewDialog(MainView appLayout) {
         this.appLayout = appLayout;
-        init(null);
-    }
-
-    public ViewDialog(MainView appLayout, String nameEntity) {
-        this.appLayout = appLayout;
-        init(nameEntity);
-    }
-
-    private void init(String nameEntity) {
-        this.nameEntity = nameEntity;
 
         dialog = new Dialog();
 
-        crtBtn = new Button("Создать", new Icon(VaadinIcon.PLUS));
+        crtBtn = new Button("Создать статус документа", new Icon(VaadinIcon.PLUS));
         crtBtn.setWidthFull();
-        crtBtn.addClickListener(btnClick -> getCreateViewDialog().show(this));
+        crtBtn.addClickListener(btnClick -> new CreateCardStatusView(this));
 
         reloadData();
 
         dialog.open();
     }
 
+
     private void initProducts() {
-        docTypeList = new VerticalLayout();
-        docTypeList.setWidthFull();
+        cardStatusList = new VerticalLayout();
 
-        List<E> entityList = getRepository().findAll();
+        List<CardStatus> cardStatusList = getRepository().findAll();
 
-        for (E entity : entityList) {
+        for (CardStatus cardStatus : cardStatusList) {
             TextField name = new TextField();
             name.setTitle("Name");
             name.setEnabled(false);
             name.setWidthFull();
-            name.setValue(getText(entity));
+            name.setValue(cardStatus.getTitle());
 
             Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> {
                 try {
                     new DeleteDialogWidget(() -> {
-                        getRepository().delete(entity);
+                        getRepository().delete(cardStatus);
                         reloadData();
                     });
                 } catch (Exception ex) {
@@ -75,9 +64,9 @@ public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaReposito
 
             Button uptBtn = new Button(
                     new Icon(VaadinIcon.PENCIL),
-                    buttonClickEvent -> getUpdateViewDialog().show(this, entity)
+                    buttonClickEvent -> new UpdateCardStatusView(this, cardStatus)
             );
-            this.docTypeList.add(new HorizontalLayout(name, uptBtn, dltBtn));
+            this.cardStatusList.add(new HorizontalLayout(name, uptBtn, dltBtn));
         }
     }
 
@@ -92,18 +81,13 @@ public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaReposito
         appLayout.setContent(appLayout.getCardView().getContent());
         dialog.removeAll();
         dialog.add(
-                new Label(getLabel()),
-                docTypeList,
+                new Label("Список статусов документа"),
+                cardStatusList,
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(dialog))
         );
     }
 
-    private String getLabel() {
-        return nameEntity == null ? "Список" : "Список '" + nameEntity + "'";
+    public CardStatusRepository getRepository() {
+        return appLayout.getRepositoryService().getCardStatusRepository();
     }
-
-    protected abstract String getText(E entity);
-    protected abstract CVD getCreateViewDialog();
-    protected abstract UVD getUpdateViewDialog();
-    protected abstract Repo getRepository();
 }

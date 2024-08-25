@@ -118,6 +118,11 @@ public class ViewUtils {
         return field.getValue().floatValue();
     }
 
+    public static double getDoubleValue(BigDecimalField field) {
+        if (field == null || field.getValue() == null) return 0;
+        return field.getValue().doubleValue();
+    }
+
 
     public static long getLongValue(BigDecimalField field) {
         if (field == null || field.getValue() == null) return 0;
