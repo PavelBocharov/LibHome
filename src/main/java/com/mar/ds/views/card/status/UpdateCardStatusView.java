@@ -21,9 +21,8 @@ public class UpdateCardStatusView {
 
         TextField textField = new TextField();
         textField.setWidthFull();
-        textField.setLabel("Наименование статуса");
+        textField.setLabel("Title");
         ViewUtils.setTextFieldValue(textField, updatedStatus.getTitle());
-
 
         TextField colorField = new TextField();
         colorField.setPattern("^#(?:[0-9a-fA-F]{3}){1,2}$");
@@ -31,13 +30,14 @@ public class UpdateCardStatusView {
         colorField.setLabel("Color");
         ViewUtils.setTextFieldValue(colorField, updatedStatus.getColor());
 
-        Button updBtn = new Button("Обновить", new Icon(ROTATE_RIGHT));
+        Button updBtn = new Button("Update", new Icon(ROTATE_RIGHT));
         updBtn.addClickListener(btnEvent -> {
             try {
                 updatedStatus.setTitle(ViewUtils.getTextFieldValue(textField));
+                updatedStatus.setColor(ViewUtils.getTextFieldValue(colorField));
                 cardStatusView.getRepository().save(updatedStatus);
             } catch (Exception ex) {
-                ViewUtils.showErrorMsg("При обновлении произошла ошибка", ex);
+                ViewUtils.showErrorMsg("ERROR", ex);
                 updBtn.setEnabled(true);
                 return;
             }
@@ -49,7 +49,7 @@ public class UpdateCardStatusView {
         updBtn.addClickShortcut(Key.ENTER);
 
         updateDialog.add(
-                new Label("Обновить статус"),
+                new Label("Update card status"),
                 textField,
                 colorField,
                 new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))

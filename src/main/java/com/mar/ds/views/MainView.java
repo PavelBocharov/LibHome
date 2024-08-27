@@ -13,6 +13,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.BOOK;
 import static com.vaadin.flow.component.icon.VaadinIcon.HOME;
 
 @Route("")
+@PageTitle("LibHome")
 public class MainView extends AppLayout {
 
     @Getter

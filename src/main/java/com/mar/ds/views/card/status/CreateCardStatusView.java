@@ -22,14 +22,14 @@ public class CreateCardStatusView {
 
         TextField textField = new TextField();
         textField.setWidthFull();
-        textField.setLabel("Наименование статуса");
+        textField.setLabel("Title");
 
         TextField colorField = new TextField();
         colorField.setPattern("^#(?:[0-9a-fA-F]{3}){1,2}$");
         colorField.setWidthFull();
         colorField.setLabel("Color");
 
-        Button createBtn = new Button("Создать", new Icon(PLUS));
+        Button createBtn = new Button("Create", new Icon(PLUS));
         createBtn.addClickListener(btnEvent -> {
             try {
                 cardStatusView.getRepository().save(
@@ -39,7 +39,7 @@ public class CreateCardStatusView {
                                 .build()
                 );
             } catch (Exception ex) {
-                ViewUtils.showErrorMsg("При создании произошла ошибка", ex);
+                ViewUtils.showErrorMsg("Error", ex);
                 createBtn.setEnabled(true);
                 return;
             }
@@ -51,7 +51,7 @@ public class CreateCardStatusView {
         createBtn.addClickShortcut(Key.ENTER);
 
         createDialog.add(
-                new Label("Создать новый статус"),
+                new Label("Create card status"),
                 textField,
                 colorField,
                 new HorizontalLayout(createBtn, ViewUtils.getCloseButton(createDialog))

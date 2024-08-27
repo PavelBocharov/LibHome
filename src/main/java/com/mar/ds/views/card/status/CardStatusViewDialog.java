@@ -27,7 +27,7 @@ public class CardStatusViewDialog {
 
         dialog = new Dialog();
 
-        crtBtn = new Button("Создать статус документа", new Icon(VaadinIcon.PLUS));
+        crtBtn = new Button("Create card status", new Icon(VaadinIcon.PLUS));
         crtBtn.setWidthFull();
         crtBtn.addClickListener(btnClick -> new CreateCardStatusView(this));
 
@@ -56,7 +56,7 @@ public class CardStatusViewDialog {
                         reloadData();
                     });
                 } catch (Exception ex) {
-                    ViewUtils.showErrorMsg("При создании произошла ошибка", ex);
+                    ViewUtils.showErrorMsg("ERROR", ex);
                     return;
                 }
             });
@@ -74,14 +74,14 @@ public class CardStatusViewDialog {
         try {
             initProducts();
         } catch (Exception ex) {
-            ViewUtils.showErrorMsg("При создании произошла ошибка", ex);
+            ViewUtils.showErrorMsg("ERROR", ex);
             crtBtn.setEnabled(true);
             return;
         }
         appLayout.setContent(appLayout.getCardView().getContent());
         dialog.removeAll();
         dialog.add(
-                new Label("Список статусов документа"),
+                new Label("Card status list"),
                 cardStatusList,
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(dialog))
         );

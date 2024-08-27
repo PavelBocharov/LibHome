@@ -10,6 +10,7 @@ import com.mar.ds.views.card.type.CardTypeViewDialog;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -17,22 +18,25 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
 import static com.vaadin.flow.component.icon.VaadinIcon.COG;
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @RequiredArgsConstructor
 public class CardView implements ContentView {
 
-    private Logger logger = Logger.getLogger(CardView.class.getSimpleName());
+    private Logger logger = LoggerFactory.getLogger(CardView.class);
 
     private final MainView appLayout;
 
@@ -54,6 +58,19 @@ public class CardView implements ContentView {
         return icon;
     }
 
+    private Anchor getLinkIcon(Card card) {
+        Icon icon = VaadinIcon.EXTERNAL_LINK.create();
+        Anchor anchor = new Anchor();
+        anchor.add(icon);
+        if (card == null || isBlank(card.getLink())) {
+            icon.setColor("grey");
+            anchor.setEnabled(false);
+            return anchor;
+        }
+        anchor.setHref(card.getLink());
+        return anchor;
+    }
+
     private boolean mathUpd(Card card) {
         if (card == null || card.getLastGame() == null || card.getLastUpdate() == null) {
             return false;
@@ -71,13 +88,19 @@ public class CardView implements ContentView {
         // column
 //        grid.addColumn(Card::getId).setHeader("ID").setAutoWidth(true);
         grid.addComponentColumn(card -> this.getStatusIcon(card.getCardStatus(), mathUpd(card)))
-                .setHeader("Status").setAutoWidth(true);
+                .setHeader("Status").setAutoWidth(true).setSortable(true)
+                .setComparator(Comparator.comparing(o -> o.getCardStatus().getTitle()));
         grid.addColumn(card -> card.getTitle()).setHeader("Title").setAutoWidth(true);
-        grid.addColumn(card -> card.getPoint() == null ? "-": format("%.3f", card.getPoint()))
-                .setHeader("Point").setAutoWidth(true);
-        grid.addColumn(card -> dateFormat.format(card.getLastUpdate())).setHeader("Last UPD").setAutoWidth(true);
-        grid.addColumn(card -> dateFormat.format(card.getLastGame())).setHeader("Last game").setAutoWidth(true);
-        grid.addColumn(card -> card.getCardType().getTitle()).setHeader("Type").setAutoWidth(true);
+        grid.addColumn(card -> card.getPoint())
+                .setHeader("Point").setAutoWidth(true)
+                .setSortable(true);
+        grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
+                .setHeader("Last UPD").setAutoWidth(true).setSortable(true);
+        grid.addColumn(card -> dateFormat.format(card.getLastGame()))
+                .setHeader("Last game").setAutoWidth(true).setSortable(true);
+        grid.addColumn(card -> card.getCardType().getTitle())
+                .setHeader("Type").setAutoWidth(true).setSortable(true);
+        grid.addComponentColumn(this::getLinkIcon).setHeader("Type").setAutoWidth(true);
         // settings
         grid.setWidthFull();
         grid.addThemeVariants(GridVariant.LUMO_COMPACT);
@@ -106,7 +129,7 @@ public class CardView implements ContentView {
         // value
         List<Card> cards = appLayout.getRepositoryService().getCardRepository().findAll();
         grid.setItems(cards);
-
+//        logger.debug("Load {} cards.", cards != null ? cards.size() : 0);
         // down buttons
         Button crtBtn = new Button("Add", new Icon(PLUS), click -> new CreateCardView(appLayout));
         crtBtn.setWidthFull();

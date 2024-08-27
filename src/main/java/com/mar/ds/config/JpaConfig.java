@@ -30,7 +30,7 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class JpaConfig {
 
-    @Value("${dbPath}")
+    @Value("${db.path}")
     private String dbPath;
 
     @Autowired
