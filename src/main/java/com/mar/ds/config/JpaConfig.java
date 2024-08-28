@@ -2,6 +2,9 @@ package com.mar.ds.config;
 
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.jpa.CardRepository;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +22,9 @@ import org.sqlite.SQLiteDataSource;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 
 @Configuration
 @EntityScan(basePackageClasses = {Card.class})
@@ -30,8 +36,13 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class JpaConfig {
 
-    @Value("${db.path}")
-    private String dbPath;
+    private Logger logger = LoggerFactory.getLogger(JpaConfig.class);
+
+    @Value("${data.path:./}")
+    private String dataPath;
+
+    @Value("${db.file}")
+    private String dbFile;
 
     @Autowired
     @Bean
@@ -76,8 +87,23 @@ public class JpaConfig {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.driverClassName("org.sqlite.JDBC");
 //        String dbPath1 = "src/main/resources/static/db/dark_sun1.db";
-        dataSourceBuilder.url("jdbc:sqlite:" + dbPath);
+
+        String dbAbsPath = getDbPath().getAbsolutePath();
+        logger.debug("Data path: {}, DB path: {}", dataPath, dbAbsPath);
+        dataSourceBuilder.url("jdbc:sqlite:" + dbAbsPath);
         dataSourceBuilder.type(SQLiteDataSource.class);
         return dataSourceBuilder.build();
+    }
+
+    private File getDbPath() {
+        File dataDir = new File(dataPath + dbFile);
+        if (!dataDir.exists()) {
+            try {
+                FileUtils.createParentDirectories(dataDir);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return dataDir;
     }
 }

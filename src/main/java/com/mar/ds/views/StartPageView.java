@@ -26,14 +26,13 @@ public class StartPageView implements ContentView {
 
     public Component getContent() {
         try {
-            Image image = null;
-            image = getImageByResource("static/img/vmu-01.png");
+            Image image = getImageByResource("static/img/home_lib.png");
             image.setWidthFull();
-            image.setMaxWidth(600.0f, Unit.PIXELS);
+            image.setMaxWidth(360.0f, Unit.PIXELS);
 
 
             VerticalLayout verticalLayout = new VerticalLayout(
-                    new H3("Тут всякий хлам и утилиты"),
+                    new H3("LibHome - your book, game, music and other library."),
                     image,
                     getButton(
                             "Card list",
@@ -45,7 +44,7 @@ public class StartPageView implements ContentView {
             return verticalLayout;
 
         } catch (IOException e) {
-            ViewUtils.showErrorMsg("Ошибка при загрузке стартовой страницы", e);
+            ViewUtils.showErrorMsg("ERROR: Load page.", e);
         }
         return null;
     }

@@ -7,22 +7,29 @@ import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
-import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
-import static com.mar.ds.utils.ViewUtils.setTextFieldValue;
+import static com.mar.ds.utils.ViewUtils.*;
 import static java.lang.String.format;
 
+@Slf4j
 public class UpdateCardView {
 
     public UpdateCardView(MainView mainView, Card updateCard) {
@@ -30,41 +37,62 @@ public class UpdateCardView {
         updateDialog.setCloseOnEsc(true);
         updateDialog.setCloseOnOutsideClick(false);
 
+
         // title
-        TextField cardTitle = new TextField("Заголовок");
+        TextField cardTitle = new TextField("Title");
         cardTitle.setRequired(true);
         cardTitle.setWidthFull();
         setTextFieldValue(cardTitle, updateCard.getTitle());
         // text
-        TextArea infoArea = new TextArea("Текст");
+        TextArea infoArea = new TextArea("Info");
         infoArea.setRequired(true);
         infoArea.setWidthFull();
         setTextFieldValue(infoArea, updateCard.getInfo());
-        // title
-        TextField link = new TextField("Link");
-        link.setRequired(true);
-        link.setWidthFull();
-        setTextFieldValue(link, updateCard.getLink());
+        // point
+        BigDecimalField point = new BigDecimalField("Point");
+        point.setWidthFull();
+        setBigDecimalFieldValue(point, updateCard.getPoint());
+        // last update
+        DatePicker lastUpdDate = new DatePicker("Last update", LocalDate.now());
+        lastUpdDate.setWidthFull();
+        lastUpdDate.setRequired(true);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(updateCard.getLastUpdate());
+        lastUpdDate.setValue(LocalDate.of(
+                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH)
+        ));
+        // last game
+        DatePicker lastGameDate = new DatePicker("Last game", LocalDate.now());
+        lastGameDate.setWidthFull();
+        lastGameDate.setRequired(true);
+        calendar.setTime(updateCard.getLastGame());
+        lastGameDate.setValue(LocalDate.of(
+                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH)
+        ));
         // status
         List<CardStatus> cardStatusList = mainView.getRepositoryService().getCardStatusRepository().findAll();
         Select<CardStatus> cardStatusListSelect = new Select<>();
-        cardStatusListSelect.setLabel("Статус");
+        cardStatusListSelect.setLabel("Status");
         cardStatusListSelect.setEmptySelectionAllowed(false);
-        cardStatusListSelect.setTextRenderer(documentStatus -> format("%32s", documentStatus.getTitle()));
+        cardStatusListSelect.setTextRenderer(CardStatus::getTitle);
         cardStatusListSelect.setDataProvider(new ListDataProvider<>(cardStatusList));
         cardStatusListSelect.setWidthFull();
         ViewUtils.setSelectValue(cardStatusListSelect, updateCard.getCardStatus(), cardStatusList);
         // type
         List<CardType> cardTypeList = mainView.getRepositoryService().getCardTypeRepository().findAll();
         Select<CardType> cardTypeListSelect = new Select<>();
-        cardTypeListSelect.setLabel("Тип");
+        cardTypeListSelect.setLabel("Type");
         cardTypeListSelect.setEmptySelectionAllowed(false);
-        cardTypeListSelect.setTextRenderer(documentStatus -> documentStatus.getTitle());
+        cardTypeListSelect.setTextRenderer(CardType::getTitle);
         cardTypeListSelect.setDataProvider(new ListDataProvider<>(cardTypeList));
         cardTypeListSelect.setWidthFull();
-        ViewUtils.setSelectValue(cardTypeListSelect, updateCard.getCardType(), cardTypeList);
-
-        Button updBtn = new Button("Обновить", new Icon(VaadinIcon.ROTATE_RIGHT));
+        setSelectValue(cardTypeListSelect, updateCard.getCardType(), cardTypeList);
+        // link
+        TextField link = new TextField("Link");
+        link.setRequired(true);
+        link.setWidthFull();
+        Button updBtn = new Button("Update", new Icon(VaadinIcon.ROTATE_RIGHT));
         updBtn.addClickListener(click -> {
             try {
                 updateCard.setTitle(getTextFieldValue(cardTitle));
@@ -72,10 +100,13 @@ public class UpdateCardView {
                 updateCard.setLink(getTextFieldValue(link));
                 updateCard.setCardStatus(cardStatusListSelect.getValue());
                 updateCard.setCardType(cardTypeListSelect.getValue());
-
+                updateCard.setPoint(getDoubleValue(point));
+                updateCard.setLastUpdate(Date.from(lastUpdDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                updateCard.setLastGame(Date.from(lastGameDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 mainView.getRepositoryService().getCardRepository().save(updateCard);
+                log.debug("Update card: {}", updateCard);
             } catch (Exception ex) {
-                ViewUtils.showErrorMsg("При обновлении произошла ошибка", ex);
+                ViewUtils.showErrorMsg("ERROR", ex);
                 updBtn.setEnabled(true);
                 return;
             }
@@ -87,12 +118,15 @@ public class UpdateCardView {
         updBtn.addClickShortcut(Key.ENTER);
 
         updateDialog.add(
-                new Label("Обновить документ"),
+                new Label("Update"),
                 cardTitle,
-                infoArea,
+                point,
                 link,
+                lastUpdDate,
+                lastGameDate,
                 cardStatusListSelect,
                 cardTypeListSelect,
+                infoArea,
                 new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
         );
         updateDialog.open();

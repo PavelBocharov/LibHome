@@ -133,6 +133,10 @@ public class ViewUtils {
         field.setValue(value == null ? BigDecimal.ZERO : BigDecimal.valueOf(value));
     }
 
+    public static void setBigDecimalFieldValue(BigDecimalField field, Double value) {
+        field.setValue(value == null ? BigDecimal.ZERO : BigDecimal.valueOf(value));
+    }
+
     public static void setBigDecimalFieldValue(BigDecimalField field, Long value) {
         field.setValue(value == null ? BigDecimal.ZERO : BigDecimal.valueOf(value));
     }

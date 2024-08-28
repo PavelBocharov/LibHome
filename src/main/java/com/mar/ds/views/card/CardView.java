@@ -40,45 +40,6 @@ public class CardView implements ContentView {
 
     private final MainView appLayout;
 
-    private Icon getStatusIcon(CardStatus status, boolean hasUpd) {
-        if (hasUpd) {
-            Icon icon = VaadinIcon.EXCLAMATION_CIRCLE.create();
-            icon.setColor("#0B6623");
-            return icon;
-        }
-
-        Icon icon = VaadinIcon.BULLSEYE.create();
-
-        if (status != null && isNotBlank(status.getColor())) {
-            icon.setColor(status.getColor());
-        } else {
-            icon.setColor("grey");
-        }
-
-        return icon;
-    }
-
-    private Anchor getLinkIcon(Card card) {
-        Icon icon = VaadinIcon.EXTERNAL_LINK.create();
-        Anchor anchor = new Anchor();
-        anchor.add(icon);
-        if (card == null || isBlank(card.getLink())) {
-            icon.setColor("grey");
-            anchor.setEnabled(false);
-            return anchor;
-        }
-        anchor.setHref(card.getLink());
-        return anchor;
-    }
-
-    private boolean mathUpd(Card card) {
-        if (card == null || card.getLastGame() == null || card.getLastUpdate() == null) {
-            return false;
-        }
-
-        return card.getLastUpdate().getTime() - card.getLastGame().getTime() > 0;
-    }
-
     public VerticalLayout getContent() {
         H2 label = new H2("Card list");
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
@@ -86,12 +47,12 @@ public class CardView implements ContentView {
         Grid<Card> grid = new Grid<>();
 
         // column
-//        grid.addColumn(Card::getId).setHeader("ID").setAutoWidth(true);
-        grid.addComponentColumn(card -> this.getStatusIcon(card.getCardStatus(), mathUpd(card)))
+        grid.addColumn(Card::getId).setHeader("ID").setAutoWidth(true);
+        grid.addComponentColumn(card -> this.getStatusIcon(card, mathUpd(card)))
                 .setHeader("Status").setAutoWidth(true).setSortable(true)
                 .setComparator(Comparator.comparing(o -> o.getCardStatus().getTitle()));
-        grid.addColumn(card -> card.getTitle()).setHeader("Title").setAutoWidth(true);
-        grid.addColumn(card -> card.getPoint())
+        grid.addColumn(Card::getTitle).setHeader("Title").setAutoWidth(true);
+        grid.addColumn(Card::getPoint)
                 .setHeader("Point").setAutoWidth(true)
                 .setSortable(true);
         grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
@@ -129,7 +90,6 @@ public class CardView implements ContentView {
         // value
         List<Card> cards = appLayout.getRepositoryService().getCardRepository().findAll();
         grid.setItems(cards);
-//        logger.debug("Load {} cards.", cards != null ? cards.size() : 0);
         // down buttons
         Button crtBtn = new Button("Add", new Icon(PLUS), click -> new CreateCardView(appLayout));
         crtBtn.setWidthFull();
@@ -160,5 +120,45 @@ public class CardView implements ContentView {
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, btns);
         verticalLayout.add(label, grid, btns);
         return verticalLayout;
+    }
+
+    private Icon getStatusIcon(Card card, boolean hasUpd) {
+        Icon icon = VaadinIcon.BULLSEYE.create();
+
+        if (card != null && card.getCardStatus() != null && isNotBlank(card.getCardStatus().getColor())) {
+            if (hasUpd) {
+                icon = VaadinIcon.EXCLAMATION_CIRCLE.create();
+                icon.setColor("#0B6623");
+            } else {
+                icon.setColor(card.getCardStatus().getColor());
+            }
+            icon.getElement().setAttribute("title", card.getInfo());
+        } else {
+            icon.setColor("grey");
+        }
+
+        return icon;
+    }
+
+    private Anchor getLinkIcon(Card card) {
+        Icon icon = VaadinIcon.EXTERNAL_LINK.create();
+        Anchor anchor = new Anchor();
+        anchor.add(icon);
+        if (card == null || isBlank(card.getLink())) {
+            icon.setColor("grey");
+            anchor.setEnabled(false);
+            return anchor;
+        }
+        anchor.setHref(card.getLink());
+        anchor.setTarget( "_blank" ); // new tab
+        return anchor;
+    }
+
+    private boolean mathUpd(Card card) {
+        if (card == null || card.getLastGame() == null || card.getLastUpdate() == null) {
+            return false;
+        }
+
+        return card.getLastUpdate().getTime() - card.getLastGame().getTime() > 0;
     }
 }

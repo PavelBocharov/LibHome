@@ -18,6 +18,7 @@ import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -27,6 +28,7 @@ import java.util.List;
 import static com.mar.ds.utils.ViewUtils.getDoubleValue;
 import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 
+@Slf4j
 public class CreateCardView {
 
     public CreateCardView(MainView mainView) {
@@ -77,7 +79,7 @@ public class CreateCardView {
         Button crtBtn = new Button("Create", new Icon(VaadinIcon.PLUS));
         crtBtn.addClickListener(click -> {
             try {
-                mainView.getRepositoryService().getCardRepository()
+                Card card = mainView.getRepositoryService().getCardRepository()
                         .save(
                                 Card.builder()
                                         .title(getTextFieldValue(cardTitle))
@@ -91,6 +93,7 @@ public class CreateCardView {
                                         .lastGame(Date.from(lastGameDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()))
                                         .build()
                         );
+                log.debug("Create card: {}", card);
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("An error occurred while creating", ex);
                 crtBtn.setEnabled(true);
