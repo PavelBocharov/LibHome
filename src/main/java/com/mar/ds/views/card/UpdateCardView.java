@@ -92,6 +92,8 @@ public class UpdateCardView {
         TextField link = new TextField("Link");
         link.setRequired(true);
         link.setWidthFull();
+        setTextFieldValue(link, updateCard.getLink());
+
         Button updBtn = new Button("Update", new Icon(VaadinIcon.ROTATE_RIGHT));
         updBtn.addClickListener(click -> {
             try {

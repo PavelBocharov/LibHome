@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.common.io.Resources;
+import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.HasId;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.accordion.Accordion;
@@ -14,6 +15,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -23,12 +25,14 @@ import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.StreamResource;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -40,6 +44,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
 public class ViewUtils {
@@ -70,6 +75,19 @@ public class ViewUtils {
 
         notification.add(layout);
         notification.open();
+    }
+
+    @SneakyThrows
+    public static Image getImage(String pathInResource) throws IOException {
+        File image = new File(pathInResource);
+        byte[] img = FileUtils.readFileToByteArray(image);
+        return new Image(
+                new StreamResource(
+                        image.getName(),
+                        () -> new ByteArrayInputStream(img)
+                ),
+                String.format("Not load image: %s", pathInResource)
+        );
     }
 
     public static Image getImageByResource(String pathInResource) throws IOException {
@@ -212,4 +230,23 @@ public class ViewUtils {
         buttonWrapper.wrapComponent(downloadJson);
         return buttonWrapper;
     }
+
+    public static Icon getStatusIcon(Card card, boolean hasUpd) {
+        Icon icon = VaadinIcon.BULLSEYE.create();
+
+        if (card != null && card.getCardStatus() != null && isNotBlank(card.getCardStatus().getColor())) {
+            if (hasUpd) {
+                icon = VaadinIcon.EXCLAMATION_CIRCLE.create();
+                icon.setColor("#0B6623");
+            } else {
+                icon.setColor(card.getCardStatus().getColor());
+            }
+            icon.getElement().setAttribute("title", card.getInfo());
+        } else {
+            icon.setColor("grey");
+        }
+
+        return icon;
+    }
+
 }

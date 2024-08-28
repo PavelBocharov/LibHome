@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.mar.ds.utils.ViewUtils.getStatusIcon;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
 import static com.vaadin.flow.component.icon.VaadinIcon.COG;
@@ -48,7 +49,7 @@ public class CardView implements ContentView {
 
         // column
         grid.addColumn(Card::getId).setHeader("ID").setAutoWidth(true);
-        grid.addComponentColumn(card -> this.getStatusIcon(card, mathUpd(card)))
+        grid.addComponentColumn(card -> getStatusIcon(card, mathUpd(card)))
                 .setHeader("Status").setAutoWidth(true).setSortable(true)
                 .setComparator(Comparator.comparing(o -> o.getCardStatus().getTitle()));
         grid.addColumn(Card::getTitle).setHeader("Title").setAutoWidth(true);
@@ -67,7 +68,10 @@ public class CardView implements ContentView {
         grid.addThemeVariants(GridVariant.LUMO_COMPACT);
         // edit
         grid.addItemDoubleClickListener(
-                dialogItemDoubleClickEvent -> new UpdateCardView(appLayout, dialogItemDoubleClickEvent.getItem())
+                dialogItemDoubleClickEvent -> {
+                    CardInfoView info = new CardInfoView(appLayout, dialogItemDoubleClickEvent.getItem());
+                    appLayout.setContent(info.getContent());
+                }
         );
         grid.addComponentColumn(card -> {
             Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> {
@@ -121,25 +125,6 @@ public class CardView implements ContentView {
         verticalLayout.add(label, grid, btns);
         return verticalLayout;
     }
-
-    private Icon getStatusIcon(Card card, boolean hasUpd) {
-        Icon icon = VaadinIcon.BULLSEYE.create();
-
-        if (card != null && card.getCardStatus() != null && isNotBlank(card.getCardStatus().getColor())) {
-            if (hasUpd) {
-                icon = VaadinIcon.EXCLAMATION_CIRCLE.create();
-                icon.setColor("#0B6623");
-            } else {
-                icon.setColor(card.getCardStatus().getColor());
-            }
-            icon.getElement().setAttribute("title", card.getInfo());
-        } else {
-            icon.setColor("grey");
-        }
-
-        return icon;
-    }
-
     private Anchor getLinkIcon(Card card) {
         Icon icon = VaadinIcon.EXTERNAL_LINK.create();
         Anchor anchor = new Anchor();
