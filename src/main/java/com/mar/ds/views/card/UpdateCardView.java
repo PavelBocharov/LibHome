@@ -3,9 +3,11 @@ package com.mar.ds.views.card;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
+import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -19,6 +21,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -34,9 +37,10 @@ public class UpdateCardView {
 
     public UpdateCardView(MainView mainView, Card updateCard) {
         Dialog updateDialog = new Dialog();
+        updateDialog.setMaxHeight(80, Unit.PERCENTAGE);
+        updateDialog.setMaxWidth(80, Unit.PERCENTAGE);
         updateDialog.setCloseOnEsc(true);
         updateDialog.setCloseOnOutsideClick(false);
-
 
         // title
         TextField cardTitle = new TextField("Title");
@@ -88,6 +92,22 @@ public class UpdateCardView {
         cardTypeListSelect.setDataProvider(new ListDataProvider<>(cardTypeList));
         cardTypeListSelect.setWidthFull();
         setSelectValue(cardTypeListSelect, updateCard.getCardType(), cardTypeList);
+        // type tags
+        MultiselectComboBox<CardTypeTag> tags = new MultiselectComboBox<>();
+        tags.setLabel("Tags");
+        tags.setPlaceholder("Select tags...");
+        tags.setItemLabelGenerator(CardTypeTag::getTitle);
+        tags.setWidthFull();
+        tags.setAllowCustomValues(false);
+        tags.setClearButtonVisible(true);
+        cardTypeListSelect.addValueChangeListener(event -> {
+            tags.deselectAll();
+            List<CardTypeTag> tagList = mainView.getRepositoryService().getCardTypeTagRepository().findByCardType(event.getValue());
+            tags.setItems(tagList);
+        });
+        List<CardTypeTag> tagList = mainView.getRepositoryService().getCardTypeTagRepository().findByCardType(updateCard.getCardType());
+        tags.setItems(tagList);
+        tags.select(updateCard.getTagList());
         // link
         TextField link = new TextField("Link");
         link.setRequired(true);
@@ -105,8 +125,8 @@ public class UpdateCardView {
                 updateCard.setPoint(getDoubleValue(point));
                 updateCard.setLastUpdate(Date.from(lastUpdDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 updateCard.setLastGame(Date.from(lastGameDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                updateCard.setTagList(tags.getValue().stream().toList());
                 mainView.getRepositoryService().getCardRepository().save(updateCard);
-                log.debug("Update card: {}", updateCard);
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);
                 updBtn.setEnabled(true);
@@ -128,6 +148,7 @@ public class UpdateCardView {
                 lastGameDate,
                 cardStatusListSelect,
                 cardTypeListSelect,
+                tags,
                 infoArea,
                 new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
         );

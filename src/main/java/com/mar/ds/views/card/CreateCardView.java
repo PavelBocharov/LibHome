@@ -3,9 +3,11 @@ package com.mar.ds.views.card;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
+import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -18,7 +20,9 @@ import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.selection.MultiSelect;
 import lombok.extern.slf4j.Slf4j;
+import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -33,6 +37,8 @@ public class CreateCardView {
 
     public CreateCardView(MainView mainView) {
         Dialog createDialog = new Dialog();
+        createDialog.setMaxHeight(80, Unit.PERCENTAGE);
+        createDialog.setMaxWidth(80, Unit.PERCENTAGE);
         createDialog.setCloseOnEsc(true);
         createDialog.setCloseOnOutsideClick(false);
 
@@ -71,6 +77,20 @@ public class CreateCardView {
         cardTypeListSelect.setTextRenderer(CardType::getTitle);
         cardTypeListSelect.setDataProvider(new ListDataProvider<>(cardTypeList));
         cardTypeListSelect.setWidthFull();
+        // type tags
+        MultiselectComboBox<CardTypeTag> tags = new MultiselectComboBox<>();
+        tags.setLabel("Tags");
+        tags.setPlaceholder("Select tags...");
+        tags.setItemLabelGenerator(CardTypeTag::getTitle);
+        tags.setWidthFull();
+        tags.setAllowCustomValues(false);
+        tags.setClearButtonVisible(true);
+        cardTypeListSelect.addValueChangeListener(event -> {
+            tags.deselectAll();
+            List<CardTypeTag> tagList = mainView.getRepositoryService().getCardTypeTagRepository().findByCardType(event.getValue());
+            log.debug("load tagList: {}", tagList);
+            tags.setItems(tagList);
+        });
         // link
         TextField link = new TextField("Link");
         link.setRequired(true);
@@ -79,21 +99,20 @@ public class CreateCardView {
         Button crtBtn = new Button("Create", new Icon(VaadinIcon.PLUS));
         crtBtn.addClickListener(click -> {
             try {
-                Card card = mainView.getRepositoryService().getCardRepository()
+                mainView.getRepositoryService().getCardRepository()
                         .save(
                                 Card.builder()
                                         .title(getTextFieldValue(cardTitle))
                                         .info(getTextFieldValue(infoArea))
                                         .link(getTextFieldValue(link))
                                         .point(getDoubleValue(point))
-                                        .previewImage("")
                                         .cardStatus(cardStatusListSelect.getValue())
                                         .cardType(cardTypeListSelect.getValue())
                                         .lastUpdate(Date.from(lastUpdDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()))
                                         .lastGame(Date.from(lastGameDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                                        .tagList(tags.getValue().stream().toList())
                                         .build()
                         );
-                log.debug("Create card: {}", card);
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("An error occurred while creating", ex);
                 crtBtn.setEnabled(true);
@@ -115,6 +134,7 @@ public class CreateCardView {
                 lastGameDate,
                 cardStatusListSelect,
                 cardTypeListSelect,
+                tags,
                 infoArea,
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(createDialog))
         );

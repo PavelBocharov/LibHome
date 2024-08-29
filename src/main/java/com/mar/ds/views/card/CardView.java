@@ -2,10 +2,12 @@ package com.mar.ds.views.card;
 
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
+import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.mar.ds.views.card.status.CardStatusViewDialog;
+import com.mar.ds.views.card.tags.CardTagsView;
 import com.mar.ds.views.card.type.CardTypeViewDialog;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -23,7 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.mar.ds.utils.ViewUtils.getStatusIcon;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
@@ -37,15 +41,15 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @RequiredArgsConstructor
 public class CardView implements ContentView {
 
-    private Logger logger = LoggerFactory.getLogger(CardView.class);
-
     private final MainView appLayout;
+
+    private Grid<Card> grid;
 
     public VerticalLayout getContent() {
         H2 label = new H2("Card list");
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         // TABLE
-        Grid<Card> grid = new Grid<>();
+        grid = new Grid<>();
 
         // column
         grid.addColumn(Card::getId).setHeader("ID").setAutoWidth(true);
@@ -56,12 +60,17 @@ public class CardView implements ContentView {
         grid.addColumn(Card::getPoint)
                 .setHeader("Point").setAutoWidth(true)
                 .setSortable(true);
+        grid.addColumn(this::calcRate).setHeader("Rate").setSortable(true);
         grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
                 .setHeader("Last UPD").setAutoWidth(true).setSortable(true);
         grid.addColumn(card -> dateFormat.format(card.getLastGame()))
                 .setHeader("Last game").setAutoWidth(true).setSortable(true);
         grid.addColumn(card -> card.getCardType().getTitle())
                 .setHeader("Type").setAutoWidth(true).setSortable(true);
+        grid.addColumn(card -> card.getTagList() == null ||  card.getTagList().isEmpty() ? "---" : card.getTagList().stream()
+                        .map(CardTypeTag::getTitle)
+                        .collect(Collectors.joining(", ")))
+                .setHeader("Tags");
         grid.addComponentColumn(this::getLinkIcon).setHeader("Type").setAutoWidth(true);
         // settings
         grid.setWidthFull();
@@ -89,11 +98,10 @@ public class CardView implements ContentView {
             return new HorizontalLayout(
                     edtBtn, dltBtn
             );
-        });
+        }).setWidth("128px");
 
         // value
-        List<Card> cards = appLayout.getRepositoryService().getCardRepository().findAll();
-        grid.setItems(cards);
+        reloadGrid();
         // down buttons
         Button crtBtn = new Button("Add", new Icon(PLUS), click -> new CreateCardView(appLayout));
         crtBtn.setWidthFull();
@@ -109,9 +117,15 @@ public class CardView implements ContentView {
         );
         cardTypeView.setWidthFull();
 
+        Button cardTypeTagView = new Button(
+                "Type tag list", new Icon(COG), click -> new CardTagsView(appLayout).showDialog()
+        );
+        cardTypeTagView.setWidthFull();
+
         HorizontalLayout btns = new HorizontalLayout(
                 crtBtn,
                 cardStatusView,
+                cardTypeTagView,
                 cardTypeView
         );
         btns.setWidthFull();
@@ -125,6 +139,28 @@ public class CardView implements ContentView {
         verticalLayout.add(label, grid, btns);
         return verticalLayout;
     }
+
+    public void reloadGrid() {
+        List<Card> cards = appLayout.getRepositoryService().getCardRepository().findAll();
+        grid.setItems(cards);
+    }
+
+    private float calcRate(Card card) {
+        if (card == null) {
+            return 0.0f;
+        }
+
+        long deltaGame = -1;
+        if (card.getLastGame() != null) {
+            long now = new Date().getTime() / 86400000;
+            long lastGameTime = card.getLastGame().getTime() / 86400000;
+            deltaGame = now - lastGameTime;
+        }
+
+        return (float) (card.getPoint() * deltaGame * 0.01);
+    }
+
+
     private Anchor getLinkIcon(Card card) {
         Icon icon = VaadinIcon.EXTERNAL_LINK.create();
         Anchor anchor = new Anchor();
@@ -135,7 +171,7 @@ public class CardView implements ContentView {
             return anchor;
         }
         anchor.setHref(card.getLink());
-        anchor.setTarget( "_blank" ); // new tab
+        anchor.setTarget("_blank"); // new tab
         return anchor;
     }
 

@@ -2,14 +2,12 @@ package com.mar.ds.db.entity;
 
 import com.mar.ds.views._build.popup.PopupEntity;
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.List;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -27,5 +25,9 @@ public class CardType implements Serializable, HasId, PopupEntity {
 
     @Column(name = "title", nullable = false, unique = true)
     private String title;
+
+    @OneToMany(mappedBy = "id")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    List<CardTypeTag> tags;
 
 }

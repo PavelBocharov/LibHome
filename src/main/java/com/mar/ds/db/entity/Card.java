@@ -1,16 +1,13 @@
 package com.mar.ds.db.entity;
 
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import java.util.List;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -32,9 +29,6 @@ public class Card implements Serializable, HasId {
     @Column(name = "point", nullable = true)
     private Double point;
 
-    @Column(name = "preview_image", nullable = false)
-    private String previewImage;
-
     @Column(name = "info", nullable = false)
     private String info;
 
@@ -52,5 +46,13 @@ public class Card implements Serializable, HasId {
 
     @OneToOne(optional = false)
     private CardStatus cardStatus;
+
+    @ManyToMany
+    @JoinTable(
+            name = "card_tag_join",
+            joinColumns = @JoinColumn(name = "card_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<CardTypeTag> tagList;
 
 }

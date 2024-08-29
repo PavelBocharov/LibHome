@@ -2,6 +2,7 @@ package com.mar.ds.config;
 
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.jpa.CardRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
+@Slf4j
 @Configuration
 @EntityScan(basePackageClasses = {Card.class})
 @EnableJpaRepositories(
@@ -35,8 +37,6 @@ import java.net.URI;
 )
 @EnableTransactionManagement
 public class JpaConfig {
-
-    private Logger logger = LoggerFactory.getLogger(JpaConfig.class);
 
     @Value("${data.path:./}")
     private String dataPath;
@@ -86,10 +86,9 @@ public class JpaConfig {
     public DataSource dataSource() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.driverClassName("org.sqlite.JDBC");
-//        String dbPath1 = "src/main/resources/static/db/dark_sun1.db";
 
         String dbAbsPath = getDbPath().getAbsolutePath();
-        logger.debug("Data path: {}, DB path: {}", dataPath, dbAbsPath);
+        log.debug("Data path: {}, DB path: {}", dataPath, dbAbsPath);
         dataSourceBuilder.url("jdbc:sqlite:" + dbAbsPath);
         dataSourceBuilder.type(SQLiteDataSource.class);
         return dataSourceBuilder.build();
