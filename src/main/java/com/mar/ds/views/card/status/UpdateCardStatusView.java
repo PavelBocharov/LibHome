@@ -4,6 +4,7 @@ import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.utils.ViewUtils;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
@@ -30,11 +31,14 @@ public class UpdateCardStatusView {
         colorField.setLabel("Color");
         ViewUtils.setTextFieldValue(colorField, updatedStatus.getColor());
 
+        Checkbox isRate = new Checkbox("Is rate", updatedStatus.getIsRate());
+
         Button updBtn = new Button("Update", new Icon(ROTATE_RIGHT));
         updBtn.addClickListener(btnEvent -> {
             try {
                 updatedStatus.setTitle(ViewUtils.getTextFieldValue(textField));
                 updatedStatus.setColor(ViewUtils.getTextFieldValue(colorField));
+                updatedStatus.setIsRate(isRate.getValue());
                 cardStatusView.getRepository().save(updatedStatus);
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);
@@ -52,6 +56,7 @@ public class UpdateCardStatusView {
                 new Label("Update card status"),
                 textField,
                 colorField,
+                isRate,
                 new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
         );
 

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -34,5 +35,9 @@ public class CardStatus implements Serializable, HasId {
 
     @Column(name = "color", nullable = false, unique = true)
     private String color;
+
+    @Column(name = "is_rate", nullable = false)
+    @ColumnDefault("true")
+    private Boolean isRate;
 
 }

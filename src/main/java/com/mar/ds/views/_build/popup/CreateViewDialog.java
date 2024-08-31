@@ -39,14 +39,14 @@ public abstract class CreateViewDialog<E extends PopupEntity, VD extends ViewDia
 
         TextField titleField = new TextField();
         titleField.setWidthFull();
-        titleField.setLabel("Наименование");
+        titleField.setLabel("Title");
 
-        Button createBtn = new Button("Создать", new Icon(PLUS));
+        Button createBtn = new Button("Create", new Icon(PLUS));
         createBtn.addClickListener(btnEvent -> {
             try {
                 viewDialog.getRepository().save(getNewEntity(enumIdField, titleField));
             } catch (Exception ex) {
-                ViewUtils.showErrorMsg("При создании произошла ошибка", ex);
+                ViewUtils.showErrorMsg("Create ERROR", ex);
                 createBtn.setEnabled(true);
                 return;
             }
@@ -76,7 +76,7 @@ public abstract class CreateViewDialog<E extends PopupEntity, VD extends ViewDia
     }
 
     private String getLabel() {
-        return nameEntity == null ? "Создать" : "Создать '" + nameEntity + "'";
+        return nameEntity == null ? "Create" : "Create '" + nameEntity + "'";
     }
 
     protected abstract E getNewEntity(BigDecimalField enumId, TextField title);

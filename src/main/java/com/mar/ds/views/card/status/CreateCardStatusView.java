@@ -4,6 +4,7 @@ import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.utils.ViewUtils;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
@@ -28,6 +29,8 @@ public class CreateCardStatusView {
         colorField.setWidthFull();
         colorField.setLabel("Color");
 
+        Checkbox isRate = new Checkbox("Is rate", false);
+
         Button createBtn = new Button("Create", new Icon(PLUS));
         createBtn.addClickListener(btnEvent -> {
             try {
@@ -35,6 +38,7 @@ public class CreateCardStatusView {
                         CardStatus.builder()
                                 .title(ViewUtils.getTextFieldValue(textField))
                                 .color(ViewUtils.getTextFieldValue(colorField))
+                                .isRate(isRate.getValue())
                                 .build()
                 );
             } catch (Exception ex) {
@@ -53,6 +57,7 @@ public class CreateCardStatusView {
                 new Label("Create card status"),
                 textField,
                 colorField,
+                isRate,
                 new HorizontalLayout(createBtn, ViewUtils.getCloseButton(createDialog))
         );
 

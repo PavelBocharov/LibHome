@@ -9,8 +9,8 @@ import com.mar.ds.views.card.status.CardStatusViewDialog;
 import com.mar.ds.views.card.tags.CardTagsView;
 import com.mar.ds.views.card.type.CardTypeViewDialog;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.icon.Icon;
@@ -47,36 +47,29 @@ public class CardView implements ContentView {
         grid = new Grid<>();
 
         // column
-        grid.addColumn(Card::getId).setHeader("ID").setAutoWidth(true);
+        grid.addColumn(Card::getId).setHeader("ID");
         grid.addComponentColumn(card -> getStatusIcon(card, mathUpd(card)))
-                .setHeader("Status").setAutoWidth(true).setSortable(true)
+                .setHeader("Status").setSortable(true)
                 .setComparator(Comparator.comparing(o -> o.getCardStatus().getTitle()));
         grid.addColumn(Card::getTitle).setHeader("Title").setAutoWidth(true);
-        grid.addColumn(Card::getPoint)
-                .setHeader("Point").setAutoWidth(true)
-                .setSortable(true);
+        grid.addColumn(Card::getPoint).setHeader("Point").setSortable(true);
         grid.addColumn(this::calcRate).setHeader("Rate").setSortable(true);
         grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
-                .setHeader("Last UPD").setAutoWidth(true).setSortable(true);
+                .setHeader("Last UPD").setSortable(true)
+                .setComparator(Comparator.comparingLong(value -> value.getLastUpdate().getTime()));
         grid.addColumn(card -> dateFormat.format(card.getLastGame()))
-                .setHeader("Last game").setAutoWidth(true).setSortable(true);
+                .setHeader("Last game").setSortable(true)
+                .setComparator(Comparator.comparingLong(value -> value.getLastGame().getTime()));
         grid.addColumn(card -> card.getCardType().getTitle())
-                .setHeader("Type").setAutoWidth(true).setSortable(true);
-        grid.addColumn(card -> card.getTagList() == null || card.getTagList().isEmpty() ? "---" : card.getTagList().stream()
+                .setHeader("Type").setSortable(true);
+        grid.addColumn(card -> card.getTagList() == null || card.getTagList().isEmpty()
+                        ? "---"
+                        : card.getTagList().stream()
                         .map(CardTypeTag::getTitle)
-                        .collect(Collectors.joining(", ")))
-                .setHeader("Tags");
-        grid.addComponentColumn(this::getLinkIcon).setHeader("Type").setAutoWidth(true);
-        // settings
-        grid.setWidthFull();
-        grid.addThemeVariants(GridVariant.LUMO_COMPACT);
-        // edit
-        grid.addItemDoubleClickListener(
-                dialogItemDoubleClickEvent -> {
-                    CardInfoView info = new CardInfoView(appLayout, dialogItemDoubleClickEvent.getItem());
-                    appLayout.setContent(info.getContent());
-                }
-        );
+                        .collect(Collectors.joining(", "))
+                )
+                .setHeader("Tags").setAutoWidth(true);
+        grid.addComponentColumn(this::getLinkIcon).setHeader("Link").setTextAlign(ColumnTextAlign.END);
         grid.addComponentColumn(card -> {
             Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> {
                 new UpdateCardView(appLayout, card);
@@ -93,7 +86,18 @@ public class CardView implements ContentView {
             return new HorizontalLayout(
                     edtBtn, dltBtn
             );
-        }).setWidth("128px");
+        }).setTextAlign(ColumnTextAlign.END);
+
+        // settings
+        grid.setWidthFull();
+        // edit
+        grid.addItemDoubleClickListener(
+                dialogItemDoubleClickEvent -> {
+                    CardInfoView info = new CardInfoView(appLayout, dialogItemDoubleClickEvent.getItem());
+                    appLayout.setContent(info.getContent());
+                }
+        );
+
 
         // value
         reloadGrid();
@@ -141,7 +145,7 @@ public class CardView implements ContentView {
     }
 
     private float calcRate(Card card) {
-        if (card == null) {
+        if (card == null || !card.getCardStatus().getIsRate()) {
             return 0.0f;
         }
 

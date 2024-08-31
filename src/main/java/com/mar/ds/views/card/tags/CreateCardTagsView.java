@@ -45,6 +45,7 @@ public class CreateCardTagsView {
         );
         crtBtn.setWidthFull();
 
+        dialog.removeAll();
         dialog.add(
                 new H3("Create card tag"),
                 title,

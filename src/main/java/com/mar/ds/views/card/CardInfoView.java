@@ -27,20 +27,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
 
 import static com.mar.ds.utils.ViewUtils.findImage;
 import static com.mar.ds.utils.ViewUtils.getAccordionContent;
 import static com.mar.ds.utils.ViewUtils.getImage;
 import static com.mar.ds.utils.ViewUtils.getImageByResource;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -131,23 +130,27 @@ public class CardInfoView implements ContentView {
 
         if (fileDir.exists()) {
 
+            Accordion accordion = new Accordion();
+            accordion.setWidthFull();
+
+            Collection<File> imgFiles = FileUtils.listFiles(fileDir, new String[]{"png", "jpg", "jpeg"}, false);
+            if (imgFiles != null && !imgFiles.isEmpty()) {
+                VerticalLayout images = new VerticalLayout();
+                images.setSizeFull();
+                for (File file : imgFiles) {
+                    Image accImage = getImage(file.getAbsolutePath());
+                    accImage.setSizeFull();
+                    images.add(accImage);
+                }
+                accordion.add("Images", getAccordionContent(images));
+            }
+
             Grid<File> cardFiles = new Grid<>();
             cardFiles.addComponentColumn(this::openFile).setHeader("File path").setAutoWidth(true);
             cardFiles.addComponentColumn(this::getDeleteFileButton).setHeader("Delete").setWidth("32px");
             cardFiles.setItems(FileUtils.listFiles(fileDir, null, true));
             cardFiles.setWidthFull();
             cardFiles.addThemeVariants(GridVariant.LUMO_COMPACT);
-
-            Accordion accordion = new Accordion();
-            accordion.setWidthFull();
-            VerticalLayout images = new VerticalLayout();
-            images.setSizeFull();
-            for (File file : FileUtils.listFiles(fileDir, new String[]{"png", "jpg", "jpeg"}, true)) {
-                Image accImage = getImage(file.getAbsolutePath());
-                accImage.setSizeFull();
-                images.add(accImage);
-            }
-            accordion.add("Images", getAccordionContent(images));
             accordion.add("Files", getAccordionContent(cardFiles));
             accordion.close();
 

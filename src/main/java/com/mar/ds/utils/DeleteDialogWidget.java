@@ -16,23 +16,23 @@ public class DeleteDialogWidget extends Dialog {
         deleteDialog.setCloseOnEsc(true);
         deleteDialog.setCloseOnOutsideClick(false);
 
-        Button yesBtn = new Button("Удалить", new Icon(CHECK));
+        Button yesBtn = new Button("Delete", new Icon(CHECK));
         yesBtn.getStyle().set("color", "red");
         yesBtn.addClickListener(btnEvent -> {
             try {
                 deleteEvent.run();
             } catch (Exception ex) {
-                ViewUtils.showErrorMsg("При удалении произошла ошибка", ex);
+                ViewUtils.showErrorMsg("Delete ERROR", ex);
             }
             deleteDialog.close();
         });
 
-        Button noBtn = new Button("Отмена", new Icon(BAN));
+        Button noBtn = new Button("Close", new Icon(BAN));
         noBtn.addClickListener(btnEvent -> {
             deleteDialog.close();
         });
 
-        deleteDialog.add(new Text("Удалить запись?"), new HorizontalLayout(yesBtn, noBtn));
+        deleteDialog.add(new Text("Delete data?"), new HorizontalLayout(yesBtn, noBtn));
         deleteDialog.open();
     }
 

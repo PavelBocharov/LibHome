@@ -38,7 +38,7 @@ public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaReposito
 
         dialog = new Dialog();
 
-        crtBtn = new Button("Создать", new Icon(VaadinIcon.PLUS));
+        crtBtn = new Button("Create", new Icon(VaadinIcon.PLUS));
         crtBtn.setWidthFull();
         crtBtn.addClickListener(btnClick -> getCreateViewDialog().show(this));
 
@@ -67,7 +67,7 @@ public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaReposito
                         reloadData();
                     });
                 } catch (Exception ex) {
-                    ViewUtils.showErrorMsg("При создании произошла ошибка", ex);
+                    ViewUtils.showErrorMsg("Create ERROR", ex);
                     return;
                 }
             });
@@ -85,7 +85,7 @@ public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaReposito
         try {
             initProducts();
         } catch (Exception ex) {
-            ViewUtils.showErrorMsg("При создании произошла ошибка", ex);
+            ViewUtils.showErrorMsg("Create ERROR", ex);
             crtBtn.setEnabled(true);
             return;
         }
@@ -99,7 +99,7 @@ public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaReposito
     }
 
     private String getLabel() {
-        return nameEntity == null ? "Список" : "Список '" + nameEntity + "'";
+        return nameEntity == null ? "List" : "List '" + nameEntity + "'";
     }
 
     protected abstract String getText(E entity);

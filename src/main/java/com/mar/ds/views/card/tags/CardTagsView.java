@@ -7,9 +7,11 @@ import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import lombok.RequiredArgsConstructor;
@@ -48,9 +50,10 @@ public class CardTagsView {
                     mainView.getRepositoryService().getCardTypeTagRepository().delete(tag);
                     reloadData();
                 })
-        );
+        ).setTextAlign(ColumnTextAlign.END);
         tagsGrid.setWidthFull();
-        tagsGrid.setHeight(70, Unit.PERCENTAGE);
+        tagsGrid.setHeightFull();
+//        tagsGrid.setHeight(70, Unit.PERCENTAGE);
 
         Button createTagBtn = new Button(
                 "Create tag",
@@ -65,14 +68,22 @@ public class CardTagsView {
             createTagBtn.setEnabled(true);
         });
 
-        dialog.add(
-                cardTypeListSelect,
-                tagsGrid,
+        HorizontalLayout btns =
                 new HorizontalLayout(
                         createTagBtn,
                         ViewUtils.getCloseButton(dialog)
-                )
-        );
+                );
+        btns.setWidthFull();
+
+        VerticalLayout data =
+                new VerticalLayout(
+                        cardTypeListSelect,
+                        tagsGrid,
+                        btns
+                );
+        data.setSizeFull();
+
+        dialog.add(data);
         dialog.open();
     }
 

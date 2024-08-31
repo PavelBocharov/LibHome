@@ -1,2 +1,1 @@
-set dbPath=C:\Users\marol\IdeaProjects\vaadinTest\src\main\resources\static\db\dark_sun1.db
-java -jar .\target\dark-sun-0.0.1-SNAPSHOT.jar -Dspring.profiles.active=production
+java -jar .\target\lib-home-1.0.0-SNAPSHOT.jar -Ddata.path=G:/Cache/Temp/LibHome/ -Ddb.file=test.db

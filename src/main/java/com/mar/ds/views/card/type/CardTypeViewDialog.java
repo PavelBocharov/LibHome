@@ -8,7 +8,7 @@ import com.mar.ds.views._build.popup.ViewDialog;
 public class CardTypeViewDialog extends ViewDialog<CardType, CardTypeRepository, CardTypeCreateDialog, CardTypeUpdateDialog> {
 
     public CardTypeViewDialog(MainView appLayout) {
-        super(appLayout, "Тип документа");
+        super(appLayout, "Card type");
     }
 
     @Override
@@ -20,15 +20,14 @@ public class CardTypeViewDialog extends ViewDialog<CardType, CardTypeRepository,
     protected CardTypeCreateDialog getCreateViewDialog() {
         return (CardTypeCreateDialog) new CardTypeCreateDialog()
                 .withoutEnumNumber()
-                .withNameEntity("Тип документа");
+                .withNameEntity("Card type");
     }
 
     @Override
     protected CardTypeUpdateDialog getUpdateViewDialog() {
         return (CardTypeUpdateDialog) new CardTypeUpdateDialog()
                 .withoutEnumNumber()
-                .withNameEntity("Тип документа")
-                ;
+                .withNameEntity("Card type");
     }
 
     public CardTypeRepository getRepository() {
