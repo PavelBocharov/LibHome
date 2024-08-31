@@ -103,7 +103,10 @@ public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaReposito
     }
 
     protected abstract String getText(E entity);
+
     protected abstract CVD getCreateViewDialog();
+
     protected abstract UVD getUpdateViewDialog();
+
     protected abstract Repo getRepository();
 }

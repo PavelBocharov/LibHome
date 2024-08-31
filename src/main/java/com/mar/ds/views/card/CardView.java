@@ -1,7 +1,6 @@
 package com.mar.ds.views.card;
 
 import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.views.ContentView;
@@ -20,8 +19,6 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
@@ -34,9 +31,7 @@ import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
 import static com.vaadin.flow.component.icon.VaadinIcon.COG;
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
-import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @RequiredArgsConstructor
 public class CardView implements ContentView {
@@ -67,7 +62,7 @@ public class CardView implements ContentView {
                 .setHeader("Last game").setAutoWidth(true).setSortable(true);
         grid.addColumn(card -> card.getCardType().getTitle())
                 .setHeader("Type").setAutoWidth(true).setSortable(true);
-        grid.addColumn(card -> card.getTagList() == null ||  card.getTagList().isEmpty() ? "---" : card.getTagList().stream()
+        grid.addColumn(card -> card.getTagList() == null || card.getTagList().isEmpty() ? "---" : card.getTagList().stream()
                         .map(CardTypeTag::getTitle)
                         .collect(Collectors.joining(", ")))
                 .setHeader("Tags");
@@ -125,8 +120,8 @@ public class CardView implements ContentView {
         HorizontalLayout btns = new HorizontalLayout(
                 crtBtn,
                 cardStatusView,
-                cardTypeTagView,
-                cardTypeView
+                cardTypeView,
+                cardTypeTagView
         );
         btns.setWidthFull();
 

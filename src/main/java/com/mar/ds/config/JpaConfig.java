@@ -4,8 +4,6 @@ import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.jpa.CardRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,11 +19,10 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.sqlite.SQLiteDataSource;
 
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
 @Slf4j
 @Configuration

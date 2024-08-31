@@ -29,8 +29,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static com.mar.ds.utils.ViewUtils.*;
-import static java.lang.String.format;
+import static com.mar.ds.utils.ViewUtils.getDoubleValue;
+import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
+import static com.mar.ds.utils.ViewUtils.setBigDecimalFieldValue;
+import static com.mar.ds.utils.ViewUtils.setSelectValue;
+import static com.mar.ds.utils.ViewUtils.setTextFieldValue;
 
 @Slf4j
 public class UpdateCardView {

@@ -1,7 +1,9 @@
 package com.mar.ds.views.card;
 
 import com.mar.ds.db.entity.Card;
+import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.PropertiesLoader;
+import com.mar.ds.utils.UploadFileDialog;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
@@ -10,26 +12,33 @@ import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.server.StreamResource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import static com.mar.ds.utils.ViewUtils.*;
-import static java.lang.String.format;
+import static com.mar.ds.utils.ViewUtils.findImage;
+import static com.mar.ds.utils.ViewUtils.getAccordionContent;
+import static com.mar.ds.utils.ViewUtils.getImage;
+import static com.mar.ds.utils.ViewUtils.getImageByResource;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -37,18 +46,16 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @RequiredArgsConstructor
 public class CardInfoView implements ContentView {
 
-    @Value("${data.path:./}")
-    private String dataPath;
-
     private final MainView appLayout;
     private final Card card;
 
     @SneakyThrows
     public VerticalLayout getContent() {
-        log.debug("Init dataPath in CardInfoView: {}", dataPath);
-        log.debug("Show card info: {}: ", card);
         String dataDir = PropertiesLoader.loadProperties("application.properties").getProperty("data.path");
+        File fileDir = new File(dataDir + "cards/", +card.getId() + "/");
+
         HorizontalLayout imageAndTitle = new HorizontalLayout();
+        imageAndTitle.setPadding(false);
 
         Label title = new Label(card.getTitle());
         HorizontalLayout headerInfo = new HorizontalLayout(
@@ -70,29 +77,45 @@ public class CardInfoView implements ContentView {
         link.add(linkText);
         link.setWidthFull();
 
+        MultiselectComboBox<CardTypeTag> tags = new MultiselectComboBox<>();
+        tags.setLabel("Tags");
+        tags.setItemLabelGenerator(CardTypeTag::getTitle);
+        tags.setWidthFull();
+        tags.setAllowCustomValues(false);
+        tags.setReadOnly(true);
+        tags.setItems(card.getTagList());
+        tags.select(card.getTagList());
+
+        VerticalLayout cardInfo = new VerticalLayout(
+                headerInfo,
+                getTextField("Type", card.getCardType().getTitle()),
+                getTextField("Status", card.getCardStatus().getTitle()),
+                link,
+                tags
+        );
+        // Cover
         Image cover;
         try {
-            cover = getImage(dataDir + "cards/" + card.getId() + "/cover/main.jpg");
+            cover = findImage(dataDir + "cards/" + card.getId() + "/cover/", "static/img/not_cover.jpeg");
             cover.setSizeFull();
         } catch (FileNotFoundException ex) {
             cover = getImageByResource("static/img/not_cover.jpeg");
             cover.setSizeFull();
         }
         Button updMainImage = new Button("New main image", VaadinIcon.UPLOAD_ALT.create());
-        // TODO load file view to "base.dir/cards/id/cover/main.jpg"
+        updMainImage.addClickListener(event -> new UploadFileDialog(
+                        dataDir + "cards/" + card.getId() + "/cover/",
+                        true,
+                        1,
+                        () -> appLayout.setContent(this.getContent())
+                )
+        );
         updMainImage.setWidthFull();
 
         VerticalLayout imageInfo = new VerticalLayout(cover, updMainImage);
         imageInfo.setSizeFull();
         imageInfo.setAlignItems(FlexComponent.Alignment.CENTER);
-
-        VerticalLayout cardInfo = new VerticalLayout(
-                headerInfo,
-                getTextField("Type", card.getCardType().getTitle()),
-                getTextField("Status", card.getCardStatus().getTitle()),
-                link
-        );
-
+        // BUILD
         imageAndTitle.setSizeFull();
         imageAndTitle.setAlignItems(FlexComponent.Alignment.CENTER);
         imageAndTitle.add(imageInfo, cardInfo);
@@ -106,12 +129,11 @@ public class CardInfoView implements ContentView {
         VerticalLayout data = new VerticalLayout();
         data.setWidth(70, Unit.PERCENTAGE);
 
-        File fileDir = new File(dataDir + "cards/", + card.getId() + "/");
         if (fileDir.exists()) {
+
             Grid<File> cardFiles = new Grid<>();
-            cardFiles.addColumn(File::getAbsolutePath).setHeader("File path").setAutoWidth(true);
-            cardFiles.addComponentColumn(file -> new Button(VaadinIcon.DOWNLOAD.create())).setHeader("Download");
-            cardFiles.addComponentColumn(file -> new Button(VaadinIcon.CLOSE_CIRCLE.create())).setHeader("Delete");
+            cardFiles.addComponentColumn(this::openFile).setHeader("File path").setAutoWidth(true);
+            cardFiles.addComponentColumn(this::getDeleteFileButton).setHeader("Delete").setWidth("32px");
             cardFiles.setItems(FileUtils.listFiles(fileDir, null, true));
             cardFiles.setWidthFull();
             cardFiles.addThemeVariants(GridVariant.LUMO_COMPACT);
@@ -120,15 +142,16 @@ public class CardInfoView implements ContentView {
             accordion.setWidthFull();
             VerticalLayout images = new VerticalLayout();
             images.setSizeFull();
-            for (File file : FileUtils.listFiles(fileDir, new String[]{"png", "jpg", "jpeg"}, false)) {
+            for (File file : FileUtils.listFiles(fileDir, new String[]{"png", "jpg", "jpeg"}, true)) {
                 Image accImage = getImage(file.getAbsolutePath());
                 accImage.setSizeFull();
                 images.add(accImage);
             }
             accordion.add("Images", getAccordionContent(images));
+            accordion.add("Files", getAccordionContent(cardFiles));
             accordion.close();
 
-            data.add(imageAndTitle, textArea, accordion, cardFiles);
+            data.add(imageAndTitle, textArea, accordion);
         } else {
             data.add(imageAndTitle, textArea);
         }
@@ -139,8 +162,13 @@ public class CardInfoView implements ContentView {
         backBtn.setWidthFull();
 
         Button addFiles = new Button("Add files", VaadinIcon.UPLOAD.create());
-        // TODO Load files to base.dir/cards/id/ - create load view
-//        backBtn.addClickListener(buttonClickEvent -> appLayout.setContent(appLayout.getCardView().getContent()));
+        addFiles.addClickListener(event -> new UploadFileDialog(
+                        dataDir + "cards/" + card.getId() + "/",
+                        false,
+                        10,
+                        () -> appLayout.setContent(this.getContent())
+                )
+        );
         addFiles.setWidthFull();
 
         Button updBtn = new Button("Update", VaadinIcon.PENCIL.create());
@@ -164,6 +192,37 @@ public class CardInfoView implements ContentView {
         return verticalLayout;
     }
 
+    private Anchor openFile(File file) {
+        StreamResource streamResource = new StreamResource(file.getName(), () -> {
+            try {
+                return new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        Anchor link = new Anchor(streamResource, file.getAbsolutePath());
+        link.getElement().setAttribute("download", true);
+
+        return link;
+    }
+
+    private Button getDeleteFileButton(File file) {
+        Icon icon = VaadinIcon.CLOSE_CIRCLE.create();
+        icon.setColor("red");
+
+        Button btn = new Button(icon);
+        btn.addClickListener(event -> {
+            try {
+                FileUtils.delete(file);
+                appLayout.setContent(this.getContent());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return btn;
+    }
+
     private TextField getTextField(String label, String text) {
         TextField textField = new TextField();
         textField.setReadOnly(true);
@@ -173,43 +232,4 @@ public class CardInfoView implements ContentView {
         return textField;
     }
 
-    private Icon getStatusIcon(Card card, boolean hasUpd) {
-        Icon icon = VaadinIcon.BULLSEYE.create();
-
-        if (card != null && card.getCardStatus() != null && isNotBlank(card.getCardStatus().getColor())) {
-            if (hasUpd) {
-                icon = VaadinIcon.EXCLAMATION_CIRCLE.create();
-                icon.setColor("#0B6623");
-            } else {
-                icon.setColor(card.getCardStatus().getColor());
-            }
-            icon.getElement().setAttribute("title", card.getInfo());
-        } else {
-            icon.setColor("grey");
-        }
-
-        return icon;
-    }
-
-    private Anchor getLinkIcon(Card card) {
-        Icon icon = VaadinIcon.EXTERNAL_LINK.create();
-        Anchor anchor = new Anchor();
-        anchor.add(icon);
-        if (card == null || isBlank(card.getLink())) {
-            icon.setColor("grey");
-            anchor.setEnabled(false);
-            return anchor;
-        }
-        anchor.setHref(card.getLink());
-        anchor.setTarget("_blank"); // new tab
-        return anchor;
-    }
-
-    private boolean mathUpd(Card card) {
-        if (card == null || card.getLastGame() == null || card.getLastUpdate() == null) {
-            return false;
-        }
-
-        return card.getLastUpdate().getTime() - card.getLastGame().getTime() > 0;
-    }
 }

@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.CLOSE_SMALL;
@@ -88,6 +89,26 @@ public class ViewUtils {
                 ),
                 String.format("Not load image: %s", pathInResource)
         );
+    }
+
+    public static Image findImage(String dir, String defaultImage) throws IOException {
+        File coverDir = new File(dir);
+
+        if (coverDir.exists() && coverDir.isDirectory()) {
+            Collection<File> covers = FileUtils.listFiles(coverDir, new String[]{"png", "jpg", "jpeg"}, false);
+            if (covers != null && !covers.isEmpty()) {
+                File image = covers.stream().findFirst().get();
+                byte[] img = FileUtils.readFileToByteArray(image);
+                return new Image(
+                        new StreamResource(
+                                image.getName(),
+                                () -> new ByteArrayInputStream(img)
+                        ),
+                        String.format("Not load image: %s", dir)
+                );
+            }
+        }
+        return getImage(defaultImage);
     }
 
     public static Image getImageByResource(String pathInResource) throws IOException {
@@ -193,7 +214,7 @@ public class ViewUtils {
         String[] arrStr = str.split("\n");
         for (int i = 0; i < arrStr.length; i++) {
             if (arrStr[i].length() > countWorldInLine) {
-                textArea.setErrorMessage(format("В %d строке было превышен лимит символов (макс. %d)", i+1, countWorldInLine));
+                textArea.setErrorMessage(format("В %d строке было превышен лимит символов (макс. %d)", i + 1, countWorldInLine));
                 textArea.setInvalid(true);
                 return true;
             }
