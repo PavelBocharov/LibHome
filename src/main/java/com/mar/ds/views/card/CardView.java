@@ -47,29 +47,32 @@ public class CardView implements ContentView {
         grid = new Grid<>();
 
         // column
-        grid.addColumn(Card::getId).setHeader("ID");
+        grid.addColumn(Card::getId).setHeader("ID").setAutoWidth(true).setTextAlign(ColumnTextAlign.START);
         grid.addComponentColumn(card -> getStatusIcon(card, mathUpd(card)))
                 .setHeader("Status").setSortable(true)
-                .setComparator(Comparator.comparing(o -> o.getCardStatus().getTitle()));
-        grid.addColumn(Card::getTitle).setHeader("Title").setAutoWidth(true);
-        grid.addColumn(Card::getPoint).setHeader("Point").setSortable(true);
-        grid.addColumn(this::calcRate).setHeader("Rate").setSortable(true);
+                .setComparator(Comparator.comparing(o -> o.getCardStatus().getTitle()))
+                .setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        grid.addColumn(Card::getTitle).setHeader("Title").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        grid.addColumn(Card::getPoint).setHeader("Point").setSortable(true).setTextAlign(ColumnTextAlign.CENTER);
+        grid.addColumn(this::calcRate).setHeader("Rate").setSortable(true).setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
                 .setHeader("Last UPD").setSortable(true)
-                .setComparator(Comparator.comparingLong(value -> value.getLastUpdate().getTime()));
+                .setComparator(Comparator.comparingLong(value -> value.getLastUpdate().getTime()))
+                .setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(card -> dateFormat.format(card.getLastGame()))
                 .setHeader("Last game").setSortable(true)
-                .setComparator(Comparator.comparingLong(value -> value.getLastGame().getTime()));
+                .setComparator(Comparator.comparingLong(value -> value.getLastGame().getTime()))
+                .setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(card -> card.getCardType().getTitle())
-                .setHeader("Type").setSortable(true);
+                .setHeader("Type").setSortable(true).setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(card -> card.getTagList() == null || card.getTagList().isEmpty()
                         ? "---"
                         : card.getTagList().stream()
                         .map(CardTypeTag::getTitle)
                         .collect(Collectors.joining(", "))
                 )
-                .setHeader("Tags").setAutoWidth(true);
-        grid.addComponentColumn(this::getLinkIcon).setHeader("Link").setTextAlign(ColumnTextAlign.END);
+                .setHeader("Tags").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        grid.addComponentColumn(this::getLinkIcon).setHeader("Link").setTextAlign(ColumnTextAlign.CENTER);
         grid.addComponentColumn(card -> {
             Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> {
                 new UpdateCardView(appLayout, card);

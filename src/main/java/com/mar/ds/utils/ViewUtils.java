@@ -29,6 +29,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.vaadin.gatanaso.MultiselectComboBox;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
@@ -38,13 +39,17 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.CLOSE_SMALL;
 import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
@@ -202,7 +207,6 @@ public class ViewUtils {
         return field.getValue();
     }
 
-
     /**
      * @param textArea
      * @param countWorldInLine
@@ -268,6 +272,26 @@ public class ViewUtils {
         }
 
         return icon;
+    }
+
+    public static <T extends HasId> MultiselectComboBox<T> setMultiSelectComboBoxValue(
+            MultiselectComboBox<T> select, Collection<T> allData, Collection<T> selectedData
+    ) {
+        Set<T> items = allData.stream().collect(Collectors.toUnmodifiableSet());
+        select.setItems(items);
+
+        if (selectedData != null && !selectedData.isEmpty()) {
+            Set<T> newSelected = new HashSet<>();
+
+            for (T tag : selectedData) {
+                T item = items.stream().filter(t -> t.getId().equals(tag.getId())).findFirst().orElse(null);
+                if (item != null) {
+                    newSelected.add(item);
+                }
+            }
+            select.select(newSelected);
+        }
+        return select;
     }
 
 }

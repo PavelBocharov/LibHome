@@ -42,15 +42,26 @@ public class CardTagsView {
         cardTypeListSelect.setWidthFull();
 
         tagsGrid = new Grid<>();
-        tagsGrid.addColumn(CardTypeTag::getId).setHeader("ID");
-        tagsGrid.addColumn(CardTypeTag::getTitle).setHeader("Title");
-        tagsGrid.addComponentColumn(tag -> new Button(
-                VaadinIcon.CLOSE_CIRCLE.create(),
-                event -> {
-                    mainView.getRepositoryService().getCardTypeTagRepository().delete(tag);
-                    reloadData();
-                })
-        ).setTextAlign(ColumnTextAlign.END);
+        tagsGrid.addColumn(CardTypeTag::getId).setHeader("ID").setAutoWidth(true).setTextAlign(ColumnTextAlign.START);
+        tagsGrid.addColumn(CardTypeTag::getTitle).setHeader("Title").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        tagsGrid.addComponentColumn(tag -> {
+                    HorizontalLayout btns = new HorizontalLayout(
+                            new Button(
+                                    VaadinIcon.CLOSE_CIRCLE.create(),
+                                    event -> {
+                                        mainView.getRepositoryService().getCardTypeTagRepository().delete(tag);
+                                        reloadData();
+                                    }),
+                            new Button(
+                                    VaadinIcon.PENCIL.create(),
+                                    event -> {
+                                        new UpdateCardTagsView(mainView, this, tag).showDialog();
+                                    })
+                    );
+                    btns.setWidthFull();
+                    return btns;
+                }
+        ).setAutoWidth(true).setTextAlign(ColumnTextAlign.END);
         tagsGrid.setWidthFull();
         tagsGrid.setHeightFull();
 //        tagsGrid.setHeight(70, Unit.PERCENTAGE);

@@ -32,6 +32,7 @@ import java.util.List;
 import static com.mar.ds.utils.ViewUtils.getDoubleValue;
 import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.mar.ds.utils.ViewUtils.setBigDecimalFieldValue;
+import static com.mar.ds.utils.ViewUtils.setMultiSelectComboBoxValue;
 import static com.mar.ds.utils.ViewUtils.setSelectValue;
 import static com.mar.ds.utils.ViewUtils.setTextFieldValue;
 
@@ -109,8 +110,7 @@ public class UpdateCardView {
             tags.setItems(tagList);
         });
         List<CardTypeTag> tagList = mainView.getRepositoryService().getCardTypeTagRepository().findByCardType(updateCard.getCardType());
-        tags.setItems(tagList);
-        tags.select(updateCard.getTagList());
+        setMultiSelectComboBoxValue(tags, tagList, updateCard.getTagList());
         // link
         TextField link = new TextField("Link");
         link.setRequired(true);

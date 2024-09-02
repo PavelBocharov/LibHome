@@ -10,6 +10,8 @@ import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Anchor;
@@ -33,6 +35,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Collection;
 
 import static com.mar.ds.utils.ViewUtils.findImage;
@@ -63,6 +67,27 @@ public class CardInfoView implements ContentView {
         );
         headerInfo.setWidthFull();
 
+        // last update
+        DatePicker lastUpdDate = new DatePicker("Last update", LocalDate.now());
+        lastUpdDate.setWidthFull();
+        lastUpdDate.setRequired(true);
+        lastUpdDate.setReadOnly(true);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(card.getLastUpdate());
+        lastUpdDate.setValue(LocalDate.of(
+                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH)
+        ));
+        // last game
+        DatePicker lastGameDate = new DatePicker("Last game", LocalDate.now());
+        lastGameDate.setWidthFull();
+        lastGameDate.setRequired(true);
+        lastGameDate.setReadOnly(true);
+        calendar.setTime(card.getLastGame());
+        lastGameDate.setValue(LocalDate.of(
+                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH)
+        ));
+
         Anchor link = new Anchor();
         TextField linkText;
         if (isBlank(card.getLink())) {
@@ -89,6 +114,8 @@ public class CardInfoView implements ContentView {
                 headerInfo,
                 getTextField("Type", card.getCardType().getTitle()),
                 getTextField("Status", card.getCardStatus().getTitle()),
+                lastUpdDate,
+                lastGameDate,
                 link,
                 tags
         );
@@ -147,7 +174,7 @@ public class CardInfoView implements ContentView {
 
             Grid<File> cardFiles = new Grid<>();
             cardFiles.addComponentColumn(this::openFile).setHeader("File path").setAutoWidth(true);
-            cardFiles.addComponentColumn(this::getDeleteFileButton).setHeader("Delete").setWidth("32px");
+            cardFiles.addComponentColumn(this::getDeleteFileButton).setHeader("Delete").setTextAlign(ColumnTextAlign.END);
             cardFiles.setItems(FileUtils.listFiles(fileDir, null, true));
             cardFiles.setWidthFull();
             cardFiles.addThemeVariants(GridVariant.LUMO_COMPACT);

@@ -40,17 +40,17 @@ public abstract class UpdateViewDialog<E extends PopupEntity, VD extends ViewDia
 
         TextField textField = new TextField();
         textField.setWidthFull();
-        textField.setLabel("Наименование");
+        textField.setLabel("Title");
         ViewUtils.setTextFieldValue(textField, entity.getTitle());
 
-        Button updBtn = new Button("Обновить", new Icon(ROTATE_RIGHT));
+        Button updBtn = new Button("Update", new Icon(ROTATE_RIGHT));
         updBtn.addClickListener(btnEvent -> {
             try {
                 viewDialog.getRepository().save(updateEntity(
                         entity, enumIdField, textField
                 ));
             } catch (Exception ex) {
-                ViewUtils.showErrorMsg("При обновлении произошла ошибка", ex);
+                ViewUtils.showErrorMsg("Update ERROR", ex);
                 updBtn.setEnabled(true);
                 return;
             }
@@ -81,7 +81,7 @@ public abstract class UpdateViewDialog<E extends PopupEntity, VD extends ViewDia
     }
 
     private String getLabel() {
-        return nameEntity == null ? "Обновить" : "Обновить '" + nameEntity + "'";
+        return nameEntity == null ? "Update" : "Update '" + nameEntity + "'";
     }
 
 
