@@ -8,11 +8,13 @@ import com.mar.ds.views.MainView;
 import com.mar.ds.views.card.status.CardStatusViewDialog;
 import com.mar.ds.views.card.tags.CardTagsView;
 import com.mar.ds.views.card.type.CardTypeViewDialog;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -24,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.mar.ds.utils.ViewUtils.getStatusIcon;
@@ -53,8 +56,21 @@ public class CardView implements ContentView {
                 .setComparator(Comparator.comparing(o -> o.getCardStatus().getTitle()))
                 .setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(Card::getTitle).setHeader("Title").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
-        grid.addColumn(Card::getPoint).setHeader("Point").setSortable(true).setTextAlign(ColumnTextAlign.CENTER);
-        grid.addColumn(this::calcRate).setHeader("Rate").setSortable(true).setTextAlign(ColumnTextAlign.CENTER);
+
+//        grid.addColumn(Card::getPoint).setHeader("Point").setSortable(true).setTextAlign(ColumnTextAlign.CENTER);
+        grid.addComponentColumn(card -> getGridColorValue(card::getPoint)).setHeader("Point")
+                .setSortable(true)
+                .setComparator(Card::getPoint)
+                .setTextAlign(ColumnTextAlign.CENTER);
+
+
+
+//        grid.addColumn(this::calcRate).setHeader("Rate").setSortable(true).setTextAlign(ColumnTextAlign.CENTER);
+        grid.addComponentColumn(card -> getGridColorValue(() -> calcRate(card))).setHeader("Rate")
+                .setSortable(true)
+                .setComparator(this::calcRate)
+                .setTextAlign(ColumnTextAlign.CENTER);
+
         grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
                 .setHeader("Last UPD").setSortable(true)
                 .setComparator(Comparator.comparingLong(value -> value.getLastUpdate().getTime()))
@@ -142,12 +158,36 @@ public class CardView implements ContentView {
         return verticalLayout;
     }
 
+    private Component getGridColorValue(Supplier<Double> forColor) {
+        double value = forColor.get() != null ? forColor.get() : 0;
+        Label res = new Label(String.format("%.1f", value));
+
+        res.getStyle().set("color", "green");
+        if (value < 9) {
+            res.getStyle().set("color", "#98db00");
+        }
+        if (value < 7) {
+            res.getStyle().set("color", "#c6b400");
+        }
+        if (value < 5) {
+            res.getStyle().set("color", "#f46900");
+        }
+        if (value < 3) {
+            res.getStyle().set("color", "#fc4700");
+        }
+        if (value < 1) {
+            res.getStyle().set("color", "red");
+        }
+
+        return res;
+    }
+
     public void reloadGrid() {
         List<Card> cards = appLayout.getRepositoryService().getCardRepository().findAll();
         grid.setItems(cards);
     }
 
-    private float calcRate(Card card) {
+    private double calcRate(Card card) {
         if (card == null || !card.getCardStatus().getIsRate()) {
             return 0.0f;
         }

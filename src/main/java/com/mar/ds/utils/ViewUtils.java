@@ -8,6 +8,7 @@ import com.google.common.io.Resources;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.HasId;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -32,6 +33,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.vaadin.gatanaso.MultiselectComboBox;
 import org.vaadin.olli.FileDownloadWrapper;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -43,13 +45,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.CLOSE_SMALL;
 import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
@@ -104,13 +106,20 @@ public class ViewUtils {
             if (covers != null && !covers.isEmpty()) {
                 File image = covers.stream().findFirst().get();
                 byte[] img = FileUtils.readFileToByteArray(image);
-                return new Image(
+                Image result = new Image(
                         new StreamResource(
                                 image.getName(),
                                 () -> new ByteArrayInputStream(img)
                         ),
                         String.format("Not load image: %s", dir)
                 );
+
+                BufferedImage myPicture = ImageIO.read(image);
+
+                result.setWidth(myPicture.getWidth(), Unit.PIXELS);
+                result.setHeight(myPicture.getHeight(), Unit.PIXELS);
+
+                return result;
             }
         }
         return getImage(defaultImage);

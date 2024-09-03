@@ -123,11 +123,12 @@ public class CardInfoView implements ContentView {
         Image cover;
         try {
             cover = findImage(dataDir + "cards/" + card.getId() + "/cover/", "static/img/not_cover.jpeg");
-            cover.setSizeFull();
         } catch (FileNotFoundException ex) {
             cover = getImageByResource("static/img/not_cover.jpeg");
-            cover.setSizeFull();
         }
+        cover.setMaxWidth(cover.getWidth());
+        cover.setMaxHeight(cover.getHeight());
+        cover.setSizeFull();
         Button updMainImage = new Button("New main image", VaadinIcon.UPLOAD_ALT.create());
         updMainImage.addClickListener(event -> new UploadFileDialog(
                         dataDir + "cards/" + card.getId() + "/cover/",

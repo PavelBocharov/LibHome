@@ -21,6 +21,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Getter
@@ -34,7 +35,8 @@ import javax.persistence.Table;
 public class Card implements Serializable, HasId {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_seq_name")
+    @SequenceGenerator(name = "card_seq_name", sequenceName = "card_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "title", nullable = false, unique = true)
