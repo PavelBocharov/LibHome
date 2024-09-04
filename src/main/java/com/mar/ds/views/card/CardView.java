@@ -20,6 +20,8 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.RequiredArgsConstructor;
 
 import java.text.SimpleDateFormat;
@@ -30,6 +32,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.mar.ds.utils.ViewUtils.getStatusIcon;
+import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
 import static com.vaadin.flow.component.icon.VaadinIcon.COG;
@@ -45,6 +48,7 @@ public class CardView implements ContentView {
 
     public VerticalLayout getContent() {
         H2 label = new H2("Card list");
+        label.setWidthFull();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         // TABLE
         grid = new Grid<>();
@@ -62,7 +66,6 @@ public class CardView implements ContentView {
                 .setSortable(true)
                 .setComparator(Card::getPoint)
                 .setTextAlign(ColumnTextAlign.CENTER);
-
 
 
 //        grid.addColumn(this::calcRate).setHeader("Rate").setSortable(true).setTextAlign(ColumnTextAlign.CENTER);
@@ -117,6 +120,27 @@ public class CardView implements ContentView {
                 }
         );
 
+        TextField searchField = new TextField();
+        searchField.setWidth("50%");
+        searchField.setPlaceholder("Search");
+        searchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
+        searchField.setValueChangeMode(ValueChangeMode.EAGER);
+        searchField.addValueChangeListener(e -> {
+            List<Card> cards = appLayout.getRepositoryService().getCardRepository().findAll();
+            String text = getTextFieldValue(searchField);
+            if (text != null) {
+                grid.setItems(cards.stream().filter(
+                        card -> {
+                            String finalText = text.trim().toLowerCase();
+
+                            return card.getTitle().toLowerCase().contains(text)
+                                    || card.getInfo().toLowerCase().contains(finalText)
+                                    || card.getTagList().stream()
+                                    .anyMatch(cardTypeTag -> cardTypeTag.getTitle().toLowerCase().contains(finalText));
+                        }
+                ));
+            }
+        });
 
         // value
         reloadGrid();
@@ -154,7 +178,12 @@ public class CardView implements ContentView {
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.START, label);
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.CENTER, grid);
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, btns);
-        verticalLayout.add(label, grid, btns);
+
+        HorizontalLayout header = new HorizontalLayout(label, searchField);
+        header.setVerticalComponentAlignment(FlexComponent.Alignment.START, label);
+        header.setVerticalComponentAlignment(FlexComponent.Alignment.END, searchField);
+        header.setWidthFull();
+        verticalLayout.add(header, grid, btns);
         return verticalLayout;
     }
 
