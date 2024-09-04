@@ -133,7 +133,7 @@ public class CardView implements ContentView {
                         card -> {
                             String finalText = text.trim().toLowerCase();
 
-                            return card.getTitle().toLowerCase().contains(text)
+                            return card.getTitle().toLowerCase().contains(finalText)
                                     || card.getInfo().toLowerCase().contains(finalText)
                                     || card.getTagList().stream()
                                     .anyMatch(cardTypeTag -> cardTypeTag.getTitle().toLowerCase().contains(finalText));

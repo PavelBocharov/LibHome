@@ -91,13 +91,14 @@ public class CardInfoView implements ContentView {
         Anchor link = new Anchor();
         TextField linkText;
         if (isBlank(card.getLink())) {
-            linkText = getTextField("Link", "-");
+            linkText = getTextField("\uD83D\uDD17 Link", "-");
             link.setEnabled(false);
         } else {
-            linkText = getTextField("Link", card.getLink());
+            linkText = getTextField("\uD83D\uDD17 Link", card.getLink());
             link.setHref(card.getLink());
             link.setTarget("_blank"); // new tab
         }
+        linkText.setSuffixComponent(VaadinIcon.LINK.create());
         link.add(linkText);
         link.setWidthFull();
 
