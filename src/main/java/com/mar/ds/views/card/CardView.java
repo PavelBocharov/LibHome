@@ -57,7 +57,8 @@ public class CardView implements ContentView {
         grid.addColumn(Card::getId).setHeader("ID").setAutoWidth(true).setTextAlign(ColumnTextAlign.START);
         grid.addComponentColumn(card -> getStatusIcon(card, mathUpd(card)))
                 .setHeader("Status").setSortable(true)
-                .setComparator(Comparator.comparing(o -> o.getCardStatus().getTitle()))
+                // ~ -> last symbol in ASCII table (nope, 'DEL' is last).
+                .setComparator(Comparator.comparing(o -> mathUpd(o) ? "~" : o.getCardStatus().getTitle()))
                 .setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(Card::getTitle).setHeader("Title").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
 
@@ -93,16 +94,12 @@ public class CardView implements ContentView {
                 .setHeader("Tags").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
         grid.addComponentColumn(this::getLinkIcon).setHeader("Link").setTextAlign(ColumnTextAlign.CENTER);
         grid.addComponentColumn(card -> {
-            Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> {
-                new UpdateCardView(appLayout, card);
-            });
+            Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> new UpdateCardView(appLayout, card));
 //            edtBtn.addThemeVariants(LUMO_TERTIARY);
-            Button dltBtn = new Button(new Icon(BAN), clk -> {
-                new DeleteDialogWidget(() -> {
-                    appLayout.getRepositoryService().getCardRepository().delete(card);
-                    appLayout.setContent(appLayout.getCardView().getContent());
-                });
-            });
+            Button dltBtn = new Button(new Icon(BAN), clk -> new DeleteDialogWidget(() -> {
+                appLayout.getRepositoryService().getCardRepository().delete(card);
+                appLayout.setContent(appLayout.getCardView().getContent());
+            }));
             dltBtn.addThemeVariants(LUMO_TERTIARY);
             dltBtn.getStyle().set("color", "red");
             return new HorizontalLayout(
