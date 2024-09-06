@@ -1,12 +1,15 @@
 version: '3'
 
 services:
-  dark_sun:
-    image: marolok/dark_sun:1.0.0
+  lib_home:
+    build:
+      context: .
+      dockerfile: Dockerfile
+#    image: marolok/dark_sun:1.0.0
     env_file:
       - .env
     volumes:
-      - "${PC_DB_PATH}:${dbPath}"
+      - "${PC_DB_PATH}:${DATA_PATH}"
     tty: true
     restart: always
     networks:

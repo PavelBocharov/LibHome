@@ -86,16 +86,23 @@ public class ViewUtils {
     }
 
     @SneakyThrows
-    public static Image getImage(String pathInResource) throws IOException {
+    public static Image getImage(String pathInResource) {
         File image = new File(pathInResource);
         byte[] img = FileUtils.readFileToByteArray(image);
-        return new Image(
+
+        Image result = new Image(
                 new StreamResource(
                         image.getName(),
                         () -> new ByteArrayInputStream(img)
                 ),
                 String.format("Not load image: %s", pathInResource)
         );
+
+        BufferedImage myPicture = ImageIO.read(image);
+        result.setWidth(myPicture.getWidth(), Unit.PIXELS);
+        result.setHeight(myPicture.getHeight(), Unit.PIXELS);
+
+        return result;
     }
 
     public static Image findImage(String dir, String defaultImage) throws IOException {
@@ -241,6 +248,7 @@ public class ViewUtils {
         VerticalLayout content = new VerticalLayout(components);
         content.setPadding(false);
         content.setSpacing(false);
+        content.setAlignItems(FlexComponent.Alignment.CENTER);
         return content;
     }
 

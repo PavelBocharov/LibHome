@@ -168,6 +168,8 @@ public class CardInfoView implements ContentView {
                 images.setSizeFull();
                 for (File file : imgFiles) {
                     Image accImage = getImage(file.getAbsolutePath());
+                    accImage.setMaxWidth(accImage.getWidth());
+                    accImage.setMaxHeight(accImage.getHeight());
                     accImage.setSizeFull();
                     images.add(accImage);
                 }

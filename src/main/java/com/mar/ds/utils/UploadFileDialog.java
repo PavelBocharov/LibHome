@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
 import static org.springframework.util.MimeTypeUtils.IMAGE_JPEG_VALUE;
@@ -70,7 +71,7 @@ public class UploadFileDialog extends Dialog {
             InputStream fileData = multiFileMemoryBuffer.getInputStream(event.getFileName());
             String uploadFileName = isCover
                     ? "cover." + FilenameUtils.getExtension(event.getFileName())
-                    : event.getFileName();
+                    : UUID.randomUUID().toString().replace("-", "") + "." + FilenameUtils.getExtension(event.getFileName());
             int contentLength = (int) event.getContentLength();
             String mimeType = event.getMIMEType();
 

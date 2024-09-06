@@ -39,7 +39,7 @@ public class Card implements Serializable, HasId {
     @SequenceGenerator(name = "card_seq_name", sequenceName = "card_seq", allocationSize = 1)
     private Long id;
 
-    @Column(name = "title", nullable = false, unique = true)
+    @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "point", nullable = true)
