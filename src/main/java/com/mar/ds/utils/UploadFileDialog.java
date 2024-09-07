@@ -1,5 +1,6 @@
 package com.mar.ds.utils;
 
+import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -26,13 +27,15 @@ import static org.springframework.util.MimeTypeUtils.IMAGE_PNG_VALUE;
 @Slf4j
 public class UploadFileDialog extends Dialog {
 
+    private MainView mainView;
     private Upload uploadFile;
 
     private String rootDir;
     private int countFiles;
     private boolean isCover;
 
-    public UploadFileDialog(String rootDir, boolean isCover, int countFiles, Runnable afterUploadEvent) {
+    public UploadFileDialog(MainView mainView, String rootDir, boolean isCover, int countFiles, Runnable afterUploadEvent) {
+        this.mainView = mainView;
         this.rootDir = rootDir;
         this.countFiles = countFiles;
         this.isCover = isCover;
@@ -110,9 +113,7 @@ public class UploadFileDialog extends Dialog {
 //        uploadFile.addStartedListener(event -> log.debug("StartedListener --> filename: {}, MIME: {}", event.getFileName(), event.getMIMEType()));
 //        uploadFile.addProgressListener(progressUpdateEvent -> log.debug("ProgressListener: --> length: {}", progressUpdateEvent.getContentLength()));
 
-        String maxFileSize = PropertiesLoader
-                .loadProperties("application.properties")
-                .getProperty("spring.servlet.multipart.max-file-size", "10MB");
+        String maxFileSize = mainView.getEnv().getProperty("spring.servlet.multipart.max-file-size", "10MB");
         Integer fileSize = Integer.parseInt(maxFileSize.substring(0, maxFileSize.length() - 2)) * 1024 * 1024;
         uploadFile.setMaxFileSize(fileSize);
         uploadFile.setAcceptedFileTypes(

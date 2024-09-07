@@ -11,6 +11,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import java.io.IOException;
 
@@ -21,6 +22,10 @@ public class MainView extends AppLayout {
     @Getter
     @Autowired
     private RepositoryService repositoryService;
+
+    @Getter
+    @Autowired
+    private Environment env;
 
     @Getter
     private final CardView cardView;

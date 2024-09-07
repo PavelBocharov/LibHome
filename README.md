@@ -25,7 +25,7 @@
     2) `dbPath` - file in image
 3) Build image
    ```bash 
-   docker build --no-cache -t marolok/dark_sun:1.0.0 .
+   docker build --no-cache -t marolok/lib-home:1.0.0 .
    ```
 4) Set image version in [docker-compose.yml](./docker-compose.yml)
 5) Start `docker-compose`

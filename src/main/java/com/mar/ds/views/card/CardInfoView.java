@@ -2,7 +2,6 @@ package com.mar.ds.views.card;
 
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardTypeTag;
-import com.mar.ds.utils.PropertiesLoader;
 import com.mar.ds.utils.UploadFileDialog;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
@@ -54,8 +53,10 @@ public class CardInfoView implements ContentView {
 
     @SneakyThrows
     public VerticalLayout getContent() {
-        String dataDir = PropertiesLoader.loadProperties("application.properties").getProperty("data.path");
+        String dataDir = appLayout.getEnv().getProperty("data.path");
         File fileDir = new File(dataDir + "cards/", +card.getId() + "/");
+
+        System.out.println("Spring env: " + appLayout.getEnv().getProperty("data.path", "NUL"));
 
         HorizontalLayout imageAndTitle = new HorizontalLayout();
         imageAndTitle.setPadding(false);
@@ -132,6 +133,7 @@ public class CardInfoView implements ContentView {
         cover.setSizeFull();
         Button updMainImage = new Button("New main image", VaadinIcon.UPLOAD_ALT.create());
         updMainImage.addClickListener(event -> new UploadFileDialog(
+                        appLayout,
                         dataDir + "cards/" + card.getId() + "/cover/",
                         true,
                         1,
@@ -197,6 +199,7 @@ public class CardInfoView implements ContentView {
 
         Button addFiles = new Button("Add files", VaadinIcon.UPLOAD.create());
         addFiles.addClickListener(event -> new UploadFileDialog(
+                        appLayout,
                         dataDir + "cards/" + card.getId() + "/",
                         false,
                         10,
