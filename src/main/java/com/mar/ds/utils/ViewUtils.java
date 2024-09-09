@@ -52,6 +52,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
@@ -206,8 +207,8 @@ public class ViewUtils {
     }
 
     public static String getTextFieldValue(TextField field) {
-        if (field == null || field.getValue() == null || field.getValue().length() == 0) return null;
-        return field.getValue();
+        if (field == null || isBlank(field.getValue())) return null;
+        return field.getValue().trim();
     }
 
     public static void setTextFieldValue(TextField field, String text) {
@@ -219,8 +220,8 @@ public class ViewUtils {
     }
 
     public static String getTextFieldValue(TextArea field) {
-        if (field == null || field.getValue() == null || field.getValue().length() == 0) return null;
-        return field.getValue();
+        if (field == null || isBlank(field.getValue())) return null;
+        return field.getValue().trim();
     }
 
     /**

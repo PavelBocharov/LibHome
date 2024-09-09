@@ -167,15 +167,24 @@ public class CardInfoView implements ContentView {
             Collection<File> imgFiles = FileUtils.listFiles(fileDir, new String[]{"png", "jpg", "jpeg"}, false);
             if (imgFiles != null && !imgFiles.isEmpty()) {
                 VerticalLayout images = new VerticalLayout();
+                images.setId("acc_image_list");
                 images.setSizeFull();
-                for (File file : imgFiles) {
-                    Image accImage = getImage(file.getAbsolutePath());
-                    accImage.setMaxWidth(accImage.getWidth());
-                    accImage.setMaxHeight(accImage.getHeight());
-                    accImage.setSizeFull();
-                    images.add(accImage);
-                }
-                accordion.add("Images", getAccordionContent(images));
+
+                VerticalLayout accImages = getAccordionContent(images);
+                accordion.add("Images", accImages);
+                accordion.addOpenedChangeListener(event -> {
+                    if (event.getOpenedIndex().isPresent()) {
+                        if (event.getOpenedPanel().get().getContent().findFirst().get().equals(accImages)) {
+                            for (File file : imgFiles) {
+                                Image accImage = getImage(file.getAbsolutePath());
+                                accImage.setMaxWidth(accImage.getWidth());
+                                accImage.setMaxHeight(accImage.getHeight());
+                                accImage.setSizeFull();
+                                images.add(accImage);
+                            }
+                        }
+                    }
+                });
             }
 
             Grid<File> cardFiles = new Grid<>();

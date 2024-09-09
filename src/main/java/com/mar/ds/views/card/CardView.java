@@ -3,6 +3,7 @@ package com.mar.ds.views.card;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.DeleteDialogWidget;
+import com.mar.ds.utils.FileUtils;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.mar.ds.views.card.status.CardStatusViewDialog;
@@ -99,6 +100,9 @@ public class CardView implements ContentView {
             Button dltBtn = new Button(new Icon(BAN), clk -> new DeleteDialogWidget(() -> {
                 appLayout.getRepositoryService().getCardRepository().delete(card);
                 appLayout.setContent(appLayout.getCardView().getContent());
+
+                FileUtils.deleteDir(appLayout.getEnv().getProperty("data.path") + "cards/" + card.getId());
+
             }));
             dltBtn.addThemeVariants(LUMO_TERTIARY);
             dltBtn.getStyle().set("color", "red");
@@ -132,6 +136,7 @@ public class CardView implements ContentView {
 
                             return card.getTitle().toLowerCase().contains(finalText)
                                     || card.getInfo().toLowerCase().contains(finalText)
+                                    || String.valueOf(card.getId()).contains(finalText)
                                     || card.getTagList().stream()
                                     .anyMatch(cardTypeTag -> cardTypeTag.getTitle().toLowerCase().contains(finalText));
                         }
