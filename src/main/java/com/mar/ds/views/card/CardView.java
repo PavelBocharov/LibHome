@@ -95,8 +95,14 @@ public class CardView implements ContentView {
                 .setHeader("Tags").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
         grid.addComponentColumn(this::getLinkIcon).setHeader("Link").setTextAlign(ColumnTextAlign.CENTER);
         grid.addComponentColumn(card -> {
+            // Open Info BTN
+            Button infoBtn = new Button(new Icon(VaadinIcon.INFO_CIRCLE), clk -> openInfo(card));
+            infoBtn.addThemeVariants(LUMO_TERTIARY);
+            infoBtn.getStyle().set("color", "green");
+            // Edit BTN
             Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> new UpdateCardView(appLayout, card));
-//            edtBtn.addThemeVariants(LUMO_TERTIARY);
+            edtBtn.addThemeVariants(LUMO_TERTIARY);
+            // Delete BN
             Button dltBtn = new Button(new Icon(BAN), clk -> new DeleteDialogWidget(() -> {
                 appLayout.getRepositoryService().getCardRepository().delete(card);
                 appLayout.setContent(appLayout.getCardView().getContent());
@@ -106,10 +112,9 @@ public class CardView implements ContentView {
             }));
             dltBtn.addThemeVariants(LUMO_TERTIARY);
             dltBtn.getStyle().set("color", "red");
-            return new HorizontalLayout(
-                    edtBtn, dltBtn
-            );
-        }).setTextAlign(ColumnTextAlign.END);
+
+            return new HorizontalLayout(infoBtn, edtBtn, dltBtn);
+        }).setAutoWidth(true).setTextAlign(ColumnTextAlign.END);
 
         // settings
         grid.setWidthFull();
@@ -187,6 +192,11 @@ public class CardView implements ContentView {
         header.setWidthFull();
         verticalLayout.add(header, grid, btns);
         return verticalLayout;
+    }
+
+    private void openInfo(Card card) {
+        CardInfoView info = new CardInfoView(appLayout, card);
+        appLayout.setContent(info.getContent());
     }
 
     private Component getGridColorValue(Supplier<Double> forColor) {

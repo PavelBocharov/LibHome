@@ -1,18 +1,17 @@
-# <img src="src/main/resources/static/img/icon/database.svg" width="30"/> Dark sun
+# <img src="src/main/resources/static/img/icon/database.svg" width="30"/> Lib Home
 
-![](src/main/resources/static/img/readmeFiles/dar_sun_screen.png)
+![](src/main/resources/static/img/readmeFiles/LibHome.png)
 
 ## Links
-* [Docker HUB](https://hub.docker.com/repository/docker/marolok/dark_sun/general)
-* [GitHub](https://github.com/PavelBocharov/DarkSun)
+* [Docker HUB](https://hub.docker.com/r/marolok/lib_home)
+* [GitHub](https://github.com/PavelBocharov/LibHome)
 
 ## Build and run
 ### <img src="src/main/resources/static/img/icon/arrow-right.png" width="16"/> Start application local
-1) Install min JDK8 - https://adoptopenjdk.net/
+1) Install min JDK17 - https://adoptopenjdk.net/
 2) Install NodeJS - https://nodejs.org/en/download/
     * Install nvm - [Windows](https://github.com/coreybutler/nvm-windows), [Linux](https://github.com/nvm-sh/nvm)
-3) In `Dark Sun Spring Run` edit `Environment variables` - set `dbPath` (path to SQLite db file).
-4) Start `Dark Sun Spring Run` profile.
+3) Start `Spring Run` profile.
     * In root generate files for **npm**.
 
 ### <img src="src/main/resources/static/img/icon/docker-icon.png" width="16"/> Build Docker image
@@ -20,12 +19,13 @@
    ```bash 
    mvn clean install -Pproduction
    ```
-2) Set DB path in [.env](./.env)
-    1) `PC_DB_PATH` - your DB file
-    2) `dbPath` - file in image
-3) Build image
+2) Build image
+      ```bash 
+   docker build --no-cache -t marolok/lib_home:1.2.0 .
+   ```
+3) Push image
    ```bash 
-   docker build --no-cache -t marolok/lib-home:1.0.0 .
+   docker push marolok/lib_home:1.2.0
    ```
 4) Set image version in [docker-compose.yml](./docker-compose.yml)
 5) Start `docker-compose`

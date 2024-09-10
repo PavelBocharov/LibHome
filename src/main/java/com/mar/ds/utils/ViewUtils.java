@@ -136,11 +136,21 @@ public class ViewUtils {
     public static Image getImageByResource(String pathInResource) throws IOException {
         URL imgUrl = Resources.getResource(pathInResource);
         byte[] img = Resources.asByteSource(imgUrl).read();
-        return new Image(
+
+        File file = FileUtils.getFile(imgUrl.getFile());
+
+        Image image = new Image(
                 new StreamResource(
-                        FileUtils.getFile(imgUrl.getFile()).getName(),
-                        () -> new ByteArrayInputStream(img)), String.format("Not load image: %s", pathInResource)
+                        file.getName(),
+                        () -> new ByteArrayInputStream(img)
+                ), String.format("Not load image: %s", pathInResource)
         );
+
+        BufferedImage myPicture = ImageIO.read(file);
+        image.setWidth(myPicture.getWidth(), Unit.PIXELS);
+        image.setHeight(myPicture.getHeight(), Unit.PIXELS);
+
+        return image;
     }
 
     public static TextField getTextField(String text, boolean enable) {

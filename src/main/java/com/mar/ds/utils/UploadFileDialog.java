@@ -10,15 +10,16 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
+import javax.imageio.ImageIO;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
 import static org.springframework.util.MimeTypeUtils.IMAGE_JPEG_VALUE;
@@ -72,31 +73,40 @@ public class UploadFileDialog extends Dialog {
 
         uploadFile.addSucceededListener(event -> {
             InputStream fileData = multiFileMemoryBuffer.getInputStream(event.getFileName());
+            String formatName = FilenameUtils.getExtension(event.getFileName());
             String uploadFileName = isCover
                     ? "cover." + FilenameUtils.getExtension(event.getFileName())
-                    : UUID.randomUUID().toString().replace("-", "") + "." + FilenameUtils.getExtension(event.getFileName());
+                    : UUID.randomUUID().toString().replace("-", "") + "." + formatName;
             int contentLength = (int) event.getContentLength();
             String mimeType = event.getMIMEType();
 
-            // Do something with the file data
-            // processFile(fileData, fileName, contentLength, mimeType);
-
             try {
                 BufferedInputStream bis = new BufferedInputStream(fileData);
-                ByteArrayOutputStream buf = new ByteArrayOutputStream();
-                for (int result = bis.read(); result != -1; result = bis.read()) {
-                    buf.write((byte) result);
+
+                BufferedImage inBufImg = ImageIO.read(bis);
+
+                int h = inBufImg.getHeight();
+                int maxH = Integer.parseInt(mainView.getEnv().getProperty("image.max.height", "600"));
+                int newW = inBufImg.getWidth();
+                int newH = inBufImg.getHeight();
+
+                if (h > maxH) {
+                    newH = maxH;
+                    newW = inBufImg.getWidth() * maxH / h;
                 }
-                byte[] uploadFileData = buf.toByteArray();
 
-                log.debug("SucceededListener --> filename: {}, size: {} byte, MIME: {}, byteLength: {}", uploadFileName, contentLength, mimeType, uploadFileData.length);
+                BufferedImage resizedImage = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics2D = resizedImage.createGraphics();
+                graphics2D.drawImage(inBufImg, 0, 0, newW, newH, null);
+                graphics2D.dispose();
 
-                FileUtils.writeByteArrayToFile(
-                        new File(this.rootDir + uploadFileName),
-                        uploadFileData
+                ImageIO.write(
+                        resizedImage,
+                        formatName,
+                        new File(this.rootDir + uploadFileName)
                 );
+
                 fileData.close();
-                buf.close();
                 bis.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);

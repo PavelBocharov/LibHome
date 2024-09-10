@@ -56,8 +56,6 @@ public class CardInfoView implements ContentView {
         String dataDir = appLayout.getEnv().getProperty("data.path");
         File fileDir = new File(dataDir + "cards/", +card.getId() + "/");
 
-        System.out.println("Spring env: " + appLayout.getEnv().getProperty("data.path", "NUL"));
-
         HorizontalLayout imageAndTitle = new HorizontalLayout();
         imageAndTitle.setPadding(false);
 
@@ -131,6 +129,15 @@ public class CardInfoView implements ContentView {
         cover.setMaxWidth(cover.getWidth());
         cover.setMaxHeight(cover.getHeight());
         cover.setSizeFull();
+        cover.addClickListener(
+                event -> new UploadFileDialog(
+                        appLayout,
+                        dataDir + "cards/" + card.getId() + "/cover/",
+                        true,
+                        1,
+                        () -> appLayout.setContent(this.getContent())
+                )
+        );
         Button updMainImage = new Button("New main image", VaadinIcon.UPLOAD_ALT.create());
         updMainImage.addClickListener(event -> new UploadFileDialog(
                         appLayout,
@@ -175,6 +182,7 @@ public class CardInfoView implements ContentView {
                 accordion.addOpenedChangeListener(event -> {
                     if (event.getOpenedIndex().isPresent()) {
                         if (event.getOpenedPanel().get().getContent().findFirst().get().equals(accImages)) {
+                            images.removeAll();
                             for (File file : imgFiles) {
                                 Image accImage = getImage(file.getAbsolutePath());
                                 accImage.setMaxWidth(accImage.getWidth());

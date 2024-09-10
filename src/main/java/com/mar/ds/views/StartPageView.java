@@ -26,10 +26,6 @@ public class StartPageView implements ContentView {
     public Component getContent() {
         try {
             Image image = getImageByResource("static/img/home_lib.png");
-            image.setWidthFull();
-            image.setMaxWidth(360.0f, Unit.PIXELS);
-
-
             VerticalLayout verticalLayout = new VerticalLayout(
                     new H3("LibHome - your book, game, music and other library."),
                     image,
