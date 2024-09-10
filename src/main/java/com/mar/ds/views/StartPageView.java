@@ -39,6 +39,7 @@ public class StartPageView implements ContentView {
             return verticalLayout;
 
         } catch (IOException e) {
+            e.printStackTrace();
             ViewUtils.showErrorMsg("ERROR: Load page.", e);
         }
         return null;

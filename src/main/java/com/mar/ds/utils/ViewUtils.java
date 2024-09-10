@@ -137,20 +137,12 @@ public class ViewUtils {
         URL imgUrl = Resources.getResource(pathInResource);
         byte[] img = Resources.asByteSource(imgUrl).read();
 
-        File file = FileUtils.getFile(imgUrl.getFile());
-
-        Image image = new Image(
+        return new Image(
                 new StreamResource(
-                        file.getName(),
+                        FileUtils.getFile(imgUrl.getFile()).getName(),
                         () -> new ByteArrayInputStream(img)
                 ), String.format("Not load image: %s", pathInResource)
         );
-
-        BufferedImage myPicture = ImageIO.read(file);
-        image.setWidth(myPicture.getWidth(), Unit.PIXELS);
-        image.setHeight(myPicture.getHeight(), Unit.PIXELS);
-
-        return image;
     }
 
     public static TextField getTextField(String text, boolean enable) {
