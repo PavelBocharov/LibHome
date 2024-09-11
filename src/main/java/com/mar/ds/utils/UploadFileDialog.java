@@ -11,8 +11,8 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.imgscalr.Scalr;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -84,21 +84,8 @@ public class UploadFileDialog extends Dialog {
                 BufferedInputStream bis = new BufferedInputStream(fileData);
 
                 BufferedImage inBufImg = ImageIO.read(bis);
-
-                int h = inBufImg.getHeight();
                 int maxH = Integer.parseInt(mainView.getEnv().getProperty("image.max.height", "600"));
-                int newW = inBufImg.getWidth();
-                int newH = inBufImg.getHeight();
-
-                if (h > maxH) {
-                    newH = maxH;
-                    newW = inBufImg.getWidth() * maxH / h;
-                }
-
-                BufferedImage resizedImage = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_RGB);
-                Graphics2D graphics2D = resizedImage.createGraphics();
-                graphics2D.drawImage(inBufImg, 0, 0, newW, newH, null);
-                graphics2D.dispose();
+                BufferedImage resizedImage = compressImage(inBufImg, maxH);
 
                 ImageIO.write(
                         resizedImage,
@@ -142,4 +129,15 @@ public class UploadFileDialog extends Dialog {
         return uploadFile;
     }
 
+    private BufferedImage compressImage(BufferedImage image, int maxHeight) {
+        int h = image.getHeight();
+        int targetWidth = image.getWidth();
+        int targetHeight = image.getHeight();
+
+        if (h > maxHeight) {
+            targetHeight = maxHeight;
+            targetWidth = image.getWidth() * maxHeight / h;
+        }
+        return Scalr.resize(image, targetWidth, targetHeight);
+    }
 }

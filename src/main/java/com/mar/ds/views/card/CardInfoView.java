@@ -62,7 +62,7 @@ public class CardInfoView implements ContentView {
         Label title = new Label(card.getTitle());
         HorizontalLayout headerInfo = new HorizontalLayout(
                 ViewUtils.getStatusIcon(card, false),
-                title
+                new Label("[" + card.getId() + "] " + card.getTitle())
         );
         headerInfo.setWidthFull();
 
