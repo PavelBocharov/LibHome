@@ -77,8 +77,6 @@ public class UploadFileDialog extends Dialog {
             String uploadFileName = isCover
                     ? "cover." + FilenameUtils.getExtension(event.getFileName())
                     : UUID.randomUUID().toString().replace("-", "") + "." + formatName;
-            int contentLength = (int) event.getContentLength();
-            String mimeType = event.getMIMEType();
 
             try {
                 BufferedInputStream bis = new BufferedInputStream(fileData);
@@ -87,15 +85,21 @@ public class UploadFileDialog extends Dialog {
                 int maxH = Integer.parseInt(mainView.getEnv().getProperty("image.max.height", "600"));
                 BufferedImage resizedImage = compressImage(inBufImg, maxH);
 
-                ImageIO.write(
-                        resizedImage,
-                        formatName,
-                        new File(this.rootDir + uploadFileName)
-                );
+                File dir = new File(this.rootDir);
+                if (!dir.exists()) {
+                    log.debug("Create image dir: {}", this.rootDir);
+                    dir.mkdirs();
+                    log.debug("Create image dir: {}... OK", this.rootDir);
+                }
+                log.debug("Create image file: {}", this.rootDir + uploadFileName);
+                File file = new File(this.rootDir + uploadFileName);
+                ImageIO.write(resizedImage, formatName, file);
+                log.debug("Create image file: {}... OK", this.rootDir + uploadFileName);
 
                 fileData.close();
                 bis.close();
             } catch (IOException e) {
+                ViewUtils.showErrorMsg("Cannot upload file", e);
                 throw new RuntimeException(e);
             }
         });
