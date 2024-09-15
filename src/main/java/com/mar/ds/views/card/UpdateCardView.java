@@ -39,7 +39,7 @@ import static com.mar.ds.utils.ViewUtils.setTextFieldValue;
 @Slf4j
 public class UpdateCardView {
 
-    public UpdateCardView(MainView mainView, Card updateCard) {
+    public UpdateCardView(MainView mainView, Card updateCard, Runnable afterUpdateEvent) {
         Dialog updateDialog = new Dialog();
         updateDialog.setMaxHeight(80, Unit.PERCENTAGE);
         updateDialog.setMaxWidth(80, Unit.PERCENTAGE);
@@ -135,7 +135,7 @@ public class UpdateCardView {
                 updBtn.setEnabled(true);
                 return;
             }
-            mainView.setContent(mainView.getCardView().getContent());
+            afterUpdateEvent.run();
             updateDialog.close();
         });
         updBtn.setWidthFull();

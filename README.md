@@ -1,10 +1,10 @@
 # <img src="src/main/resources/static/img/icon/database.svg" width="30"/> Lib Home
 
-![](src/main/resources/static/img/readmeFiles/LibHome.png)
-
 ## Links
 * [Docker HUB](https://hub.docker.com/r/marolok/lib_home)
 * [GitHub](https://github.com/PavelBocharov/LibHome)
+* [Build and run](#build-and-run)
+* [Problem and fix](#problem-and-fix)
 
 ## Build and run
 ### <img src="src/main/resources/static/img/icon/arrow-right.png" width="16"/> Start application local
@@ -21,11 +21,11 @@
    ```
 2) Build image
       ```bash 
-   docker build --no-cache -t marolok/lib_home:1.3.2 .
+   docker build --no-cache -t marolok/lib_home:1.4.0 .
    ```
 3) Push image
    ```bash 
-   docker push marolok/lib_home:1.3.2
+   docker push marolok/lib_home:1.4.0
    ```
 4) Set image version in [docker-compose.yml](./docker-compose.yml)
 5) Start `docker-compose`
@@ -36,6 +36,11 @@
    ```bash 
    docker-compose up
    ```
+## Screenshots
+<img src="src/main/resources/static/img/readmeFiles/LibHome.png" width="900"/></br>
+<img src="src/main/resources/static/img/readmeFiles/1.png" width="900"/></br>
+<img src="src/main/resources/static/img/readmeFiles/2.png" width="900"/></br>
+<img src="src/main/resources/static/img/readmeFiles/3.png" width="900"/></br>
 
 ## Problem and fix
 ### NodeJS code `ERR_OSSL_EVP_UNSUPPORTED`

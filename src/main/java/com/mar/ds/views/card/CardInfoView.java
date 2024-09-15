@@ -4,27 +4,28 @@ import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.UploadFileDialog;
 import com.mar.ds.utils.ViewUtils;
-import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.StreamResource;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -45,26 +46,54 @@ import static com.mar.ds.utils.ViewUtils.getImageByResource;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
-@RequiredArgsConstructor
-public class CardInfoView implements ContentView {
+public class CardInfoView extends Dialog {
 
     private final MainView appLayout;
     private final Card card;
 
-    @SneakyThrows
-    public VerticalLayout getContent() {
+    public CardInfoView(MainView appLayout, Card card) {
+        this.appLayout = appLayout;
+        this.card = card;
+
+
+        try {
+            this.add(loadData());
+        } catch (IOException e) {
+            e.printStackTrace();
+            ViewUtils.showErrorMsg("Load card info ERROR", e);
+        }
+
+        this.setWidth(70, Unit.PERCENTAGE);
+        this.setHeight(90, Unit.PERCENTAGE);
+    }
+
+    private VerticalLayout loadData() throws IOException {
+
         String dataDir = appLayout.getEnv().getProperty("data.path");
         File fileDir = new File(dataDir + "cards/", +card.getId() + "/");
 
         HorizontalLayout imageAndTitle = new HorizontalLayout();
         imageAndTitle.setPadding(false);
 
-        Label title = new Label(card.getTitle());
         HorizontalLayout headerInfo = new HorizontalLayout(
                 ViewUtils.getStatusIcon(card, false),
                 new Label("[" + card.getId() + "] " + card.getTitle())
         );
         headerInfo.setWidthFull();
+//        headerInfo.setAlignItems(FlexComponent.Alignment.END);
+        Button returnBtn = new Button(
+                VaadinIcon.ARROW_BACKWARD.create(),
+                buttonClickEvent -> closeBtn()
+        );
+
+        Div d = new Div();
+        d.setWidthFull();
+
+        HorizontalLayout header = new HorizontalLayout(returnBtn, d, headerInfo);
+//        header.setVerticalComponentAlignment(FlexComponent.Alignment.START, returnBtn);
+//        header.setVerticalComponentAlignment(FlexComponent.Alignment.END, headerInfo);
+//        header.setWidth(70, Unit.PERCENTAGE);
+        header.setWidthFull();
 
         // last update
         DatePicker lastUpdDate = new DatePicker("Last update", LocalDate.now());
@@ -111,7 +140,7 @@ public class CardInfoView implements ContentView {
         tags.select(card.getTagList());
 
         VerticalLayout cardInfo = new VerticalLayout(
-                headerInfo,
+//                headerInfo,
                 getTextField("Type", card.getCardType().getTitle()),
                 getTextField("Status", card.getCardStatus().getTitle()),
                 lastUpdDate,
@@ -135,7 +164,7 @@ public class CardInfoView implements ContentView {
                         dataDir + "cards/" + card.getId() + "/cover/",
                         true,
                         1,
-                        () -> appLayout.setContent(this.getContent())
+                        () -> this.close()
                 )
         );
         Button updMainImage = new Button("New main image", VaadinIcon.UPLOAD_ALT.create());
@@ -144,7 +173,7 @@ public class CardInfoView implements ContentView {
                         dataDir + "cards/" + card.getId() + "/cover/",
                         true,
                         1,
-                        () -> appLayout.setContent(this.getContent())
+                        this::reloadData
                 )
         );
         updMainImage.setWidthFull();
@@ -158,13 +187,12 @@ public class CardInfoView implements ContentView {
         imageAndTitle.add(imageInfo, cardInfo);
 
         TextArea textArea = new TextArea();
-        textArea.setSizeFull();
+        textArea.setWidthFull();
         textArea.setReadOnly(true);
         textArea.setLabel("Info");
         textArea.setValue(card.getInfo());
 
-        VerticalLayout data = new VerticalLayout();
-        data.setWidth(70, Unit.PERCENTAGE);
+        Div div = new Div();
 
         if (fileDir.exists()) {
 
@@ -176,6 +204,7 @@ public class CardInfoView implements ContentView {
                 VerticalLayout images = new VerticalLayout();
                 images.setId("acc_image_list");
                 images.setSizeFull();
+                images.setAlignItems(FlexComponent.Alignment.CENTER);
 
                 VerticalLayout accImages = getAccordionContent(images);
                 accordion.add("Images", accImages);
@@ -204,14 +233,24 @@ public class CardInfoView implements ContentView {
             accordion.add("Files", getAccordionContent(cardFiles));
             accordion.close();
 
-            data.add(imageAndTitle, textArea, accordion);
+            div.add(imageAndTitle, textArea, accordion);
         } else {
-            data.add(imageAndTitle, textArea);
+            div.add(imageAndTitle, textArea);
         }
+
+        Scroller data = new Scroller(div);
+        data.setScrollDirection(Scroller.ScrollDirection.VERTICAL);
+        data.getStyle()
+                .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
+                .set("padding", "var(--lumo-space-m)");
+//        data.setHeightFull();
+//        data.setWidth(70, Unit.PERCENTAGE);
+        data.setSizeFull();
 
         // Buttons
         Button backBtn = new Button("Back", VaadinIcon.ARROW_BACKWARD.create());
-        backBtn.addClickListener(buttonClickEvent -> appLayout.setContent(appLayout.getCardView().getContent()));
+//        backBtn.addClickListener(buttonClickEvent -> appLayout.setContent(appLayout.getCardView().getContent()));
+        backBtn.addClickListener(buttonClickEvent -> closeBtn());
         backBtn.setWidthFull();
 
         Button addFiles = new Button("Add files", VaadinIcon.UPLOAD.create());
@@ -220,13 +259,16 @@ public class CardInfoView implements ContentView {
                         dataDir + "cards/" + card.getId() + "/",
                         false,
                         10,
-                        () -> appLayout.setContent(this.getContent())
+                        this::reloadData
                 )
         );
         addFiles.setWidthFull();
 
         Button updBtn = new Button("Update", VaadinIcon.PENCIL.create());
-        updBtn.addClickListener(buttonClickEvent -> new UpdateCardView(appLayout, card));
+        updBtn.addClickListener(buttonClickEvent -> new UpdateCardView(appLayout, card, () -> {
+            this.reloadData();
+            appLayout.setContent(appLayout.getCardView().getContent());
+        }));
         updBtn.setWidthFull();
 
         HorizontalLayout footer = new HorizontalLayout(
@@ -238,11 +280,18 @@ public class CardInfoView implements ContentView {
 
         // create view
         VerticalLayout verticalLayout = new VerticalLayout(
+                header,
                 data,
                 footer
         );
+        verticalLayout.setSizeFull();
+//        verticalLayout.setWidth(70, Unit.PERCENTAGE);
+        verticalLayout.getStyle().set("padding", "0px");
         verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.START, header);
+//        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.CENTER, data);
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, footer);
+
         return verticalLayout;
     }
 
@@ -261,6 +310,12 @@ public class CardInfoView implements ContentView {
         return link;
     }
 
+    @SneakyThrows
+    private void reloadData() {
+        this.removeAll();
+        this.add(loadData());
+    }
+
     private Button getDeleteFileButton(File file) {
         Icon icon = VaadinIcon.CLOSE_CIRCLE.create();
         icon.setColor("red");
@@ -269,7 +324,7 @@ public class CardInfoView implements ContentView {
         btn.addClickListener(event -> {
             try {
                 FileUtils.delete(file);
-                appLayout.setContent(this.getContent());
+                reloadData();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -284,6 +339,11 @@ public class CardInfoView implements ContentView {
         textField.setValue(text);
         textField.setWidthFull();
         return textField;
+    }
+
+    private void closeBtn() {
+        appLayout.setContent(appLayout.getCardView().getContent());
+        this.close();
     }
 
 }

@@ -100,7 +100,11 @@ public class CardView implements ContentView {
             infoBtn.addThemeVariants(LUMO_TERTIARY);
             infoBtn.getStyle().set("color", "green");
             // Edit BTN
-            Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> new UpdateCardView(appLayout, card));
+            Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> new UpdateCardView(
+                    appLayout,
+                    card,
+                    () -> appLayout.setContent(appLayout.getCardView().getContent()))
+            );
             edtBtn.addThemeVariants(LUMO_TERTIARY);
             // Delete BN
             Button dltBtn = new Button(new Icon(BAN), clk -> new DeleteDialogWidget(() -> {
@@ -121,8 +125,7 @@ public class CardView implements ContentView {
         // edit
         grid.addItemDoubleClickListener(
                 dialogItemDoubleClickEvent -> {
-                    CardInfoView info = new CardInfoView(appLayout, dialogItemDoubleClickEvent.getItem());
-                    appLayout.setContent(info.getContent());
+                    openInfo(dialogItemDoubleClickEvent.getItem());
                 }
         );
 
@@ -131,27 +134,50 @@ public class CardView implements ContentView {
         searchField.setPlaceholder("Search");
         searchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
+        searchField.setClearButtonVisible(true);
         searchField.addValueChangeListener(e -> {
             List<Card> cards = appLayout.getRepositoryService().getCardRepository().findAll();
             String text = getTextFieldValue(searchField);
             if (text != null) {
-                grid.setItems(cards.stream().filter(
-                        card -> {
-                            String finalText = text.trim().toLowerCase();
-
-                            return card.getTitle().toLowerCase().contains(finalText)
+                String finalText = text.trim().toLowerCase();
+                if (!finalText.isEmpty()) {
+                    grid.setItems(cards.stream().filter(
+                            card -> card.getTitle().toLowerCase().contains(finalText)
                                     || card.getInfo().toLowerCase().contains(finalText)
                                     || String.valueOf(card.getId()).contains(finalText)
                                     || card.getTagList().stream()
-                                    .anyMatch(cardTypeTag -> cardTypeTag.getTitle().toLowerCase().contains(finalText));
-                        }
-                ));
+                                    .anyMatch(cardTypeTag -> cardTypeTag.getTitle().toLowerCase().contains(finalText))
+                    ));
+                } else {
+                    grid.setItems(cards);
+                }
+            } else {
+                grid.setItems(cards);
             }
         });
 
         // value
         reloadGrid();
+
         // down buttons
+        HorizontalLayout btns = getBtns();
+
+        // create view
+        HorizontalLayout header = new HorizontalLayout(label, searchField);
+        header.setVerticalComponentAlignment(FlexComponent.Alignment.START, label);
+        header.setVerticalComponentAlignment(FlexComponent.Alignment.END, searchField);
+        header.setWidthFull();
+
+        VerticalLayout verticalLayout = new VerticalLayout(header, grid, btns);
+        verticalLayout.setSizeFull();
+        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.START, header);
+        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.CENTER, grid);
+        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, btns);
+
+        return verticalLayout;
+    }
+
+    private HorizontalLayout getBtns() {
         Button crtBtn = new Button("Add", new Icon(PLUS), click -> new CreateCardView(appLayout));
         crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
@@ -178,25 +204,12 @@ public class CardView implements ContentView {
                 cardTypeTagView
         );
         btns.setWidthFull();
-
-        // create view
-        VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.setSizeFull();
-        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.START, label);
-        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.CENTER, grid);
-        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, btns);
-
-        HorizontalLayout header = new HorizontalLayout(label, searchField);
-        header.setVerticalComponentAlignment(FlexComponent.Alignment.START, label);
-        header.setVerticalComponentAlignment(FlexComponent.Alignment.END, searchField);
-        header.setWidthFull();
-        verticalLayout.add(header, grid, btns);
-        return verticalLayout;
+        return btns;
     }
 
     private void openInfo(Card card) {
         CardInfoView info = new CardInfoView(appLayout, card);
-        appLayout.setContent(info.getContent());
+        info.open();
     }
 
     private Component getGridColorValue(Supplier<Double> forColor) {
