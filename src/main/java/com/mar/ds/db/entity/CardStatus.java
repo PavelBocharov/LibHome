@@ -36,6 +36,10 @@ public class CardStatus implements Serializable, HasId {
     @Column(name = "color", nullable = false, unique = true)
     private String color;
 
+    @Column(name = "icon", nullable = false, unique = false)
+    @ColumnDefault("BULLSEYE")
+    private String icon;
+
     @Column(name = "is_rate", nullable = false)
     @ColumnDefault("true")
     private Boolean isRate;

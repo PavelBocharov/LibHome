@@ -26,10 +26,16 @@ public class UpdateCardStatusView {
         ViewUtils.setTextFieldValue(textField, updatedStatus.getTitle());
 
         TextField colorField = new TextField();
-        colorField.setPattern("^#(?:[0-9a-fA-F]{3}){1,2}$");
+        colorField.setHelperText("Use HEX or string text (red, green ant etc.)");
         colorField.setWidthFull();
         colorField.setLabel("Color");
         ViewUtils.setTextFieldValue(colorField, updatedStatus.getColor());
+
+        TextField iconField = new TextField();
+        iconField.setHelperText("Use Vaadin icon name");
+        iconField.setWidthFull();
+        iconField.setLabel("Icon");
+        ViewUtils.setTextFieldValue(iconField, updatedStatus.getIcon());
 
         Checkbox isRate = new Checkbox("Is rate", updatedStatus.getIsRate());
 
@@ -38,6 +44,7 @@ public class UpdateCardStatusView {
             try {
                 updatedStatus.setTitle(ViewUtils.getTextFieldValue(textField));
                 updatedStatus.setColor(ViewUtils.getTextFieldValue(colorField));
+                updatedStatus.setIcon(ViewUtils.getTextFieldValue(iconField));
                 updatedStatus.setIsRate(isRate.getValue());
                 cardStatusView.getRepository().save(updatedStatus);
             } catch (Exception ex) {
@@ -56,6 +63,7 @@ public class UpdateCardStatusView {
                 new Label("Update card status"),
                 textField,
                 colorField,
+                iconField,
                 isRate,
                 new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
         );

@@ -46,6 +46,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.CLOSE_SMALL;
 import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
@@ -277,21 +279,31 @@ public class ViewUtils {
     }
 
     public static Icon getStatusIcon(Card card, boolean hasUpd) {
-        Icon icon = VaadinIcon.BULLSEYE.create();
+        Icon icon;
 
         if (card != null && card.getCardStatus() != null && isNotBlank(card.getCardStatus().getColor())) {
             if (hasUpd) {
-                icon = VaadinIcon.EXCLAMATION_CIRCLE.create();
+                icon = VaadinIcon.BELL.create();
                 icon.setColor("#0B6623");
             } else {
+                icon = getIconByText(card.getCardStatus().getIcon(), VaadinIcon.BULLSEYE.create());
                 icon.setColor(card.getCardStatus().getColor());
             }
             icon.getElement().setAttribute("title", card.getInfo());
         } else {
+            icon = VaadinIcon.BULLSEYE.create();
             icon.setColor("grey");
         }
 
         return icon;
+    }
+
+    private static Icon getIconByText(@NotBlank String iconName, @NotNull Icon defaultIcon) {
+        try {
+            return VaadinIcon.valueOf(iconName.toUpperCase()).create();
+        } catch (Exception ex) {
+            return defaultIcon;
+        }
     }
 
     public static <T extends HasId> MultiselectComboBox<T> setMultiSelectComboBoxValue(

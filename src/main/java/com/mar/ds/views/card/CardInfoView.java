@@ -90,9 +90,6 @@ public class CardInfoView extends Dialog {
         d.setWidthFull();
 
         HorizontalLayout header = new HorizontalLayout(returnBtn, d, headerInfo);
-//        header.setVerticalComponentAlignment(FlexComponent.Alignment.START, returnBtn);
-//        header.setVerticalComponentAlignment(FlexComponent.Alignment.END, headerInfo);
-//        header.setWidth(70, Unit.PERCENTAGE);
         header.setWidthFull();
 
         // last update
@@ -164,7 +161,7 @@ public class CardInfoView extends Dialog {
                         dataDir + "cards/" + card.getId() + "/cover/",
                         true,
                         1,
-                        () -> this.close()
+                        this::reloadData
                 )
         );
         Button updMainImage = new Button("New main image", VaadinIcon.UPLOAD_ALT.create());

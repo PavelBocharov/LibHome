@@ -25,9 +25,14 @@ public class CreateCardStatusView {
         textField.setLabel("Title");
 
         TextField colorField = new TextField();
-        colorField.setPattern("^#(?:[0-9a-fA-F]{3}){1,2}$");
+        colorField.setHelperText("Use HEX or string text (red, green ant etc.)");
         colorField.setWidthFull();
         colorField.setLabel("Color");
+
+        TextField iconField = new TextField();
+        iconField.setHelperText("Use Vaadin icon name");
+        iconField.setWidthFull();
+        iconField.setLabel("Icon");
 
         Checkbox isRate = new Checkbox("Is rate", false);
 
@@ -38,6 +43,7 @@ public class CreateCardStatusView {
                         CardStatus.builder()
                                 .title(ViewUtils.getTextFieldValue(textField))
                                 .color(ViewUtils.getTextFieldValue(colorField))
+                                .icon(ViewUtils.getTextFieldValue(iconField))
                                 .isRate(isRate.getValue())
                                 .build()
                 );
@@ -57,6 +63,7 @@ public class CreateCardStatusView {
                 new Label("Create card status"),
                 textField,
                 colorField,
+                iconField,
                 isRate,
                 new HorizontalLayout(createBtn, ViewUtils.getCloseButton(createDialog))
         );
