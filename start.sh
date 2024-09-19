@@ -1,1 +1,1 @@
-/opt/app/java/jdk8u372-b07/bin/java -jar -Dspring.profiles.active=production /opt/app/japp.jar
+/home/marolok/.jdks/temurin-17.0.12/bin/java -jar -Ddata.path=/home/marolok/IdeaProjects/LibHome/data/test/ -Ddb.file=test.db -Dserver.port=8080 -Dspring.profiles.active=production ./target/lib-home*.jar
