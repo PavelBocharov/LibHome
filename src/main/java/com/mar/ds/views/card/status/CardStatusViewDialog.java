@@ -1,5 +1,6 @@
 package com.mar.ds.views.card.status;
 
+import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.jpa.CardStatusRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
@@ -13,9 +14,13 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import static org.springframework.util.CollectionUtils.isEmpty;
+
+@Slf4j
 public class CardStatusViewDialog {
     private final MainView appLayout;
     private Dialog dialog;
@@ -52,8 +57,19 @@ public class CardStatusViewDialog {
             Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> {
                 try {
                     new DeleteDialogWidget(() -> {
-                        getRepository().delete(cardStatus);
-                        reloadData();
+                        List<Card> cards = appLayout.getRepositoryService().getCardRepository().findByCardStatus(cardStatus);
+                        if (isEmpty(cards)) {
+                            log.info("Not find cards by status: {}. Delete status.", cardStatus);
+                            getRepository().delete(cardStatus);
+                            reloadData();
+                        } else {
+                            log.warn("Find cards by status: {}, list: {}", cardStatus, cards);
+                            ViewUtils.showErrorMsg(
+                                    "Delete card status ERROR",
+                                    new Exception(String.format("Find cards with status: '%s', count: %d.", cardStatus.getTitle(), cards.size()))
+                            );
+                        }
+
                     });
                 } catch (Exception ex) {
                     ViewUtils.showErrorMsg("ERROR", ex);

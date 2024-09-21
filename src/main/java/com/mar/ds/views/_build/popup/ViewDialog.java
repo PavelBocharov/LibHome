@@ -60,17 +60,7 @@ public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaReposito
             name.setWidthFull();
             name.setValue(getText(entity));
 
-            Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> {
-                try {
-                    new DeleteDialogWidget(() -> {
-                        getRepository().delete(entity);
-                        reloadData();
-                    });
-                } catch (Exception ex) {
-                    ViewUtils.showErrorMsg("Create ERROR", ex);
-                    return;
-                }
-            });
+            Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> deleteData(entity));
             dltBtn.getStyle().set("color", "red");
 
             Button uptBtn = new Button(
@@ -96,6 +86,17 @@ public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaReposito
                 docTypeList,
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(dialog))
         );
+    }
+
+    protected void deleteData(E entity) {
+        try {
+            new DeleteDialogWidget(() -> {
+                getRepository().delete(entity);
+                reloadData();
+            });
+        } catch (Exception ex) {
+            ViewUtils.showErrorMsg("Create ERROR", ex);
+        }
     }
 
     private String getLabel() {

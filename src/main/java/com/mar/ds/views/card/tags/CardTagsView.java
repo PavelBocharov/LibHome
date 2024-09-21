@@ -1,5 +1,6 @@
 package com.mar.ds.views.card.tags;
 
+import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.ViewUtils;
@@ -18,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -49,8 +52,18 @@ public class CardTagsView {
                             new Button(
                                     VaadinIcon.CLOSE_CIRCLE.create(),
                                     event -> {
-                                        mainView.getRepositoryService().getCardTypeTagRepository().delete(tag);
-                                        reloadData();
+                                        List<Card> cards = mainView.getRepositoryService().getCardRepository().findByTagIn(tag.getId());
+                                        if (isEmpty(cards)) {
+                                            log.info("Delete card status tag: {}", tag);
+                                            mainView.getRepositoryService().getCardTypeTagRepository().delete(tag);
+                                            reloadData();
+                                        } else {
+                                            log.warn("Find cards with status tag: {}, list: {}", tag, cards);
+                                            ViewUtils.showErrorMsg(
+                                                    "Delete card type tag ERROR",
+                                                    new Exception(String.format("Find cards with type tag: '%s', count: %d.", tag.getTitle(), cards.size()))
+                                            );
+                                        }
                                     }),
                             new Button(
                                     VaadinIcon.PENCIL.create(),

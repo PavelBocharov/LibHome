@@ -87,7 +87,7 @@ public class CreateCardView {
         cardTypeListSelect.addValueChangeListener(event -> {
             tags.deselectAll();
             List<CardTypeTag> tagList = mainView.getRepositoryService().getCardTypeTagRepository().findByCardType(event.getValue());
-            log.debug("load tagList: {}", tagList);
+            log.info("Load tagList: {}", tagList);
             tags.setItems(tagList);
         });
         // link

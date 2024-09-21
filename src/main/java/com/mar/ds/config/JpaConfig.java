@@ -81,14 +81,13 @@ public class JpaConfig {
 
     @Bean(destroyMethod = "", name = "EmbeddedDataSource")
     public DataSource dataSource() {
-        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.driverClassName("org.sqlite.JDBC");
-
         String dbAbsPath = getDbPath().getAbsolutePath();
-        log.debug("Data path: {}, DB path: {}", dataPath, dbAbsPath);
-        dataSourceBuilder.url("jdbc:sqlite:" + dbAbsPath);
-        dataSourceBuilder.type(SQLiteDataSource.class);
-        return dataSourceBuilder.build();
+        log.info("Data path: {}, DB path: {}", dataPath, dbAbsPath);
+        return DataSourceBuilder.create()
+                .driverClassName("org.sqlite.JDBC")
+                .url("jdbc:sqlite:" + dbAbsPath)
+                .type(SQLiteDataSource.class)
+                .build();
     }
 
     private File getDbPath() {
