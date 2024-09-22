@@ -10,6 +10,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -45,36 +46,37 @@ public class CardTagsView {
         cardTypeListSelect.setWidthFull();
 
         tagsGrid = new Grid<>();
-        tagsGrid.addColumn(CardTypeTag::getId).setHeader("ID").setAutoWidth(true).setTextAlign(ColumnTextAlign.START);
-        tagsGrid.addColumn(CardTypeTag::getTitle).setHeader("Title").setAutoWidth(true).setTextAlign(ColumnTextAlign.CENTER);
+        tagsGrid.addColumn(CardTypeTag::getId).setHeader("ID").setAutoWidth(true);
+        tagsGrid.addColumn(CardTypeTag::getTitle).setHeader("Title").setAutoWidth(true);
         tagsGrid.addComponentColumn(tag -> {
+                    Button dltBtn = new Button(
+                            VaadinIcon.CLOSE_CIRCLE.create(),
+                            event -> {
+                                List<Card> cards = mainView.getRepositoryService().getCardRepository().findByTagIn(tag.getId());
+                                if (isEmpty(cards)) {
+                                    log.info("Delete card status tag: {}", tag);
+                                    mainView.getRepositoryService().getCardTypeTagRepository().delete(tag);
+                                    reloadData();
+                                } else {
+                                    log.warn("Find cards with status tag: {}, list: {}", tag, cards);
+                                    ViewUtils.showErrorMsg(
+                                            "Delete card type tag ERROR",
+                                            new Exception(String.format("Find cards with type tag: '%s', count: %d.", tag.getTitle(), cards.size()))
+                                    );
+                                }
+                            });
+                    dltBtn.getStyle().set("color", "red");
                     HorizontalLayout btns = new HorizontalLayout(
-                            new Button(
-                                    VaadinIcon.CLOSE_CIRCLE.create(),
-                                    event -> {
-                                        List<Card> cards = mainView.getRepositoryService().getCardRepository().findByTagIn(tag.getId());
-                                        if (isEmpty(cards)) {
-                                            log.info("Delete card status tag: {}", tag);
-                                            mainView.getRepositoryService().getCardTypeTagRepository().delete(tag);
-                                            reloadData();
-                                        } else {
-                                            log.warn("Find cards with status tag: {}, list: {}", tag, cards);
-                                            ViewUtils.showErrorMsg(
-                                                    "Delete card type tag ERROR",
-                                                    new Exception(String.format("Find cards with type tag: '%s', count: %d.", tag.getTitle(), cards.size()))
-                                            );
-                                        }
-                                    }),
+                            dltBtn,
                             new Button(
                                     VaadinIcon.PENCIL.create(),
                                     event -> {
                                         new UpdateCardTagsView(mainView, this, tag).showDialog();
                                     })
                     );
-                    btns.setWidthFull();
                     return btns;
                 }
-        ).setAutoWidth(true).setTextAlign(ColumnTextAlign.END);
+        ).setAutoWidth(true);
         tagsGrid.setWidthFull();
         tagsGrid.setHeightFull();
 //        tagsGrid.setHeight(70, Unit.PERCENTAGE);
@@ -101,6 +103,7 @@ public class CardTagsView {
 
         VerticalLayout data =
                 new VerticalLayout(
+                        new Label("Type tag list"),
                         cardTypeListSelect,
                         tagsGrid,
                         btns

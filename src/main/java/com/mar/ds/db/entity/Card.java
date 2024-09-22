@@ -57,6 +57,9 @@ public class Card implements Serializable, HasId {
     @Column(name = "last_update", nullable = false)
     private Date lastUpdate;
 
+    @Column(name = "engine", nullable = true)
+    private GameEngine engine;
+
     @OneToOne(optional = false)
     private CardType cardType;
 

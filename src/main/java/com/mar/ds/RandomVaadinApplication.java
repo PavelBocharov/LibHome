@@ -8,8 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @NpmPackage(value = "@babel/plugin-proposal-object-rest-spread", version = "^7.20.7")
 public class RandomVaadinApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(RandomVaadinApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(RandomVaadinApplication.class, args);
+    }
 
 }

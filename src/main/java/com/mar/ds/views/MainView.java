@@ -30,16 +30,14 @@ import java.util.Properties;
 public class MainView extends AppLayout {
 
     @Getter
+    private final CardView cardView;
+    private final StartPageView startPageView;
+    @Getter
     @Autowired
     private RepositoryService repositoryService;
-
     @Getter
     @Autowired
     private Environment env;
-
-    @Getter
-    private final CardView cardView;
-    private final StartPageView startPageView;
 
     public MainView() throws IOException {
         cardView = new CardView(this);

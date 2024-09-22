@@ -4,6 +4,7 @@ import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
+import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
@@ -25,6 +26,7 @@ import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -60,6 +62,13 @@ public class UpdateCardView {
         BigDecimalField point = new BigDecimalField("Point");
         point.setWidthFull();
         setBigDecimalFieldValue(point, updateCard.getPoint());
+        // engine
+        Select<GameEngine> engineSelect = new Select<>(GameEngine.values());
+        engineSelect.setLabel("Engine");
+        engineSelect.setEmptySelectionAllowed(false);
+        engineSelect.setTextRenderer(GameEngine::getName);
+        engineSelect.setWidthFull();
+        ViewUtils.setSelectValue(engineSelect, updateCard.getEngine(), List.of(GameEngine.values()));
         // last update
         DatePicker lastUpdDate = new DatePicker("Last update", LocalDate.now());
         lastUpdDate.setWidthFull();
@@ -125,6 +134,7 @@ public class UpdateCardView {
                 updateCard.setTitle(getTextFieldValue(cardTitle));
                 updateCard.setInfo(getTextFieldValue(infoArea));
                 updateCard.setLink(getTextFieldValue(link));
+                updateCard.setEngine(engineSelect.getValue());
                 updateCard.setCardStatus(cardStatusListSelect.getValue());
                 updateCard.setCardType(cardTypeListSelect.getValue());
                 updateCard.setPoint(getDoubleValue(point));
@@ -149,6 +159,7 @@ public class UpdateCardView {
                 cardTitle,
                 point,
                 link,
+                engineSelect,
                 lastUpdDate,
                 lastGameDate,
                 cardStatusListSelect,

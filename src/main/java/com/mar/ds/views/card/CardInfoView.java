@@ -45,7 +45,8 @@ import static com.mar.ds.utils.ViewUtils.getAccordionContent;
 import static com.mar.ds.utils.ViewUtils.getImage;
 import static com.mar.ds.utils.ViewUtils.getImageByResource;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
+import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 @Slf4j
 public class CardInfoView extends Dialog {
@@ -141,6 +142,7 @@ public class CardInfoView extends Dialog {
 //                headerInfo,
                 getTextField("Type", card.getCardType().getTitle()),
                 getTextField("Status", card.getCardStatus().getTitle()),
+                getTextField("Engine", card.getEngine() == null ? "---" : card.getEngine().getName()),
                 lastUpdDate,
                 lastGameDate,
                 link,

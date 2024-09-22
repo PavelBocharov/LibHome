@@ -24,8 +24,6 @@ import java.util.UUID;
 import javax.imageio.ImageIO;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
-import static org.springframework.util.MimeTypeUtils.IMAGE_JPEG_VALUE;
-import static org.springframework.util.MimeTypeUtils.IMAGE_PNG_VALUE;
 
 @Slf4j
 public class UploadFileDialog extends Dialog {
@@ -101,16 +99,11 @@ public class UploadFileDialog extends Dialog {
 
         String maxFileSize = mainView.getEnv().getProperty("spring.servlet.multipart.max-file-size", "10MB");
         Integer fileSize = Integer.parseInt(maxFileSize.substring(0, maxFileSize.length() - 2)) * 1024 * 1024;
-        uploadFile.setMaxFileSize(fileSize);
-        uploadFile.setAcceptedFileTypes(
-                uploadFileTypes.toArray(new String[0])
-        );
 
-        uploadFile.setWidth(90, Unit.PERCENTAGE);
+        uploadFile.setMaxFileSize(fileSize);
+        uploadFile.setAcceptedFileTypes(uploadFileTypes.toArray(new String[0]));
+        uploadFile.setWidth(94, Unit.PERCENTAGE);
         uploadFile.setHeight(75, Unit.PERCENTAGE);
-        Button uploadBtn = new Button("Upload file...", new Icon(VaadinIcon.UPLOAD));
-        uploadBtn.setWidthFull();
-        uploadFile.setUploadButton(uploadBtn);
         uploadFile.setAutoUpload(true);
         uploadFile.setMaxFiles(countFiles);
         uploadFile.setDropAllowed(true);

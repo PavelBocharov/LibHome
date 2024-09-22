@@ -4,7 +4,6 @@ import com.mar.ds.utils.ViewUtils;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Image;
@@ -49,7 +48,6 @@ public class StartPageView implements ContentView {
         Button button = new Button(title, new Icon(icon));
         button.setHeightFull();
         button.addClickListener(listener);
-//        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         return button;
     }
 }

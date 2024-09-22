@@ -4,6 +4,7 @@ import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
+import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
@@ -52,6 +53,13 @@ public class CreateCardView {
         // point
         BigDecimalField point = new BigDecimalField("Point");
         point.setWidthFull();
+        // engine
+        Select<GameEngine> engineSelect = new Select<>(GameEngine.values());
+        engineSelect.setLabel("Engine");
+        engineSelect.setEmptySelectionAllowed(false);
+        engineSelect.setTextRenderer(GameEngine::getName);
+        engineSelect.setWidthFull();
+        engineSelect.setValue(GameEngine.RENPY);
         // last update
         DatePicker lastUpdDate = new DatePicker("Last update", LocalDate.now());
         lastUpdDate.setWidthFull();
@@ -106,6 +114,7 @@ public class CreateCardView {
                                         .title(getTextFieldValue(cardTitle))
                                         .info(getTextFieldValue(infoArea))
                                         .link(getTextFieldValue(link))
+                                        .engine(engineSelect.getValue())
                                         .point(getDoubleValue(point))
                                         .cardStatus(cardStatusListSelect.getValue())
                                         .cardType(cardTypeListSelect.getValue())
@@ -131,6 +140,7 @@ public class CreateCardView {
                 cardTitle,
                 point,
                 link,
+                engineSelect,
                 lastUpdDate,
                 lastGameDate,
                 cardStatusListSelect,
