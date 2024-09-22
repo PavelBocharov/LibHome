@@ -68,6 +68,7 @@ public class CreateCardView {
         cardStatusListSelect.setTextRenderer(CardStatus::getTitle);
         cardStatusListSelect.setDataProvider(new ListDataProvider<>(cardStatusList));
         cardStatusListSelect.setWidthFull();
+        cardStatusListSelect.setRequiredIndicatorVisible(true);
         // type
         List<CardType> cardTypeList = mainView.getRepositoryService().getCardTypeRepository().findAll();
         Select<CardType> cardTypeListSelect = new Select<>();
@@ -76,6 +77,7 @@ public class CreateCardView {
         cardTypeListSelect.setTextRenderer(CardType::getTitle);
         cardTypeListSelect.setDataProvider(new ListDataProvider<>(cardTypeList));
         cardTypeListSelect.setWidthFull();
+        cardTypeListSelect.setRequiredIndicatorVisible(true);
         // type tags
         MultiselectComboBox<CardTypeTag> tags = new MultiselectComboBox<>();
         tags.setLabel("Tags");

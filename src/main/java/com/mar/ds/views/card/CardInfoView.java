@@ -38,12 +38,14 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Set;
 
 import static com.mar.ds.utils.ViewUtils.findImage;
 import static com.mar.ds.utils.ViewUtils.getAccordionContent;
 import static com.mar.ds.utils.ViewUtils.getImage;
 import static com.mar.ds.utils.ViewUtils.getImageByResource;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.springframework.http.MediaType.*;
 
 @Slf4j
 public class CardInfoView extends Dialog {
@@ -54,7 +56,6 @@ public class CardInfoView extends Dialog {
     public CardInfoView(MainView appLayout, Card card) {
         this.appLayout = appLayout;
         this.card = card;
-
 
         try {
             this.add(loadData());
@@ -161,6 +162,7 @@ public class CardInfoView extends Dialog {
                         dataDir + "cards/" + card.getId() + "/cover/",
                         true,
                         1,
+                        Set.of(IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE),
                         this::reloadData
                 )
         );
@@ -170,6 +172,7 @@ public class CardInfoView extends Dialog {
                         dataDir + "cards/" + card.getId() + "/cover/",
                         true,
                         1,
+                        Set.of(IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE),
                         this::reloadData
                 )
         );
@@ -240,13 +243,10 @@ public class CardInfoView extends Dialog {
         data.getStyle()
                 .set("border-bottom", "1px solid var(--lumo-contrast-20pct)")
                 .set("padding", "var(--lumo-space-m)");
-//        data.setHeightFull();
-//        data.setWidth(70, Unit.PERCENTAGE);
         data.setSizeFull();
 
         // Buttons
         Button backBtn = new Button("Back", VaadinIcon.ARROW_BACKWARD.create());
-//        backBtn.addClickListener(buttonClickEvent -> appLayout.setContent(appLayout.getCardView().getContent()));
         backBtn.addClickListener(buttonClickEvent -> closeBtn());
         backBtn.setWidthFull();
 
@@ -256,6 +256,7 @@ public class CardInfoView extends Dialog {
                         dataDir + "cards/" + card.getId() + "/",
                         false,
                         10,
+                        Set.of(),
                         this::reloadData
                 )
         );

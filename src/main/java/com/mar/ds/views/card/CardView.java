@@ -10,9 +10,9 @@ import com.mar.ds.views.card.status.CardStatusViewDialog;
 import com.mar.ds.views.card.tags.CardTagsView;
 import com.mar.ds.views.card.type.CardTypeViewDialog;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Label;
@@ -24,6 +24,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.RequiredArgsConstructor;
+import org.vaadin.klaudeta.PaginatedGrid;
 
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
@@ -45,14 +46,14 @@ public class CardView implements ContentView {
 
     private final MainView appLayout;
 
-    private Grid<Card> grid;
+    private PaginatedGrid<Card> grid;
 
     public VerticalLayout getContent() {
         H2 label = new H2("Card list");
         label.setWidthFull();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         // TABLE
-        grid = new Grid<>();
+        grid = new PaginatedGrid<>();
 
         // column
         grid.addColumn(Card::getId).setHeader("ID").setAutoWidth(true).setTextAlign(ColumnTextAlign.START);
@@ -122,6 +123,8 @@ public class CardView implements ContentView {
 
         // settings
         grid.setWidthFull();
+        grid.setPageSize(15);
+        grid.setPaginatorSize(3);
         // edit
         grid.addItemDoubleClickListener(
                 dialogItemDoubleClickEvent -> {
@@ -155,6 +158,7 @@ public class CardView implements ContentView {
                 grid.setItems(cards);
             }
         });
+        label.getStyle().set("margin", "var(--lumo-space-m)");
 
         // value
         reloadGrid();
@@ -168,10 +172,14 @@ public class CardView implements ContentView {
         header.setVerticalComponentAlignment(FlexComponent.Alignment.END, searchField);
         header.setWidthFull();
 
+        header.setMaxHeight(5, Unit.PERCENTAGE);
+        grid.setHeight(80, Unit.PERCENTAGE);
+        btns.setMaxHeight(5, Unit.PERCENTAGE);
+
         VerticalLayout verticalLayout = new VerticalLayout(header, grid, btns);
         verticalLayout.setSizeFull();
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.START, header);
-        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.CENTER, grid);
+//        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.CENTER, grid);
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, btns);
 
         return verticalLayout;

@@ -95,6 +95,7 @@ public class UpdateCardView {
         cardTypeListSelect.setTextRenderer(CardType::getTitle);
         cardTypeListSelect.setDataProvider(new ListDataProvider<>(cardTypeList));
         cardTypeListSelect.setWidthFull();
+        cardTypeListSelect.setRequiredIndicatorVisible(true);
         setSelectValue(cardTypeListSelect, updateCard.getCardType(), cardTypeList);
         // type tags
         MultiselectComboBox<CardTypeTag> tags = new MultiselectComboBox<>();
@@ -104,6 +105,7 @@ public class UpdateCardView {
         tags.setWidthFull();
         tags.setAllowCustomValues(false);
         tags.setClearButtonVisible(true);
+        tags.setRequiredIndicatorVisible(true);
         cardTypeListSelect.addValueChangeListener(event -> {
             tags.deselectAll();
             List<CardTypeTag> tagList = mainView.getRepositoryService().getCardTypeTagRepository().findByCardType(event.getValue());

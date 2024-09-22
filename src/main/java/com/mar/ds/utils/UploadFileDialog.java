@@ -10,6 +10,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.imgscalr.Scalr;
 
@@ -18,6 +19,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 
@@ -34,12 +36,14 @@ public class UploadFileDialog extends Dialog {
     private String rootDir;
     private int countFiles;
     private boolean isCover;
+    private Set<String> uploadFileTypes;
 
-    public UploadFileDialog(MainView mainView, String rootDir, boolean isCover, int countFiles, Runnable afterUploadEvent) {
+    public UploadFileDialog(MainView mainView, String rootDir, boolean isCover, int countFiles, Set<String> uploadFileTypes, Runnable afterUploadEvent) {
         this.mainView = mainView;
         this.rootDir = rootDir;
         this.countFiles = countFiles;
         this.isCover = isCover;
+        this.uploadFileTypes = uploadFileTypes;
 
         Dialog dialog = new Dialog();
         dialog.setCloseOnEsc(true);
@@ -68,36 +72,19 @@ public class UploadFileDialog extends Dialog {
     }
 
     private Upload initAndGetUploadView() {
+        checkRootDir();
+        log.info("Init upload view");
         MultiFileMemoryBuffer multiFileMemoryBuffer = new MultiFileMemoryBuffer();
         uploadFile = new Upload(multiFileMemoryBuffer);
-
         uploadFile.addSucceededListener(event -> {
-            InputStream fileData = multiFileMemoryBuffer.getInputStream(event.getFileName());
-            String formatName = FilenameUtils.getExtension(event.getFileName());
-            String uploadFileName = isCover
-                    ? "cover." + FilenameUtils.getExtension(event.getFileName())
-                    : UUID.randomUUID().toString().replace("-", "") + "." + formatName;
-
-            try {
-                BufferedInputStream bis = new BufferedInputStream(fileData);
-
-                BufferedImage inBufImg = ImageIO.read(bis);
-                int maxH = Integer.parseInt(mainView.getEnv().getProperty("image.max.height", "600"));
-                BufferedImage resizedImage = compressImage(inBufImg, maxH);
-
-                File dir = new File(this.rootDir);
-                if (!dir.exists()) {
-                    log.debug("Create image dir: {}", this.rootDir);
-                    dir.mkdirs();
-                    log.debug("Create image dir: {}... OK", this.rootDir);
+            log.info("success upload listener: {}", event.getFileName());
+            try (InputStream fileData = multiFileMemoryBuffer.getInputStream(event.getFileName())) {
+                String formatName = FilenameUtils.getExtension(event.getFileName()).toLowerCase();
+                if (formatName.endsWith("jpg") || formatName.endsWith("jpeg") || formatName.endsWith("png")) {
+                    uploadImage(fileData, event.getFileName());
+                } else {
+                    uploadFile(fileData, event.getFileName());
                 }
-                log.debug("Create image file: {}", this.rootDir + uploadFileName);
-                File file = new File(this.rootDir + uploadFileName);
-                ImageIO.write(resizedImage, formatName, file);
-                log.debug("Create image file: {}... OK", this.rootDir + uploadFileName);
-
-                fileData.close();
-                bis.close();
             } catch (IOException e) {
                 ViewUtils.showErrorMsg("Cannot upload file", e);
                 throw new RuntimeException(e);
@@ -106,20 +93,17 @@ public class UploadFileDialog extends Dialog {
 
         // TODO: SEND ERROR MSG
         uploadFile.addFileRejectedListener(fileRejectedEvent -> {
-                    log.debug("FileRejectedListener -->  {}", fileRejectedEvent.getErrorMessage());
+                    log.warn("FileRejectedListener -->  {}", fileRejectedEvent.getErrorMessage());
                     ViewUtils.showErrorMsg("Send post exception: ", new Exception(fileRejectedEvent.getErrorMessage()));
                 }
         );
         uploadFile.addFailedListener(failedEvent -> log.warn("FailedListener --> {}", failedEvent.getReason().getMessage()));
-//        uploadFile.addStartedListener(event -> log.debug("StartedListener --> filename: {}, MIME: {}", event.getFileName(), event.getMIMEType()));
-//        uploadFile.addProgressListener(progressUpdateEvent -> log.debug("ProgressListener: --> length: {}", progressUpdateEvent.getContentLength()));
 
         String maxFileSize = mainView.getEnv().getProperty("spring.servlet.multipart.max-file-size", "10MB");
         Integer fileSize = Integer.parseInt(maxFileSize.substring(0, maxFileSize.length() - 2)) * 1024 * 1024;
         uploadFile.setMaxFileSize(fileSize);
         uploadFile.setAcceptedFileTypes(
-                IMAGE_JPEG_VALUE,
-                IMAGE_PNG_VALUE
+                uploadFileTypes.toArray(new String[0])
         );
 
         uploadFile.setWidth(90, Unit.PERCENTAGE);
@@ -131,6 +115,38 @@ public class UploadFileDialog extends Dialog {
         uploadFile.setMaxFiles(countFiles);
         uploadFile.setDropAllowed(true);
         return uploadFile;
+    }
+
+    private void uploadImage(InputStream fileData, String fileName) throws IOException {
+        String formatName = FilenameUtils.getExtension(fileName);
+        String uploadFileName = isCover
+                ? "cover." + FilenameUtils.getExtension(fileName)
+                : UUID.randomUUID().toString().replace("-", "") + "." + formatName;
+
+        try (BufferedInputStream bis = new BufferedInputStream(fileData)) {
+            BufferedImage inBufImg = ImageIO.read(bis);
+            int maxH = Integer.parseInt(mainView.getEnv().getProperty("image.max.height", "600"));
+            BufferedImage resizedImage = compressImage(inBufImg, maxH);
+            log.info("Create image file: {}", this.rootDir + uploadFileName);
+            File file = new File(this.rootDir + uploadFileName);
+            ImageIO.write(resizedImage, formatName, file);
+            log.info("Create image file: {}... OK", this.rootDir + uploadFileName);
+        }
+    }
+
+    private void uploadFile(InputStream fileData, String uploadFileName) throws IOException {
+        log.info("Create file: {}", this.rootDir + uploadFileName);
+        FileUtils.copyInputStreamToFile(fileData, new File(this.rootDir + uploadFileName));
+        log.info("Create file: {}... OK", this.rootDir + uploadFileName);
+    }
+
+    private void checkRootDir() {
+        File dir = new File(this.rootDir);
+        if (!dir.exists()) {
+            log.info("Create root dir: {}", this.rootDir);
+            dir.mkdirs();
+            log.info("Create root dir: {}... OK", this.rootDir);
+        }
     }
 
     private BufferedImage compressImage(BufferedImage image, int maxHeight) {
