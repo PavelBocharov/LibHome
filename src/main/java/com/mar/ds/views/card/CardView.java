@@ -118,7 +118,7 @@ public class CardView implements ContentView {
                         .collect(Collectors.joining(", "))
                 )
                 .setHeader("Tags")
-                .setAutoWidth(true).setFlexGrow(0)
+                .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.CENTER);
         grid.addComponentColumn(this::getLinkIcon)
                 .setAutoWidth(true).setFlexGrow(0)
