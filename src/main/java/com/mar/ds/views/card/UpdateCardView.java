@@ -26,7 +26,6 @@ import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -157,14 +156,10 @@ public class UpdateCardView {
         updateDialog.add(
                 new Label("Update"),
                 cardTitle,
-                point,
+                new HorizontalLayout(point, engineSelect),
                 link,
-                engineSelect,
-                lastUpdDate,
-                lastGameDate,
-                cardStatusListSelect,
-                cardTypeListSelect,
-                tags,
+                new HorizontalLayout(lastUpdDate, lastGameDate),
+                new HorizontalLayout(cardStatusListSelect, cardTypeListSelect, tags),
                 infoArea,
                 new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
         );

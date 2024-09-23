@@ -18,4 +18,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Query(value = "SELECT card FROM Card card INNER JOIN card.tagList tag WHERE tag.id = :id")
     List<Card> findByTagIn(@NotNull Long id);
 
+    @Query(value = "SELECT card FROM Card card ORDER BY card.point DESC")
+    List<Card> findWithOrderByPoint();
+
 }

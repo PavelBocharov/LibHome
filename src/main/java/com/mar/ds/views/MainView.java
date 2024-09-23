@@ -4,7 +4,7 @@ import com.mar.ds.service.RepositoryService;
 import com.mar.ds.views.card.CardView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -43,13 +43,14 @@ public class MainView extends AppLayout {
         cardView = new CardView(this);
         startPageView = new StartPageView(this);
 
-        H1 title = new H1("LibHome");
+        H3 title = new H3("LibHome");
         title.getStyle()
                 .set("font-size", "var(--lumo-font-size-l)")
                 .set("margin", "0");
 
-        Icon icon = VaadinIcon.BOOK.create();
-        icon.setSize("40px");
+        Icon icon = VaadinIcon.HOME.create();
+        icon.setSize("32");
+        icon.getStyle().set("padding", "4px");
         Anchor anchor = new Anchor();
         anchor.add(icon);
         anchor.setHref("");

@@ -1,17 +1,15 @@
 package com.mar.ds.views;
 
 import com.mar.ds.utils.ViewUtils;
-import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 
@@ -28,11 +26,7 @@ public class StartPageView implements ContentView {
             VerticalLayout verticalLayout = new VerticalLayout(
                     new H3("LibHome - your book, game, music and other library."),
                     image,
-                    getButton(
-                            "Card list",
-                            VaadinIcon.BULLETS,
-                            btnClickEvent -> appLayout.setContent(appLayout.getCardView().getContent())
-                    )
+                    getButton()
             );
             verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             return verticalLayout;
@@ -44,10 +38,17 @@ public class StartPageView implements ContentView {
         return null;
     }
 
-    private Button getButton(String title, VaadinIcon icon, ComponentEventListener<ClickEvent<Button>> listener) {
-        Button button = new Button(title, new Icon(icon));
+    @SneakyThrows
+    private Button getButton() {
+        Button button = new Button("Card list");
         button.setHeightFull();
-        button.addClickListener(listener);
+        button.addClickListener(btnClickEvent -> appLayout.setContent(appLayout.getCardView().getContent()));
+
+        Image icon = ViewUtils.getImageByResource("static/img/icon/icon.png");
+        icon.setHeight(32, Unit.PIXELS);
+        icon.setWidth(32, Unit.PIXELS);
+        button.setIcon(icon);
+
         return button;
     }
 }

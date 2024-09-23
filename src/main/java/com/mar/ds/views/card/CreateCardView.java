@@ -138,14 +138,10 @@ public class CreateCardView {
         createDialog.add(
                 new Label("Create card"),
                 cardTitle,
-                point,
+                new HorizontalLayout(point, engineSelect),
                 link,
-                engineSelect,
-                lastUpdDate,
-                lastGameDate,
-                cardStatusListSelect,
-                cardTypeListSelect,
-                tags,
+                new HorizontalLayout(lastUpdDate, lastGameDate),
+                new HorizontalLayout(cardStatusListSelect, cardTypeListSelect, tags),
                 infoArea,
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(createDialog))
         );

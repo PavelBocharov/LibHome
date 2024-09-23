@@ -22,6 +22,9 @@ public enum GameEngine implements Serializable, HasId {
 
     @Override
     public Long getId() {
+        if (name == null) {
+            return 0L;
+        }
         return (long) name.hashCode();
     }
 }

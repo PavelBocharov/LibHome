@@ -17,7 +17,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
@@ -25,6 +25,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.RequiredArgsConstructor;
@@ -56,8 +57,6 @@ public class CardView implements ContentView {
     private PaginatedGrid<Card> grid;
 
     public VerticalLayout getContent() {
-        H2 label = new H2("Card list");
-        label.setWidthFull();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         // TABLE
         grid = new PaginatedGrid<>();
@@ -65,7 +64,7 @@ public class CardView implements ContentView {
         // column
         grid.addColumn(Card::getId)
                 .setHeader("ID")
-                .setAutoWidth(true)
+                .setAutoWidth(true).setFlexGrow(0)
                 .setTextAlign(ColumnTextAlign.START);
         grid.addComponentColumn(card -> {
                     Icon icon = getStatusIcon(card, mathUpd(card));
@@ -75,34 +74,40 @@ public class CardView implements ContentView {
                 .setHeader("Status").setSortable(true)
                 // ~ -> last symbol in ASCII table (nope, 'DEL' is last).
                 .setComparator(Comparator.comparing(o -> mathUpd(o) ? "~" : o.getCardStatus().getTitle()))
-                .setAutoWidth(true)
+                .setAutoWidth(true).setFlexGrow(0)
                 .setTextAlign(ColumnTextAlign.CENTER);
         grid.addComponentColumn(this::getEngineIcon)
                 .setHeader("Engine")
+                .setAutoWidth(true).setFlexGrow(0)
+                .setSortable(true)
+                .setComparator(Card::getEngine)
                 .setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(Card::getTitle)
                 .setHeader("Title")
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.CENTER);
         grid.addComponentColumn(card -> getGridColorValue(card::getPoint)).setHeader("Point")
+                .setAutoWidth(true).setFlexGrow(0)
                 .setSortable(true)
                 .setComparator(Card::getPoint)
                 .setTextAlign(ColumnTextAlign.CENTER);
         grid.addComponentColumn(card -> getGridColorValue(() -> calcRate(card))).setHeader("Rate")
+                .setAutoWidth(true).setFlexGrow(0)
                 .setSortable(true)
                 .setComparator(this::calcRate)
                 .setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
                 .setHeader("Last UPD").setSortable(true)
                 .setComparator(Comparator.comparingLong(value -> value.getLastUpdate().getTime()))
-                .setAutoWidth(true)
+                .setAutoWidth(true).setFlexGrow(0)
                 .setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(card -> dateFormat.format(card.getLastGame()))
                 .setHeader("Last game").setSortable(true)
                 .setComparator(Comparator.comparingLong(value -> value.getLastGame().getTime()))
-                .setAutoWidth(true)
+                .setAutoWidth(true).setFlexGrow(0)
                 .setTextAlign(ColumnTextAlign.CENTER);
         grid.addColumn(card -> card.getCardType().getTitle())
+                .setAutoWidth(true).setFlexGrow(0)
                 .setHeader("Type")
                 .setSortable(true)
                 .setTextAlign(ColumnTextAlign.CENTER);
@@ -113,11 +118,12 @@ public class CardView implements ContentView {
                         .collect(Collectors.joining(", "))
                 )
                 .setHeader("Tags")
-                .setAutoWidth(true)
+                .setAutoWidth(true).setFlexGrow(0)
                 .setTextAlign(ColumnTextAlign.CENTER);
         grid.addComponentColumn(this::getLinkIcon)
+                .setAutoWidth(true).setFlexGrow(0)
                 .setHeader("Link")
-                .setTextAlign(ColumnTextAlign.CENTER);
+                .setTextAlign(ColumnTextAlign.END);
         grid.addComponentColumn(card -> {
                     // Open Info BTN
                     Button infoBtn = new Button(new Icon(VaadinIcon.INFO_CIRCLE), clk -> openInfo(card));
@@ -144,7 +150,7 @@ public class CardView implements ContentView {
 
                     return new HorizontalLayout(infoBtn, edtBtn, dltBtn);
                 })
-                .setAutoWidth(true)
+                .setAutoWidth(true).setFlexGrow(0)
                 .setTextAlign(ColumnTextAlign.END);
 
         // settings
@@ -165,7 +171,7 @@ public class CardView implements ContentView {
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.setClearButtonVisible(true);
         searchField.addValueChangeListener(e -> {
-            List<Card> cards = appLayout.getRepositoryService().getCardRepository().findAll();
+            List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint();
             String text = getTextFieldValue(searchField);
             if (text != null) {
                 String finalText = text.trim().toLowerCase();
@@ -184,65 +190,56 @@ public class CardView implements ContentView {
                 grid.setItems(cards);
             }
         });
-        label.getStyle().set("margin", "var(--lumo-space-m)");
 
         // value
         reloadGrid();
 
-        // down buttons
-        HorizontalLayout btns = getBtns();
-
         // create view
-        HorizontalLayout header = new HorizontalLayout(label, searchField);
-//        header.setVerticalComponentAlignment(FlexComponent.Alignment.START, label);
-//        header.setVerticalComponentAlignment(FlexComponent.Alignment.END, searchField);
+        H3 label = new H3("Card list");
+        label.setWidthFull();
+
+        Select<Button> settingButtons = new Select<>();
+        settingButtons.setPlaceholder("Settings");
+        settingButtons.add(getBtns());
+
+        Div div = new Div();
+        div.setWidthFull();
+
+        HorizontalLayout header = new HorizontalLayout(label, div, searchField, settingButtons);
+        header.setVerticalComponentAlignment(FlexComponent.Alignment.CENTER, label, div, searchField, settingButtons);
         header.setWidthFull();
 
-        header.setMaxHeight(5, Unit.PERCENTAGE);
-        grid.setHeight(80, Unit.PERCENTAGE);
-        btns.setMaxHeight(5, Unit.PERCENTAGE);
+        header.setMaxHeight(40, Unit.PIXELS);
+        grid.setSizeFull();
 
-        VerticalLayout verticalLayout = new VerticalLayout(header, grid, btns);
+        VerticalLayout verticalLayout = new VerticalLayout(header, grid);
         verticalLayout.setSizeFull();
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.START, header);
-//        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.CENTER, grid);
-        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, btns);
 
         return verticalLayout;
     }
 
-    private HorizontalLayout getBtns() {
+    private Button[] getBtns() {
         Button crtBtn = new Button("Add", new Icon(PLUS), click -> new CreateCardView(appLayout));
-        crtBtn.setWidth(10, Unit.PERCENTAGE);
+        crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
 
         Button cardStatusView = new Button(
                 "Status list", new Icon(COG), click -> new CardStatusViewDialog(appLayout)
         );
-        cardStatusView.setWidth(10, Unit.PERCENTAGE);
+        cardStatusView.setWidthFull();
 
         Button cardTypeView = new Button(
                 "Types", new Icon(COMPILE), click -> new CardTypeViewDialog(appLayout)
         );
-        cardTypeView.setWidth(10, Unit.PERCENTAGE);
+        cardTypeView.setWidthFull();
 
         Button cardTypeTagView = new Button(
                 "Type tags", new Icon(CUBES), click -> new CardTagsView(appLayout).showDialog()
         );
-        cardTypeTagView.setWidth(10, Unit.PERCENTAGE);
+        cardTypeTagView.setWidthFull();
 
-        Div div = new Div();
-        div.setWidthFull();
-        HorizontalLayout btns = new HorizontalLayout(
-                div,
-                crtBtn,
-                cardStatusView,
-                cardTypeView,
-                cardTypeTagView
-        );
-        btns.setWidthFull();
-        btns.getStyle().set("margin", "0px");
-        return btns;
+        return new Button[]{crtBtn, cardStatusView, cardTypeView, cardTypeTagView};
     }
 
     private Component getEngineIcon(Card card) {
@@ -294,7 +291,7 @@ public class CardView implements ContentView {
     }
 
     public void reloadGrid() {
-        List<Card> cards = appLayout.getRepositoryService().getCardRepository().findAll();
+        List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint();
         grid.setItems(cards);
     }
 
