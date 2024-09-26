@@ -37,6 +37,14 @@
    docker-compose up
    ```
 ## Screenshots
+<video width="1280" height="720" controls>
+  <source src="./readme_files/libhome.mp4" type="video/mp4">
+</video>
+
+
+![](./readme_files/libhome.mp4)
+
+
 <img src="src/main/resources/static/img/readmeFiles/LibHome.png" width="900"/></br>
 <img src="src/main/resources/static/img/readmeFiles/1.png" width="900"/></br>
 <img src="src/main/resources/static/img/readmeFiles/2.png" width="900"/></br>
