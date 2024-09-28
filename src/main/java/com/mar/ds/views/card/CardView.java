@@ -29,8 +29,10 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.vaadin.klaudeta.PaginatedGrid;
 
+import java.awt.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
@@ -47,16 +49,33 @@ import static com.vaadin.flow.component.icon.VaadinIcon.COG;
 import static com.vaadin.flow.component.icon.VaadinIcon.COMPILE;
 import static com.vaadin.flow.component.icon.VaadinIcon.CUBES;
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
+import static java.lang.Math.abs;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+@Slf4j
 @RequiredArgsConstructor
 public class CardView implements ContentView {
 
     private final MainView appLayout;
 
+    private int minPoint;
+    private int maxPoint;
+    private int minRate = Integer.MAX_VALUE;
+    private int maxRate = Integer.MIN_VALUE;
     private PaginatedGrid<Card> grid;
 
     public VerticalLayout getContent() {
+        minPoint = Integer.parseInt(appLayout.getEnv().getProperty("card.point.min", "0"));
+        maxPoint = Integer.parseInt(appLayout.getEnv().getProperty("card.point.max", "10"));
+
+        List<Card> cardList = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint();
+        for (Card card : cardList) {
+            double rate = calcRate(card);
+            if (rate < minRate) minRate = (int) rate;
+            if (rate > maxRate) maxRate = (int) rate;
+        }
+        if (maxRate <= minRate) maxRate = minRate + 1;
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         // TABLE
         grid = new PaginatedGrid<>();
@@ -86,12 +105,12 @@ public class CardView implements ContentView {
                 .setHeader("Title")
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.CENTER);
-        grid.addComponentColumn(card -> getGridColorValue(card::getPoint)).setHeader("Point")
+        grid.addComponentColumn(card -> getLabelWithColor(card::getPoint)).setHeader("Point")
                 .setAutoWidth(true).setFlexGrow(0)
                 .setSortable(true)
                 .setComparator(Card::getPoint)
                 .setTextAlign(ColumnTextAlign.CENTER);
-        grid.addComponentColumn(card -> getGridColorValue(() -> calcRate(card))).setHeader("Rate")
+        grid.addComponentColumn(card -> getLabelWithColor(() -> calcRate(card), minRate, maxRate)).setHeader("Rate")
                 .setAutoWidth(true).setFlexGrow(0)
                 .setSortable(true)
                 .setComparator(this::calcRate)
@@ -266,28 +285,49 @@ public class CardView implements ContentView {
         info.open();
     }
 
-    private Component getGridColorValue(Supplier<Double> forColor) {
+    private Component getLabelWithColor(Supplier<Double> forColor, int min, int max) {
         double value = forColor.get() != null ? forColor.get() : 0;
         Label res = new Label(String.format("%.1f", value));
 
-        res.getStyle().set("color", "green");
-        if (value < 9) {
-            res.getStyle().set("color", "#98db00");
-        }
-        if (value < 7) {
-            res.getStyle().set("color", "#c6b400");
-        }
-        if (value < 5) {
-            res.getStyle().set("color", "#f46900");
-        }
-        if (value < 3) {
-            res.getStyle().set("color", "#fc4700");
-        }
-        if (value < 1) {
-            res.getStyle().set("color", "red");
-        }
+        String greenHex = "3cb043";
+        String redHex = "c91203";
+        Color colorTo = new Color(
+                Integer.valueOf(greenHex.substring(0, 2), 16),
+                Integer.valueOf(greenHex.substring(2, 4), 16),
+                Integer.valueOf(greenHex.substring(4, 6), 16)
+        );
+        Color colorFrom = new Color(
+                Integer.valueOf(redHex.substring(0, 2), 16),
+                Integer.valueOf(redHex.substring(2, 4), 16),
+                Integer.valueOf(redHex.substring(4, 6), 16)
+        );
 
+        String hex = String.format("#%02x%02x%02x",
+                calcGradient(colorFrom.getRed(), colorTo.getRed(), min, max, (int) value),
+                calcGradient(colorFrom.getGreen(), colorTo.getGreen(), min, max, (int) value),
+                calcGradient(colorFrom.getBlue(), colorTo.getBlue(), min, max, (int) value)
+        );
+
+//        log.info("Get color - min: {}, max: {}, value: {}, color: {}", min, max, value, hex);
+        res.getStyle().set("color", hex);
         return res;
+    }
+
+    private Component getLabelWithColor(Supplier<Double> forColor) {
+        return getLabelWithColor(forColor, minPoint, maxPoint);
+    }
+
+    private int calcGradient(int colorFrom, int colorTo, int min, int max, int point) {
+        int steps = abs(min - max);
+        double colorStep = (double) (colorTo - colorFrom) / steps;
+        int bufValue = point;
+        double color = colorFrom;
+        while (bufValue > min) {
+            color += colorStep;
+            bufValue--;
+        }
+//        log.debug("colorFrom: {}, colorTo: {}, cStep: {}, color: {}, steps: {}", colorFrom, colorTo, colorStep, color, steps);
+        return (int) color;
     }
 
     public void reloadGrid() {

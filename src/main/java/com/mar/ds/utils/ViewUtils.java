@@ -29,6 +29,7 @@ import com.vaadin.flow.server.StreamResource;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.vaadin.gatanaso.MultiselectComboBox;
 import org.vaadin.olli.FileDownloadWrapper;
@@ -41,8 +42,11 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
@@ -54,6 +58,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -135,16 +140,27 @@ public class ViewUtils {
         return getImage(defaultImage);
     }
 
-    public static Image getImageByResource(String pathInResource) throws IOException {
-        URL imgUrl = Resources.getResource(pathInResource);
-        byte[] img = Resources.asByteSource(imgUrl).read();
+    public static Map<String, byte[]> imageCache = Collections.synchronizedMap(new HashMap<>());
 
-        return new Image(
-                new StreamResource(
-                        FileUtils.getFile(imgUrl.getFile()).getName(),
-                        () -> new ByteArrayInputStream(img)
-                ), String.format("Not load image: %s", pathInResource)
+    public static Image getImageByResource(String pathInResource) throws IOException {
+        final byte[] finalCacheImageByte = imageCache.get(pathInResource);
+        String fileName = FilenameUtils.getName(pathInResource);
+        if (!isEmpty(finalCacheImageByte)) {
+            return new Image(
+                    new StreamResource(fileName, () -> new ByteArrayInputStream(finalCacheImageByte)),
+                    String.format("Not load image: %s", pathInResource)
+            );
+        }
+
+        URL imgUrl = Resources.getResource(pathInResource);
+        byte[] imageByte = Resources.asByteSource(imgUrl).read();
+
+        Image res = new Image(
+                new StreamResource(fileName, () -> new ByteArrayInputStream(imageByte)),
+                String.format("Not load image: %s", pathInResource)
         );
+        imageCache.putIfAbsent(pathInResource, imageByte);
+        return res;
     }
 
     public static TextField getTextField(String text, boolean enable) {

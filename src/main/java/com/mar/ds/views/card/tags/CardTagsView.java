@@ -8,8 +8,9 @@ import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -45,40 +46,44 @@ public class CardTagsView {
         cardTypeListSelect.setWidthFull();
 
         tagsGrid = new Grid<>();
-        tagsGrid.addColumn(CardTypeTag::getId).setHeader("ID").setAutoWidth(true);
-        tagsGrid.addColumn(CardTypeTag::getTitle).setHeader("Title").setAutoWidth(true);
+        tagsGrid.addColumn(CardTypeTag::getId).setHeader("ID")
+                .setAutoWidth(true).setFlexGrow(0)
+                .setTextAlign(ColumnTextAlign.START);
+        tagsGrid.addColumn(CardTypeTag::getTitle).setHeader("Title")
+                .setAutoWidth(true)
+                .setTextAlign(ColumnTextAlign.CENTER);
         tagsGrid.addComponentColumn(tag -> {
-                    Button dltBtn = new Button(
-                            VaadinIcon.CLOSE_CIRCLE.create(),
-                            event -> {
-                                List<Card> cards = mainView.getRepositoryService().getCardRepository().findByTagIn(tag.getId());
-                                if (isEmpty(cards)) {
-                                    log.info("Delete card status tag: {}", tag);
-                                    mainView.getRepositoryService().getCardTypeTagRepository().delete(tag);
-                                    reloadData();
-                                } else {
-                                    log.warn("Find cards with status tag: {}, list: {}", tag, cards);
-                                    ViewUtils.showErrorMsg(
-                                            "Delete card type tag ERROR",
-                                            new Exception(String.format("Find cards with type tag: '%s', count: %d.", tag.getTitle(), cards.size()))
-                                    );
-                                }
-                            });
-                    dltBtn.getStyle().set("color", "red");
-                    HorizontalLayout btns = new HorizontalLayout(
-                            dltBtn,
-                            new Button(
-                                    VaadinIcon.PENCIL.create(),
+                            Button dltBtn = new Button(
+                                    VaadinIcon.CLOSE_CIRCLE.create(),
                                     event -> {
-                                        new UpdateCardTagsView(mainView, this, tag).showDialog();
-                                    })
-                    );
-                    return btns;
-                }
-        ).setAutoWidth(true);
+                                        List<Card> cards = mainView.getRepositoryService().getCardRepository().findByTagIn(tag.getId());
+                                        if (isEmpty(cards)) {
+                                            log.info("Delete card status tag: {}", tag);
+                                            mainView.getRepositoryService().getCardTypeTagRepository().delete(tag);
+                                            reloadData();
+                                        } else {
+                                            log.warn("Find cards with status tag: {}, list: {}", tag, cards);
+                                            ViewUtils.showErrorMsg(
+                                                    "Delete card type tag ERROR",
+                                                    new Exception(String.format("Find cards with type tag: '%s', count: %d.", tag.getTitle(), cards.size()))
+                                            );
+                                        }
+                                    });
+                            dltBtn.getStyle().set("color", "red");
+                            HorizontalLayout btns = new HorizontalLayout(
+                                    dltBtn,
+                                    new Button(
+                                            VaadinIcon.PENCIL.create(),
+                                            event -> {
+                                                new UpdateCardTagsView(mainView, this, tag).showDialog();
+                                            })
+                            );
+                            return btns;
+                        }
+                )
+                .setAutoWidth(true).setFlexGrow(0).setTextAlign(ColumnTextAlign.END);
         tagsGrid.setWidthFull();
         tagsGrid.setHeightFull();
-//        tagsGrid.setHeight(70, Unit.PERCENTAGE);
 
         Button createTagBtn = new Button(
                 "Create tag",
@@ -100,14 +105,23 @@ public class CardTagsView {
                 );
         btns.setWidthFull();
 
+        H3 lable = new H3("Type tag list");
+        lable.setSizeFull();
+        HorizontalLayout head = new HorizontalLayout(
+                lable,
+                cardTypeListSelect
+        );
+        head.getStyle().set("padding", "0px");
+        head.setWidthFull();
+
         VerticalLayout data =
                 new VerticalLayout(
-                        new Label("Type tag list"),
-                        cardTypeListSelect,
+                        head,
                         tagsGrid,
                         btns
                 );
         data.setSizeFull();
+        data.getStyle().set("padding", "0px");
 
         dialog.add(data);
         dialog.open();

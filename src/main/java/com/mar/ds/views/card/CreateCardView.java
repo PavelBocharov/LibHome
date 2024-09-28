@@ -24,6 +24,7 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -35,7 +36,14 @@ import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 @Slf4j
 public class CreateCardView {
 
+    final int minPoint;
+    final int maxPoint;
+    private BigDecimalField point;
+
     public CreateCardView(MainView mainView) {
+        minPoint = Integer.parseInt(mainView.getEnv().getProperty("card.point.min", "0"));
+        maxPoint = Integer.parseInt(mainView.getEnv().getProperty("card.point.max", "10"));
+
         Dialog createDialog = new Dialog();
         createDialog.setMaxHeight(80, Unit.PERCENTAGE);
         createDialog.setMaxWidth(80, Unit.PERCENTAGE);
@@ -51,7 +59,9 @@ public class CreateCardView {
         infoArea.setRequired(true);
         infoArea.setWidthFull();
         // point
-        BigDecimalField point = new BigDecimalField("Point");
+        point = new BigDecimalField("Point");
+        point.setValue(BigDecimal.valueOf(minPoint));
+        point.setHelperText(String.format("Min value = %d, max value = %d", minPoint, maxPoint));
         point.setWidthFull();
         // engine
         Select<GameEngine> engineSelect = new Select<>(GameEngine.values());
@@ -108,6 +118,7 @@ public class CreateCardView {
         Button crtBtn = new Button("Create", new Icon(VaadinIcon.PLUS));
         crtBtn.addClickListener(click -> {
             try {
+                checkValues();
                 mainView.getRepositoryService().getCardRepository()
                         .save(
                                 Card.builder()
@@ -146,6 +157,16 @@ public class CreateCardView {
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(createDialog))
         );
         createDialog.open();
+    }
+
+    private void checkValues() throws Exception {
+        double cardPoint = getDoubleValue(point);
+        if (minPoint > cardPoint || maxPoint < cardPoint) {
+            point.setInvalid(true);
+            throw new Exception(String.format("Point value ERROR.\nMin value = %d, max value = %d", minPoint, maxPoint));
+        } else {
+            point.setInvalid(false);
+        }
     }
 
 }

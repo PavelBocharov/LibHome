@@ -30,13 +30,15 @@ import javax.persistence.Table;
 @Table(name = "card_type")
 public class CardType implements Serializable, HasId, PopupEntity {
 
-    @OneToMany(mappedBy = "id")
-    @LazyCollection(LazyCollectionOption.FALSE)
-    List<CardTypeTag> tags;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_type_seq")
     private Long id;
+
     @Column(name = "title", nullable = false, unique = true)
     private String title;
+
+    @OneToMany(mappedBy = "id")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    List<CardTypeTag> tags;
 
 }

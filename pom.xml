@@ -11,7 +11,7 @@
 
     <groupId>com.mar</groupId>
     <artifactId>lib-home</artifactId>
-    <version>1.8.1-SNAPSHOT</version>
+    <version>1.9.0</version>
     <name>lib-home</name>
     <description>LibHome - your book, game, music and other library.</description>
 

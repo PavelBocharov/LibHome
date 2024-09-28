@@ -1,5 +1,6 @@
 # <img src="src/main/resources/static/img/icon/database.svg" width="30"/> Lib Home
 
+<img src="readme_files/LibHome.png" width="900"/></br>
 ## Links
 * [Docker HUB](https://hub.docker.com/r/marolok/lib_home)
 * [GitHub](https://github.com/PavelBocharov/LibHome)
@@ -21,11 +22,11 @@
    ```
 2) Build image
       ```bash 
-   docker build --no-cache -t marolok/lib_home:1.8.1 .
+   docker build --no-cache -t marolok/lib_home:1.9.0 .
    ```
 3) Push image
    ```bash 
-   docker push marolok/lib_home:1.8.1
+   docker push marolok/lib_home:1.9.0
    ```
 4) Set image version in [docker-compose.yml](./docker-compose.yml)
 5) Start `docker-compose`
@@ -37,23 +38,15 @@
    docker-compose up
    ```
 ## Screenshots
-<video width="1280" height="720" controls>
-  <source src="./readme_files/libhome.mp4" type="video/mp4">
-</video>
-
-
-![](./readme_files/libhome.mp4)
-
-
-<img src="src/main/resources/static/img/readmeFiles/LibHome.png" width="900"/></br>
-<img src="src/main/resources/static/img/readmeFiles/1.png" width="900"/></br>
-<img src="src/main/resources/static/img/readmeFiles/2.png" width="900"/></br>
-<img src="src/main/resources/static/img/readmeFiles/3.png" width="900"/></br>
+<img src="readme_files/1.png" width="900"/></br>
+<img src="readme_files/2.png" width="900"/></br>
+<img src="readme_files/3.png" width="900"/></br>
+<img src="readme_files/4.png" width="900"/></br>
 
 ## Problem and fix
 ### NodeJS code `ERR_OSSL_EVP_UNSUPPORTED`
 #### Problem:
-![](src/main/resources/static/img/readmeFiles/criptoProblems.png)
+![](readme_files/criptoProblems.png)
 #### Solution: Set NodeJS v16
 ```bash 
 nvm install 16.13.1 64

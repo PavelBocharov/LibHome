@@ -40,11 +40,18 @@ import static com.mar.ds.utils.ViewUtils.setTextFieldValue;
 @Slf4j
 public class UpdateCardView {
 
+    final int minPoint;
+    final int maxPoint;
+    private BigDecimalField point;
+
     public UpdateCardView(MainView mainView, Card updateCard, Runnable afterUpdateEvent) {
+        minPoint = Integer.parseInt(mainView.getEnv().getProperty("card.point.min", "0"));
+        maxPoint = Integer.parseInt(mainView.getEnv().getProperty("card.point.max", "10"));
+
         Dialog updateDialog = new Dialog();
         updateDialog.setMaxHeight(80, Unit.PERCENTAGE);
         updateDialog.setMaxWidth(80, Unit.PERCENTAGE);
-        updateDialog.setCloseOnEsc(true);
+        updateDialog.setCloseOnEsc(false);
         updateDialog.setCloseOnOutsideClick(false);
 
         // title
@@ -58,7 +65,8 @@ public class UpdateCardView {
         infoArea.setWidthFull();
         setTextFieldValue(infoArea, updateCard.getInfo());
         // point
-        BigDecimalField point = new BigDecimalField("Point");
+        point = new BigDecimalField("Point");
+        point.setHelperText(String.format("Min value = %d, max value = %d", minPoint, maxPoint));
         point.setWidthFull();
         setBigDecimalFieldValue(point, updateCard.getPoint());
         // engine
@@ -130,6 +138,8 @@ public class UpdateCardView {
         Button updBtn = new Button("Update", new Icon(VaadinIcon.ROTATE_RIGHT));
         updBtn.addClickListener(click -> {
             try {
+                checkValues();
+
                 updateCard.setTitle(getTextFieldValue(cardTitle));
                 updateCard.setInfo(getTextFieldValue(infoArea));
                 updateCard.setLink(getTextFieldValue(link));
@@ -164,6 +174,16 @@ public class UpdateCardView {
                 new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
         );
         updateDialog.open();
+    }
+
+    private void checkValues() throws Exception {
+        double cardPoint = getDoubleValue(point);
+        if (minPoint > cardPoint || maxPoint < cardPoint) {
+            point.setInvalid(true);
+            throw new Exception(String.format("Point value ERROR.\nMin value = %d, max value = %d", minPoint, maxPoint));
+        } else {
+            point.setInvalid(false);
+        }
     }
 
 }
