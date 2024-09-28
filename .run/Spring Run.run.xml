@@ -31,7 +31,9 @@
           </option>
           <option name="pomFileName" value="pom.xml" />
           <option name="profilesMap">
-            <map />
+            <map>
+              <entry key="production" value="true" />
+            </map>
           </option>
           <option name="projectsCmdOptionValues">
             <list />

@@ -1,6 +1,6 @@
 # <img src="src/main/resources/static/img/icon/database.svg" width="30"/> Lib Home
 
-<img src="readme_files/LibHome.png" width="900"/></br>
+![](readme_files/LibHome.png)
 ## Links
 * [Docker HUB](https://hub.docker.com/r/marolok/lib_home)
 * [GitHub](https://github.com/PavelBocharov/LibHome)
@@ -38,10 +38,10 @@
    docker-compose up
    ```
 ## Screenshots
-<img src="readme_files/1.png" width="900"/></br>
-<img src="readme_files/2.png" width="900"/></br>
-<img src="readme_files/3.png" width="900"/></br>
-<img src="readme_files/4.png" width="900"/></br>
+![](readme_files/1.png)
+![](readme_files/2.png)
+![](readme_files/3.png)
+![](readme_files/4.png)
 
 ## Problem and fix
 ### NodeJS code `ERR_OSSL_EVP_UNSUPPORTED`
