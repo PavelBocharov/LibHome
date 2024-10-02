@@ -11,7 +11,7 @@
 
     <groupId>com.mar</groupId>
     <artifactId>lib-home</artifactId>
-    <version>1.9.0</version>
+    <version>1.10.0</version>
     <name>lib-home</name>
     <description>LibHome - your book, game, music and other library.</description>
 
@@ -45,10 +45,26 @@
             <artifactId>grid-pagination</artifactId>
             <version>2.0.9</version>
         </dependency>
+        <dependency>
+            <groupId>com.brownie.videojs</groupId>
+            <artifactId>video-js-player</artifactId>
+            <version>1.0.7</version>
+        </dependency>
         <!--    Spring    -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <version>3.3.4</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -125,7 +141,6 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-
                     <source>17</source> <!-- depending on your project -->
                     <target>17</target> <!-- depending on your project -->
                     <annotationProcessorPaths>

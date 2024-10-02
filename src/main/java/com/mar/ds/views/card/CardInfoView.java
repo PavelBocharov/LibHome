@@ -1,10 +1,12 @@
 package com.mar.ds.views.card;
 
+import com.brownie.videojs.VideoJS;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.UploadFileDialog;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
@@ -222,6 +224,31 @@ public class CardInfoView extends Dialog {
                                 accImage.setMaxHeight(accImage.getHeight());
                                 accImage.setSizeFull();
                                 images.add(accImage);
+                            }
+                        }
+                    }
+                });
+            }
+
+            Collection<File> videoFiles = FileUtils.listFiles(fileDir, new String[]{"mov", "mp4", "avi", "wmv", "mkv"}, false);
+            if (imgFiles != null && !imgFiles.isEmpty()) {
+                VerticalLayout videos = new VerticalLayout();
+                videos.setId("acc_videos_list");
+                videos.setSizeFull();
+                videos.setAlignItems(FlexComponent.Alignment.CENTER);
+
+                VerticalLayout accVideos = getAccordionContent(videos);
+                accordion.add("Videos", accVideos);
+                accordion.addOpenedChangeListener(event -> {
+                    if (event.getOpenedIndex().isPresent()) {
+                        if (event.getOpenedPanel().get().getContent().findFirst().get().equals(accVideos)) {
+                            videos.removeAll();
+                            for (File file : videoFiles) {
+                                VideoJS video = new VideoJS(UI.getCurrent().getSession(), file, null);
+                                video.setMaxWidth(80, Unit.PERCENTAGE);
+                                video.setMaxHeight(80, Unit.PERCENTAGE);
+                                video.setSizeFull();
+                                videos.add(video);
                             }
                         }
                     }
