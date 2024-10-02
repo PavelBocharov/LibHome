@@ -1,5 +1,6 @@
 package com.mar.ds.utils;
 
+import com.mar.ds.db.entity.Card;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.Unit;
@@ -18,11 +19,15 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
+import static java.lang.String.valueOf;
 
 @Slf4j
 public class UploadFileDialog extends Dialog {
@@ -30,13 +35,15 @@ public class UploadFileDialog extends Dialog {
     private MainView mainView;
     private Upload uploadFile;
 
-    private String rootDir;
-    private int countFiles;
-    private boolean isCover;
-    private Set<String> uploadFileTypes;
+    private final Card card;
+    private final String rootDir;
+    private final int countFiles;
+    private final boolean isCover;
+    private final Set<String> uploadFileTypes;
 
-    public UploadFileDialog(MainView mainView, String rootDir, boolean isCover, int countFiles, Set<String> uploadFileTypes, Runnable afterUploadEvent) {
+    public UploadFileDialog(MainView mainView, String rootDir, Card card, boolean isCover, int countFiles, Set<String> uploadFileTypes, Runnable afterUploadEvent) {
         this.mainView = mainView;
+        this.card = card;
         this.rootDir = rootDir;
         this.countFiles = countFiles;
         this.isCover = isCover;
@@ -113,7 +120,7 @@ public class UploadFileDialog extends Dialog {
         String formatName = FilenameUtils.getExtension(fileName);
         String uploadFileName = isCover
                 ? "cover." + FilenameUtils.getExtension(fileName)
-                : UUID.randomUUID().toString().replace("-", "") + "." + formatName;
+                : getName(valueOf(card.getId()), card.getTitle(), card.getCardType().getTitle(), formatName);
 
         try (BufferedInputStream bis = new BufferedInputStream(fileData)) {
             BufferedImage inBufImg = ImageIO.read(bis);
@@ -151,5 +158,31 @@ public class UploadFileDialog extends Dialog {
             targetWidth = image.getWidth() * maxHeight / h;
         }
         return Scalr.resize(image, targetWidth, targetHeight);
+    }
+
+    public static final List<String> nameWordExc = List.of("\\", "/", ":", "*", "?", "\"", "<", ">", "|", "+", " ");
+    private String replaceWord(String str, List<String> badWords, String newWord) {
+        String rez = str;
+        for (String badWord : badWords) {
+            rez = rez.replace(badWord, newWord);
+        }
+        return rez;
+    }
+
+    private String getName(String prefix, String name, String suffix, String format) {
+        String p = replaceWord(prefix.trim(), nameWordExc, "_");
+        String n = replaceWord(name.trim(), nameWordExc, "_");
+        String s = replaceWord(suffix.trim(), nameWordExc, "_");
+
+        String rez = String.join("_", p, n, s) + "." + format;
+
+        int number = 1;
+        File file = new File(this.rootDir + rez);
+        while (file.exists()) {
+            rez = String.join("_", p, n, s, valueOf(number++)) + "." + format;
+            file = new File(this.rootDir + rez);
+        }
+
+        return rez;
     }
 }

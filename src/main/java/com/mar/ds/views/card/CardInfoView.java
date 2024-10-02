@@ -162,6 +162,7 @@ public class CardInfoView extends Dialog {
                 event -> new UploadFileDialog(
                         appLayout,
                         dataDir + "cards/" + card.getId() + "/cover/",
+                        card,
                         true,
                         1,
                         Set.of(IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE),
@@ -172,6 +173,7 @@ public class CardInfoView extends Dialog {
         updMainImage.addClickListener(event -> new UploadFileDialog(
                         appLayout,
                         dataDir + "cards/" + card.getId() + "/cover/",
+                        card,
                         true,
                         1,
                         Set.of(IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE),
@@ -256,6 +258,7 @@ public class CardInfoView extends Dialog {
         addFiles.addClickListener(event -> new UploadFileDialog(
                         appLayout,
                         dataDir + "cards/" + card.getId() + "/",
+                        card,
                         false,
                         10,
                         Set.of(),
