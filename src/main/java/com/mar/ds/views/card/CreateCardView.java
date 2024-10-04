@@ -5,6 +5,7 @@ import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
+import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
@@ -36,11 +37,15 @@ import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 @Slf4j
 public class CreateCardView {
 
-    final int minPoint;
-    final int maxPoint;
+    private final ViewType viewType;
+
+    private final int minPoint;
+    private final int maxPoint;
     private BigDecimalField point;
 
-    public CreateCardView(MainView mainView) {
+    public CreateCardView(MainView mainView, ViewType viewType) {
+        this.viewType = viewType;
+
         minPoint = Integer.parseInt(mainView.getEnv().getProperty("card.point.min", "0"));
         maxPoint = Integer.parseInt(mainView.getEnv().getProperty("card.point.max", "10"));
 
@@ -122,6 +127,7 @@ public class CreateCardView {
                 mainView.getRepositoryService().getCardRepository()
                         .save(
                                 Card.builder()
+                                        .viewType(viewType)
                                         .title(getTextFieldValue(cardTitle))
                                         .info(getTextFieldValue(infoArea))
                                         .link(getTextFieldValue(link))
@@ -139,7 +145,7 @@ public class CreateCardView {
                 crtBtn.setEnabled(true);
                 return;
             }
-            mainView.setContent(mainView.getCardView().getContent());
+            mainView.reloadContent();
             createDialog.close();
         });
         crtBtn.setWidthFull();

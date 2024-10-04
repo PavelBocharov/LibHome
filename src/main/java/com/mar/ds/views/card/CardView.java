@@ -2,6 +2,7 @@ package com.mar.ds.views.card;
 
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardTypeTag;
+import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.FileUtils;
@@ -28,6 +29,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.klaudeta.PaginatedGrid;
@@ -57,6 +59,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class CardView implements ContentView {
 
     private final MainView appLayout;
+    @Getter
+    private final ViewType viewType;
 
     private int minPoint;
     private int maxPoint;
@@ -68,7 +72,7 @@ public class CardView implements ContentView {
         minPoint = Integer.parseInt(appLayout.getEnv().getProperty("card.point.min", "0"));
         maxPoint = Integer.parseInt(appLayout.getEnv().getProperty("card.point.max", "10"));
 
-        List<Card> cardList = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint();
+        List<Card> cardList = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
         for (Card card : cardList) {
             double rate = calcRate(card);
             if (rate < minRate) minRate = (int) rate;
@@ -152,14 +156,14 @@ public class CardView implements ContentView {
                     Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> new UpdateCardView(
                             appLayout,
                             card,
-                            () -> appLayout.setContent(appLayout.getCardView().getContent()))
+                            () -> appLayout.setContent(appLayout.getCardsView().get(viewType).getContent()))
                     );
                     edtBtn.addThemeVariants(LUMO_TERTIARY);
                     edtBtn.getStyle().set("margin", "0px");
                     // Delete BN
                     Button dltBtn = new Button(new Icon(BAN), clk -> new DeleteDialogWidget(() -> {
                         appLayout.getRepositoryService().getCardRepository().delete(card);
-                        appLayout.setContent(appLayout.getCardView().getContent());
+                        appLayout.setContent(appLayout.getCardsView().get(viewType).getContent());
 
                         FileUtils.deleteDir(appLayout.getEnv().getProperty("data.path") + "cards/" + card.getId());
 
@@ -174,7 +178,7 @@ public class CardView implements ContentView {
 
         // settings
         grid.setWidthFull();
-        grid.setPageSize(15);
+        grid.setPageSize(appLayout.getEnv().getProperty("grid.row.count", Integer.class, 15));
         grid.setPaginatorSize(3);
         // edit
         grid.addItemDoubleClickListener(
@@ -190,7 +194,7 @@ public class CardView implements ContentView {
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.setClearButtonVisible(true);
         searchField.addValueChangeListener(e -> {
-            List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint();
+            List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
             String text = getTextFieldValue(searchField);
             if (text != null) {
                 String finalText = text.trim().toLowerCase();
@@ -211,10 +215,10 @@ public class CardView implements ContentView {
         });
 
         // value
-        reloadGrid();
+        reloadData();
 
         // create view
-        H3 label = new H3("Card list");
+        H3 label = new H3(viewType.getTitle());
         label.setWidthFull();
 
         Select<Button> settingButtons = new Select<>();
@@ -239,7 +243,7 @@ public class CardView implements ContentView {
     }
 
     private Button[] getBtns() {
-        Button crtBtn = new Button("Add", new Icon(PLUS), click -> new CreateCardView(appLayout));
+        Button crtBtn = new Button("Add", new Icon(PLUS), click -> new CreateCardView(appLayout, viewType));
         crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
 
@@ -330,8 +334,9 @@ public class CardView implements ContentView {
         return (int) color;
     }
 
-    public void reloadGrid() {
-        List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint();
+    @Override
+    public void reloadData() {
+        List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
         grid.setItems(cards);
     }
 

@@ -230,8 +230,8 @@ public class CardInfoView extends Dialog {
                 });
             }
 
-            Collection<File> videoFiles = FileUtils.listFiles(fileDir, new String[]{"mov", "mp4", "avi", "wmv", "mkv"}, false);
-            if (imgFiles != null && !imgFiles.isEmpty()) {
+            Collection<File> videoFiles = FileUtils.listFiles(fileDir, new String[]{"mov", "mp4"}, false);
+            if (videoFiles != null && !videoFiles.isEmpty()) {
                 VerticalLayout videos = new VerticalLayout();
                 videos.setId("acc_videos_list");
                 videos.setSizeFull();
@@ -297,7 +297,8 @@ public class CardInfoView extends Dialog {
         Button updBtn = new Button("Update", VaadinIcon.PENCIL.create());
         updBtn.addClickListener(buttonClickEvent -> new UpdateCardView(appLayout, card, () -> {
             this.reloadData();
-            appLayout.setContent(appLayout.getCardView().getContent());
+//            appLayout.setContent(appLayout.getCardView().getContent());
+            appLayout.reloadContent();
         }));
         updBtn.setWidthFull();
 
@@ -372,7 +373,8 @@ public class CardInfoView extends Dialog {
     }
 
     private void closeBtn() {
-        appLayout.setContent(appLayout.getCardView().getContent());
+//        appLayout.setContent(appLayout.getCardView().getContent());
+        appLayout.reloadContent();
         this.close();
     }
 

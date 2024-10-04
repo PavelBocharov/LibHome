@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -59,6 +60,10 @@ public class Card implements Serializable, HasId {
 
     @Column(name = "engine", nullable = true)
     private GameEngine engine;
+
+    @Column(name = "view_type", nullable = false)
+    @ColumnDefault("1")
+    private ViewType viewType;
 
     @OneToOne(optional = false)
     private CardType cardType;
