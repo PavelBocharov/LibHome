@@ -73,7 +73,7 @@ public class CardInfoView extends Dialog {
 
     private VerticalLayout loadData() throws IOException {
 
-        String dataDir = appLayout.getEnv().getProperty("data.path");
+        String dataDir = appLayout.getEnv().getProperty("app.data.path");
         File fileDir = new File(dataDir + "cards/", +card.getId() + "/");
 
         HorizontalLayout imageAndTitle = new HorizontalLayout();

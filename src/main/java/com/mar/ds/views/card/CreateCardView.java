@@ -46,8 +46,8 @@ public class CreateCardView {
     public CreateCardView(MainView mainView, ViewType viewType) {
         this.viewType = viewType;
 
-        minPoint = Integer.parseInt(mainView.getEnv().getProperty("card.point.min", "0"));
-        maxPoint = Integer.parseInt(mainView.getEnv().getProperty("card.point.max", "10"));
+        minPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.min", "0"));
+        maxPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.max", "10"));
 
         Dialog createDialog = new Dialog();
         createDialog.setMaxHeight(80, Unit.PERCENTAGE);

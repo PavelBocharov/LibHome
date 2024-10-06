@@ -71,7 +71,7 @@ public class MainView extends AppLayout {
             cardsView.put(type, view);
         }
 
-        String versions = loadProperties("application.properties").getProperty("version", "1.2.3-DEV.BUILD");
+        String versions = loadProperties("application.yml").getProperty("version", "1.2.3-DEV.BUILD");
         Label version = new Label(versions);
         version.getStyle().set("font-size", "xx-small");
 

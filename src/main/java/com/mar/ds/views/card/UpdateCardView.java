@@ -45,8 +45,8 @@ public class UpdateCardView {
     private BigDecimalField point;
 
     public UpdateCardView(MainView mainView, Card updateCard, Runnable afterUpdateEvent) {
-        minPoint = Integer.parseInt(mainView.getEnv().getProperty("card.point.min", "0"));
-        maxPoint = Integer.parseInt(mainView.getEnv().getProperty("card.point.max", "10"));
+        minPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.min", "0"));
+        maxPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.max", "10"));
 
         Dialog updateDialog = new Dialog();
         updateDialog.setMaxHeight(80, Unit.PERCENTAGE);

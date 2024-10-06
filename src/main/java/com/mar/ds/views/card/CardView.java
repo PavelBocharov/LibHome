@@ -69,8 +69,8 @@ public class CardView implements ContentView {
     private PaginatedGrid<Card> grid;
 
     public VerticalLayout getContent() {
-        minPoint = Integer.parseInt(appLayout.getEnv().getProperty("card.point.min", "0"));
-        maxPoint = Integer.parseInt(appLayout.getEnv().getProperty("card.point.max", "10"));
+        minPoint = Integer.parseInt(appLayout.getEnv().getProperty("app.card.point.min", "0"));
+        maxPoint = Integer.parseInt(appLayout.getEnv().getProperty("app.card.point.max", "10"));
 
         List<Card> cardList = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
         for (Card card : cardList) {
@@ -164,9 +164,7 @@ public class CardView implements ContentView {
                     Button dltBtn = new Button(new Icon(BAN), clk -> new DeleteDialogWidget(() -> {
                         appLayout.getRepositoryService().getCardRepository().delete(card);
                         appLayout.setContent(appLayout.getCardsView().get(viewType).getContent());
-
-                        FileUtils.deleteDir(appLayout.getEnv().getProperty("data.path") + "cards/" + card.getId());
-
+                        FileUtils.deleteDir(appLayout.getEnv().getProperty("app.data.path") + "cards/" + card.getId());
                     }));
                     dltBtn.addThemeVariants(LUMO_TERTIARY);
                     dltBtn.getStyle().set("color", "red").set("margin", "0px");
@@ -178,7 +176,7 @@ public class CardView implements ContentView {
 
         // settings
         grid.setWidthFull();
-        grid.setPageSize(appLayout.getEnv().getProperty("grid.row.count", Integer.class, 15));
+        grid.setPageSize(appLayout.getEnv().getProperty("app.grid.row.count", Integer.class, 15));
         grid.setPaginatorSize(3);
         // edit
         grid.addItemDoubleClickListener(

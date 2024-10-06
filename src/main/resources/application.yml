@@ -1,0 +1,38 @@
+version: @version@
+server:
+  port: 8080
+spring:
+  application:
+    name: @artifactId@
+  devtools:
+    restart:
+      poll-interval: 2s
+      quiet-period: 1s
+  servlet:
+    multipart:
+      max-file-size: 10MB
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+      format_sql: true
+java:
+  version: @java.version@
+vaadin:
+  version: @vaadin.version@
+app:
+  data:
+    path: /home/marolok/IdeaProjects/LibHome/test_dir/
+  db:
+    file: lib.db
+  image:
+    max:
+      height: 600
+  card:
+    point:
+      min: 0
+      max: 10
+  grid:
+    row:
+      count: 18
+

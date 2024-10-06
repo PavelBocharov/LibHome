@@ -21,9 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
@@ -31,6 +28,8 @@ import static java.lang.String.valueOf;
 
 @Slf4j
 public class UploadFileDialog extends Dialog {
+
+    public static final List<String> nameWordExc = List.of("\\", "/", ":", "*", "?", "\"", "<", ">", "|", "+", " ");
 
     private MainView mainView;
     private Upload uploadFile;
@@ -124,7 +123,7 @@ public class UploadFileDialog extends Dialog {
 
         try (BufferedInputStream bis = new BufferedInputStream(fileData)) {
             BufferedImage inBufImg = ImageIO.read(bis);
-            int maxH = Integer.parseInt(mainView.getEnv().getProperty("image.max.height", "600"));
+            int maxH = Integer.parseInt(mainView.getEnv().getProperty("app.image.max.height", "600"));
             BufferedImage resizedImage = compressImage(inBufImg, maxH);
             log.info("Create image file: {}", this.rootDir + uploadFileName);
             File file = new File(this.rootDir + uploadFileName);
@@ -160,7 +159,6 @@ public class UploadFileDialog extends Dialog {
         return Scalr.resize(image, targetWidth, targetHeight);
     }
 
-    public static final List<String> nameWordExc = List.of("\\", "/", ":", "*", "?", "\"", "<", ">", "|", "+", " ");
     private String replaceWord(String str, List<String> badWords, String newWord) {
         String rez = str;
         for (String badWord : badWords) {
