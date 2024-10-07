@@ -1,0 +1,39 @@
+{
+  "GAME": {
+    "grid_status": "Статус",
+    "grid_engine": "Движок",
+    "grid_title": "Наименование",
+    "grid_point": "Оценка",
+    "grid_rate": "Рейтинг",
+    "grid_date_upd": "Дата последнего обновления",
+    "grid_date_game": "Дата последней игры",
+    "grid_type": "Тип игры",
+    "grid_tags": "Теги",
+    "grid_link": "\uD83D\uDD17",
+    "grid_btns": ""
+  },
+  "VIDEO": {
+    "grid_title": "Наименование",
+    "grid_point": "Оценка",
+    "grid_date_upd": "Дата выпуска",
+    "grid_type": "Тип контента",
+    "grid_tags": "Теги",
+    "grid_link": "\uD83D\uDD17",
+    "grid_btns": ""
+  },
+  "BOOK": {
+    "grid_title": "Наименование",
+    "grid_point": "Оценка",
+    "grid_date_upd": "Дата выпуска",
+    "grid_tags": "Теги",
+    "grid_btns": ""
+  },
+  "MUSIC": {
+    "grid_title": "Наименование",
+    "grid_point": "Оценка",
+    "grid_date_upd": "Дата первого альбома",
+    "grid_date_game": "Дата крайнего альбома",
+    "grid_tags": "Теги",
+    "grid_btns": ""
+  }
+}
