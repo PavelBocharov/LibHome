@@ -26,5 +26,9 @@ public class GridInfo implements Serializable {
     public static final String GRID_TAGS = "grid_tags";
     public static final String GRID_LINK = "grid_link";
     public static final String GRID_BTNS = "grid_btns";
+    public static final String GRID_INFO = "grid_info";
+    public static final String GRID_IMAGE = "grid_image";
+    public static final String GRID_VIDEO = "grid_video";
+    public static final String GRID_FILES = "grid_files";
 
 }

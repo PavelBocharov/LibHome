@@ -40,8 +40,20 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
+import static com.mar.ds.data.GridInfo.GRID_DATE_GAME;
+import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
+import static com.mar.ds.data.GridInfo.GRID_ENGINE;
+import static com.mar.ds.data.GridInfo.GRID_FILES;
+import static com.mar.ds.data.GridInfo.GRID_IMAGE;
+import static com.mar.ds.data.GridInfo.GRID_INFO;
+import static com.mar.ds.data.GridInfo.GRID_LINK;
+import static com.mar.ds.data.GridInfo.GRID_STATUS;
+import static com.mar.ds.data.GridInfo.GRID_TAGS;
+import static com.mar.ds.data.GridInfo.GRID_TYPE;
+import static com.mar.ds.data.GridInfo.GRID_VIDEO;
 import static com.mar.ds.utils.ViewUtils.findImage;
 import static com.mar.ds.utils.ViewUtils.getAccordionContent;
 import static com.mar.ds.utils.ViewUtils.getImage;
@@ -72,9 +84,12 @@ public class CardInfoView extends Dialog {
     }
 
     private VerticalLayout loadData() throws IOException {
-
+        Calendar calendar = Calendar.getInstance();
         String dataDir = appLayout.getEnv().getProperty("app.data.path");
         File fileDir = new File(dataDir + "cards/", +card.getId() + "/");
+        Map<String, String> titles = com.mar.ds.utils.FileUtils.getTitles(
+                card.getViewType(), appLayout.getEnv().getProperty("app.data.content.file")
+        );
 
         HorizontalLayout imageAndTitle = new HorizontalLayout();
         imageAndTitle.setPadding(false);
@@ -95,61 +110,73 @@ public class CardInfoView extends Dialog {
 
         HorizontalLayout header = new HorizontalLayout(returnBtn, d, headerInfo);
         header.setWidthFull();
+        VerticalLayout cardInfo = new VerticalLayout();
 
-        // last update
-        DatePicker lastUpdDate = new DatePicker("Last update", LocalDate.now());
-        lastUpdDate.setWidthFull();
-        lastUpdDate.setRequired(true);
-        lastUpdDate.setReadOnly(true);
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(card.getLastUpdate());
-        lastUpdDate.setValue(LocalDate.of(
-                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH)
-        ));
-        // last game
-        DatePicker lastGameDate = new DatePicker("Last game", LocalDate.now());
-        lastGameDate.setWidthFull();
-        lastGameDate.setRequired(true);
-        lastGameDate.setReadOnly(true);
-        calendar.setTime(card.getLastGame());
-        lastGameDate.setValue(LocalDate.of(
-                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH)
-        ));
-
-        Anchor link = new Anchor();
-        TextField linkText;
-        if (isBlank(card.getLink())) {
-            linkText = getTextField("\uD83D\uDD17 Link", "-");
-            link.setEnabled(false);
-        } else {
-            linkText = getTextField("\uD83D\uDD17 Link", card.getLink());
-            link.setHref(card.getLink());
-            link.setTarget("_blank"); // new tab
+        if (titles.containsKey(GRID_TYPE)) {
+            cardInfo.add(getTextField(titles.get(GRID_TYPE), card.getCardType().getTitle()));
         }
-        linkText.setSuffixComponent(VaadinIcon.LINK.create());
-        link.add(linkText);
-        link.setWidthFull();
+        if (titles.containsKey(GRID_STATUS)) {
+            cardInfo.add(getTextField(titles.get(GRID_STATUS), card.getCardStatus().getTitle()));
+        }
+        if (titles.containsKey(GRID_ENGINE)) {
+            cardInfo.add(getTextField(
+                    titles.get(GRID_ENGINE),
+                    card.getEngine() == null ? "---" : card.getEngine().getName())
+            );
+        }
+        if (titles.containsKey(GRID_DATE_UPD)) {
+            DatePicker lastUpdDate = new DatePicker(titles.get(GRID_DATE_UPD), LocalDate.now());
+            lastUpdDate.setWidthFull();
+            lastUpdDate.setRequired(true);
+            lastUpdDate.setReadOnly(true);
+            calendar.setTime(card.getLastUpdate());
+            lastUpdDate.setValue(LocalDate.of(
+                    calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH)
+            ));
+            cardInfo.add(lastUpdDate);
+        }
+        if (titles.containsKey(GRID_DATE_GAME)) {
+            DatePicker lastGameDate = new DatePicker(titles.get(GRID_DATE_GAME), LocalDate.now());
+            lastGameDate.setWidthFull();
+            lastGameDate.setRequired(true);
+            lastGameDate.setReadOnly(true);
+            calendar.setTime(card.getLastGame());
+            lastGameDate.setValue(LocalDate.of(
+                    calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH)
+            ));
+            cardInfo.add(lastGameDate);
+        }
+        if (titles.containsKey(GRID_LINK)) {
+            Anchor link = new Anchor();
+            TextField linkText;
+            String title = titles.get(GRID_LINK);
+            if (isBlank(card.getLink())) {
+                linkText = getTextField(title, "-");
+                link.setEnabled(false);
+            } else {
+                linkText = getTextField(title, card.getLink());
+                link.setHref(card.getLink());
+                link.setTarget("_blank"); // new tab
+            }
+            linkText.setSuffixComponent(VaadinIcon.LINK.create());
+            link.add(linkText);
+            link.setWidthFull();
 
-        MultiselectComboBox<CardTypeTag> tags = new MultiselectComboBox<>();
-        tags.setLabel("Tags");
-        tags.setItemLabelGenerator(CardTypeTag::getTitle);
-        tags.setWidthFull();
-        tags.setAllowCustomValues(false);
-        tags.setReadOnly(true);
-        tags.setItems(card.getTagList());
-        tags.select(card.getTagList());
+            cardInfo.add(link);
+        }
+        if (titles.containsKey(GRID_TAGS)) {
+            MultiselectComboBox<CardTypeTag> tags = new MultiselectComboBox<>();
+            tags.setLabel(titles.get(GRID_TAGS));
+            tags.setItemLabelGenerator(CardTypeTag::getTitle);
+            tags.setWidthFull();
+            tags.setAllowCustomValues(false);
+            tags.setReadOnly(true);
+            tags.setItems(card.getTagList());
+            tags.select(card.getTagList());
 
-        VerticalLayout cardInfo = new VerticalLayout(
-//                headerInfo,
-                getTextField("Type", card.getCardType().getTitle()),
-                getTextField("Status", card.getCardStatus().getTitle()),
-                getTextField("Engine", card.getEngine() == null ? "---" : card.getEngine().getName()),
-                lastUpdDate,
-                lastGameDate,
-                link,
-                tags
-        );
+            cardInfo.add(tags);
+        }
+
         // Cover
         Image cover;
         try {
@@ -195,7 +222,7 @@ public class CardInfoView extends Dialog {
         TextArea textArea = new TextArea();
         textArea.setWidthFull();
         textArea.setReadOnly(true);
-        textArea.setLabel("Info");
+        textArea.setLabel(titles.get(GRID_INFO));
         textArea.setValue(card.getInfo());
 
         Div div = new Div();
@@ -213,7 +240,7 @@ public class CardInfoView extends Dialog {
                 images.setAlignItems(FlexComponent.Alignment.CENTER);
 
                 VerticalLayout accImages = getAccordionContent(images);
-                accordion.add("Images", accImages);
+                accordion.add(titles.get(GRID_IMAGE), accImages);
                 accordion.addOpenedChangeListener(event -> {
                     if (event.getOpenedIndex().isPresent()) {
                         if (event.getOpenedPanel().get().getContent().findFirst().get().equals(accImages)) {
@@ -238,7 +265,7 @@ public class CardInfoView extends Dialog {
                 videos.setAlignItems(FlexComponent.Alignment.CENTER);
 
                 VerticalLayout accVideos = getAccordionContent(videos);
-                accordion.add("Videos", accVideos);
+                accordion.add(titles.get(GRID_VIDEO), accVideos);
                 accordion.addOpenedChangeListener(event -> {
                     if (event.getOpenedIndex().isPresent()) {
                         if (event.getOpenedPanel().get().getContent().findFirst().get().equals(accVideos)) {
@@ -261,7 +288,7 @@ public class CardInfoView extends Dialog {
             cardFiles.setItems(FileUtils.listFiles(fileDir, null, true));
             cardFiles.setWidthFull();
             cardFiles.addThemeVariants(GridVariant.LUMO_COMPACT);
-            accordion.add("Files", getAccordionContent(cardFiles));
+            accordion.add(titles.get(GRID_FILES), getAccordionContent(cardFiles));
             accordion.close();
 
             div.add(imageAndTitle, textArea, accordion);

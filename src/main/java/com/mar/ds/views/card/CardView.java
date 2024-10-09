@@ -43,6 +43,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.mar.ds.data.GridInfo.*;
+import static com.mar.ds.utils.FileUtils.getTitles;
 import static com.mar.ds.utils.ViewUtils.getStatusIcon;
 import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
@@ -80,13 +81,7 @@ public class CardView implements ContentView {
         }
         if (maxRate <= minRate) maxRate = minRate + 1;
 
-        log.info("Start load json");
-        EnumMap<ViewType, Map<String, String>> viewInfos = FileUtils.loadContentInfo(
-                appLayout.getEnv().getProperty("app.data.content.file")
-        );
-        log.info("Load JSON to MAP: {}", viewInfos);
-        Map<String, String> gridConfig = viewInfos.get(viewType);
-        log.info("View type: {}, info: {}", viewType, gridConfig);
+        Map<String, String> gridConfig = getTitles(viewType, appLayout.getEnv().getProperty("app.data.content.file"));
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         // TABLE
