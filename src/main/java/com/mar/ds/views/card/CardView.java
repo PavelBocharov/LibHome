@@ -81,7 +81,7 @@ public class CardView implements ContentView {
         }
         if (maxRate <= minRate) maxRate = minRate + 1;
 
-        Map<String, String> gridConfig = getTitles(viewType, appLayout.getEnv().getProperty("app.data.content.file"));
+        Map<String, String> gridConfig = getTitles(viewType, appLayout.getContentJSON());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         // TABLE
@@ -195,10 +195,13 @@ public class CardView implements ContentView {
                         infoBtn.addThemeVariants(LUMO_TERTIARY);
                         infoBtn.getStyle().set("color", "green").set("margin", "0px");
                         // Edit BTN
-                        Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> new UpdateCardView(
-                                appLayout,
-                                card,
-                                () -> appLayout.setContent(appLayout.getCardsView().get(viewType).getContent()))
+                        Button edtBtn = new Button(
+                                new Icon(VaadinIcon.PENCIL),
+                                clk -> new UpdateCardView(
+                                        appLayout,
+                                        card,
+                                        () -> appLayout.setContent(appLayout.getCardsView().get(viewType).getContent())
+                                ).showDialog()
                         );
                         edtBtn.addThemeVariants(LUMO_TERTIARY);
                         edtBtn.getStyle().set("margin", "0px");
@@ -285,7 +288,11 @@ public class CardView implements ContentView {
     }
 
     private Button[] getBtns() {
-        Button crtBtn = new Button("Add", new Icon(PLUS), click -> new CreateCardView(appLayout, viewType));
+        Button crtBtn = new Button(
+                "Add",
+                new Icon(PLUS),
+                click -> new CreateCardView(appLayout, viewType).showDialog()
+        );
         crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
 

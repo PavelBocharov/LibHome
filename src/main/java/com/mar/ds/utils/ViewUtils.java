@@ -12,6 +12,7 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
@@ -41,12 +42,15 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
@@ -72,6 +76,8 @@ public class ViewUtils {
     }
 
     public static void showErrorMsg(String title, Throwable ex, int duration) {
+        ex.printStackTrace();
+
         Notification notification = new Notification();
         notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
         notification.setDuration(duration);
@@ -79,7 +85,8 @@ public class ViewUtils {
 
         VerticalLayout layout = new VerticalLayout();
         Accordion accordion = new Accordion();
-        accordion.add(title, new Label(ExceptionUtils.getRootCauseMessage(ex)));
+        accordion.add(title + ": ", new Label(ExceptionUtils.getRootCauseMessage(ex)));
+        accordion.add("Message", new Label(ExceptionUtils.getMessage(ex)));
         accordion.close();
 
         Button clsBtn = new Button("Закрыть");
@@ -188,8 +195,9 @@ public class ViewUtils {
         T selectValue = initDataProviderList.stream()
                 .filter(hasId -> hasId.getId().equals(value.getId()))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new RuntimeException("Cannot select " + value));
         if (nonNull(selectValue)) {
+            select.setItems(initDataProviderList);
             select.setValue(selectValue);
         }
     }
@@ -242,6 +250,20 @@ public class ViewUtils {
     public static String getTextFieldValue(TextArea field) {
         if (field == null || isBlank(field.getValue())) return null;
         return field.getValue().trim();
+    }
+
+    public static Date getValue(DatePicker date, Date defaultDate) {
+        if (date == null || date.getValue() == null) {
+            return defaultDate;
+        }
+        return Date.from(date.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
+    public static <T> T getValue(Select<T> selector, T defaultValue) {
+        if (selector == null) {
+            return defaultValue;
+        }
+        return Optional.ofNullable(selector.getValue()).orElse(defaultValue);
     }
 
     /**

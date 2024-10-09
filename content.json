@@ -17,11 +17,13 @@
     "grid_files": "Файлы"
   },
   "VIDEO": {
+    "grid_status": "Тип",
     "grid_title": "Наименование",
-    "grid_point": "Оценка",
-    "grid_date_upd": "Дата выпуска",
     "grid_type": "Тип контента",
     "grid_tags": "Теги",
+
+    "grid_point": "Оценка",
+    "grid_date_upd": "Дата выпуска",
     "grid_link": "\uD83D\uDD17",
     "grid_btns": "",
     "grid_info": "Информация",
@@ -30,10 +32,13 @@
     "grid_files": "Файлы"
   },
   "BOOK": {
+    "grid_status": "Тип",
     "grid_title": "Наименование",
+    "grid_type": "Тип издания",
+    "grid_tags": "Теги",
+
     "grid_point": "Оценка",
     "grid_date_upd": "Дата выпуска",
-    "grid_tags": "Теги",
     "grid_btns": "",
     "grid_info": "Информация",
     "grid_image":"Скриншоты",
@@ -41,11 +46,14 @@
     "grid_files": "Файлы"
   },
   "MUSIC": {
+    "grid_status": "Тип",
     "grid_title": "Наименование",
+    "grid_type": "Тип издания",
+    "grid_tags": "Теги",
+
     "grid_point": "Оценка",
     "grid_date_upd": "Дата первого альбома",
     "grid_date_game": "Дата крайнего альбома",
-    "grid_tags": "Теги",
     "grid_btns": "",
     "grid_info": "Информация",
     "grid_image":"Скриншоты",

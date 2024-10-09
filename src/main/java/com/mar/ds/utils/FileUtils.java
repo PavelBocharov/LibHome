@@ -28,17 +28,13 @@ public class FileUtils {
     }
 
     public static @Nullable Map<String, String> getTitles(@NotNull ViewType viewType, @NotBlank @NotNull String filePath) {
-        log.info("Start load JSON file: {}", filePath);
         EnumMap<ViewType, Map<String, String>> viewInfos = FileUtils.loadContentInfo(filePath);
-        log.info("Load JSON to MAP: {}", viewInfos);
         Map<String, String> gridConfig = viewInfos.get(viewType);
-        log.info("View type: {}, info: {}", viewType, gridConfig);
         return gridConfig;
     }
 
     public static EnumMap<ViewType, Map<String, String>> loadContentInfo(@NotBlank @NotNull String filePath) {
         ObjectMapper mapper = new ObjectMapper();
-        System.out.println("load json from: " + filePath);
         EnumMap<ViewType, Map<String, String>> res = new EnumMap<>(ViewType.class);
         try {
             Map<String, Map<String, String>> json = mapper.readValue(new File(filePath), Map.class);

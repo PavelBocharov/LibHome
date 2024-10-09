@@ -119,4 +119,8 @@ public class MainView extends AppLayout {
         button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         return button;
     }
+
+    public String getContentJSON() {
+        return this.getEnv().getProperty("app.data.content.file");
+    }
 }

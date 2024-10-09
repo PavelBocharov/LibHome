@@ -88,7 +88,7 @@ public class CardInfoView extends Dialog {
         String dataDir = appLayout.getEnv().getProperty("app.data.path");
         File fileDir = new File(dataDir + "cards/", +card.getId() + "/");
         Map<String, String> titles = com.mar.ds.utils.FileUtils.getTitles(
-                card.getViewType(), appLayout.getEnv().getProperty("app.data.content.file")
+                card.getViewType(), appLayout.getContentJSON()
         );
 
         HorizontalLayout imageAndTitle = new HorizontalLayout();
@@ -248,7 +248,7 @@ public class CardInfoView extends Dialog {
                             for (File file : imgFiles) {
                                 Image accImage = getImage(file.getAbsolutePath());
                                 accImage.setMaxWidth(accImage.getWidth());
-                                accImage.setMaxHeight(accImage.getHeight());
+                                accImage.setMaxHeight(600, Unit.PIXELS);
                                 accImage.setSizeFull();
                                 images.add(accImage);
                             }
@@ -273,7 +273,7 @@ public class CardInfoView extends Dialog {
                             for (File file : videoFiles) {
                                 VideoJS video = new VideoJS(UI.getCurrent().getSession(), file, null);
                                 video.setMaxWidth(80, Unit.PERCENTAGE);
-                                video.setMaxHeight(80, Unit.PERCENTAGE);
+                                video.setMaxHeight(600, Unit.PIXELS);
                                 video.setSizeFull();
                                 videos.add(video);
                             }
@@ -323,10 +323,10 @@ public class CardInfoView extends Dialog {
 
         Button updBtn = new Button("Update", VaadinIcon.PENCIL.create());
         updBtn.addClickListener(buttonClickEvent -> new UpdateCardView(appLayout, card, () -> {
-            this.reloadData();
-//            appLayout.setContent(appLayout.getCardView().getContent());
-            appLayout.reloadContent();
-        }));
+                    this.reloadData();
+                    appLayout.reloadContent();
+                }).showDialog()
+        );
         updBtn.setWidthFull();
 
         HorizontalLayout footer = new HorizontalLayout(
