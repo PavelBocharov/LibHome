@@ -26,6 +26,6 @@
     </root>
 
     <logger name="com.mar.ds" level="DEBUG"/>
-    <logger name="org.apache." level="OFF"/>
-    <logger name="com.vaadin.flow.server.DefaultErrorHandler" level="OFF"/>
+<!--    <logger name="org.apache." level="OFF"/>-->
+<!--    <logger name="com.vaadin.flow.server.DefaultErrorHandler" level="OFF"/>-->
 </configuration>
