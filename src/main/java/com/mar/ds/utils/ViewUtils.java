@@ -39,10 +39,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -76,8 +78,6 @@ public class ViewUtils {
     }
 
     public static void showErrorMsg(String title, Throwable ex, int duration) {
-        ex.printStackTrace();
-
         Notification notification = new Notification();
         notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
         notification.setDuration(duration);
@@ -86,10 +86,10 @@ public class ViewUtils {
         VerticalLayout layout = new VerticalLayout();
         Accordion accordion = new Accordion();
         accordion.add(title + ": ", new Label(ExceptionUtils.getRootCauseMessage(ex)));
-        accordion.add("Message", new Label(ExceptionUtils.getMessage(ex)));
         accordion.close();
 
-        Button clsBtn = new Button("Закрыть");
+        Button clsBtn = new Button();
+        clsBtn.setIcon(VaadinIcon.CLOSE.create());
         clsBtn.addClickListener(btnClick -> notification.close());
 
         layout.add(accordion, clsBtn);
@@ -200,6 +200,27 @@ public class ViewUtils {
             select.setItems(initDataProviderList);
             select.setValue(selectValue);
         }
+    }
+
+    public static <E extends Enum> void setSelectValue(Select<E> select, E value, E[] selectData, E defaultValue) {
+        if (isNull(value) && nonNull(defaultValue)) {
+            setSelectValue(select, defaultValue, selectData);
+        } else {
+            setSelectValue(select, value, selectData);
+        }
+    }
+
+    public static <E extends Enum> void setSelectValue(Select<E> select, E value, E[] selectData) {
+        if (isNull(select) || isNull(value) || isEmpty(selectData)) {
+            return;
+        }
+
+        E selectValue = Arrays.stream(selectData)
+                .filter(e -> value.equals(e))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Cannot select " + value));
+        select.setItems(selectData);
+        select.setValue(selectValue);
     }
 
     public static float getFloatValue(BigDecimalField field) {

@@ -61,6 +61,9 @@ public class Card implements Serializable, HasId {
     @Column(name = "engine")
     private GameEngine engine;
 
+    @Column(name = "language")
+    private Language language;
+
     @Column(name = "view_type", nullable = false)
     @ColumnDefault("1")
     private ViewType viewType;

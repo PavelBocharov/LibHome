@@ -4,7 +4,9 @@ import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
+import com.mar.ds.db.entity.Language;
 import com.mar.ds.db.entity.ViewType;
+import com.mar.ds.utils.FileUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -34,14 +36,17 @@ import static com.mar.ds.data.GridInfo.GRID_TITLE;
 import static com.mar.ds.data.GridInfo.GRID_TYPE;
 import static com.mar.ds.utils.ViewUtils.getDoubleValue;
 import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.join;
 
 public abstract class CardDialogView {
-    
+
+    private volatile Map<String, String> titles;
+
     protected MainView mainView;
     protected ViewType viewType;
-    protected Map<String, String> titles;
     protected int minPoint;
     protected int maxPoint;
 
@@ -55,13 +60,25 @@ public abstract class CardDialogView {
     protected Select<CardType> cardTypeListSelect;
     protected MultiselectComboBox<CardTypeTag> tags;
     protected TextArea infoArea;
+    protected Select<Language> languageSelect;
 
     public abstract void showDialog();
     public abstract void closeDialog();
 
+    protected Map<String, String> getTitles() {
+        if (isNull(titles)) {
+            synchronized (this) {
+                if (isNull(titles)) {
+                    titles = FileUtils.getTitles(viewType, mainView.getContentJSON());
+                }
+            }
+        }
+        return titles;
+    }
+
     protected void checkValues() throws Exception {
         if (isBlank(getTextFieldValue(cardTitle))) {
-            throw new RuntimeException(String.format("'%s' not be blank.", titles.get(GRID_TITLE)));
+            throw new RuntimeException(String.format("'%s' not be blank.", getTitles().get(GRID_TITLE)));
         }
         if (nonNull(point)) {
             double cardPoint = getDoubleValue(point);
@@ -76,7 +93,7 @@ public abstract class CardDialogView {
 
     protected Component getTitle() {
         cardTitle = new TextField(
-                Optional.of(titles.get(GRID_TITLE)).orElseThrow(() -> new RuntimeException(
+                Optional.of(getTitles().get(GRID_TITLE)).orElseThrow(() -> new RuntimeException(
                                 String.format("Not init '%s' label text.", GRID_TITLE)
                         )
                 )
@@ -87,7 +104,7 @@ public abstract class CardDialogView {
     }
 
     protected Component getPointField() {
-        point = new BigDecimalField(titles.get(GRID_POINT));
+        point = new BigDecimalField(getTitles().get(GRID_POINT));
         point.setValue(BigDecimal.valueOf(minPoint));
         point.setHelperText(String.format("Min value = %d, max value = %d", minPoint, maxPoint));
         point.setWidthFull();
@@ -96,7 +113,7 @@ public abstract class CardDialogView {
 
     protected Component getEngineSelector() {
         engineSelect = new Select<>(GameEngine.values());
-        engineSelect.setLabel(titles.get(GRID_ENGINE));
+        engineSelect.setLabel(getTitles().get(GRID_ENGINE));
         engineSelect.setEmptySelectionAllowed(false);
         engineSelect.setTextRenderer(GameEngine::getName);
         engineSelect.setWidthFull();
@@ -105,19 +122,19 @@ public abstract class CardDialogView {
     }
 
     protected Component getLinkFiled() {
-        link = new TextField(titles.get(GRID_LINK));
+        link = new TextField(getTitles().get(GRID_LINK));
         link.setWidthFull();
         return link;
     }
 
     protected Component getUpdDate() {
-        updDate = new DatePicker(titles.get(GRID_DATE_UPD), LocalDate.now());
+        updDate = new DatePicker(getTitles().get(GRID_DATE_UPD), LocalDate.now());
         updDate.setWidthFull();
         return updDate;
     }
 
     protected Component getGameDate() {
-        gameDate = new DatePicker(titles.get(GRID_DATE_GAME), LocalDate.now());
+        gameDate = new DatePicker(getTitles().get(GRID_DATE_GAME), LocalDate.now());
         gameDate.setWidthFull();
         return gameDate;
     }
@@ -125,7 +142,7 @@ public abstract class CardDialogView {
     protected Component getStatusSelector() {
         List<CardStatus> cardStatusList = mainView.getRepositoryService().getCardStatusRepository().findAll();
         cardStatusListSelect = new Select<>();
-        cardStatusListSelect.setLabel(titles.get(GRID_STATUS));
+        cardStatusListSelect.setLabel(getTitles().get(GRID_STATUS));
         cardStatusListSelect.setEmptySelectionAllowed(false);
         cardStatusListSelect.setTextRenderer(CardStatus::getTitle);
         cardStatusListSelect.setDataProvider(new ListDataProvider<>(cardStatusList));
@@ -136,7 +153,7 @@ public abstract class CardDialogView {
     protected Component getTypeSelector() {
         List<CardType> cardTypeList = mainView.getRepositoryService().getCardTypeRepository().findAll();
         cardTypeListSelect = new Select<>();
-        cardTypeListSelect.setLabel(titles.get(GRID_TYPE));
+        cardTypeListSelect.setLabel(getTitles().get(GRID_TYPE));
         cardTypeListSelect.setEmptySelectionAllowed(false);
         cardTypeListSelect.setTextRenderer(CardType::getTitle);
         cardTypeListSelect.setDataProvider(new ListDataProvider<>(cardTypeList));
@@ -146,7 +163,7 @@ public abstract class CardDialogView {
 
     protected Component getTagMultiselector() {
         tags = new MultiselectComboBox<>();
-        tags.setLabel(titles.get(GRID_TAGS));
+        tags.setLabel(getTitles().get(GRID_TAGS));
         tags.setItemLabelGenerator(CardTypeTag::getTitle);
         tags.setWidthFull();
         tags.setAllowCustomValues(false);
@@ -168,9 +185,19 @@ public abstract class CardDialogView {
     }
 
     protected Component getInfo() {
-        infoArea = new TextArea(titles.get(GRID_INFO));
+        infoArea = new TextArea(getTitles().get(GRID_INFO));
         infoArea.setWidthFull();
         return infoArea;
+    }
+
+    protected Component getLanguageSelector() {
+        languageSelect = new Select<>(Language.values());
+        languageSelect.setLabel("Language/Язык");
+        languageSelect.setEmptySelectionAllowed(false);
+        languageSelect.setTextRenderer(language -> join(language.getIcon(), " ", language.getTitle()));
+        languageSelect.setWidthFull();
+        languageSelect.setValue(Language.DEFAULT);
+        return languageSelect;
     }
     
 }

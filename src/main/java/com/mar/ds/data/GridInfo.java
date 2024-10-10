@@ -17,6 +17,7 @@ public class GridInfo implements Serializable {
     public static final String GRID_ID = "grid_id";
     public static final String GRID_STATUS = "grid_status";
     public static final String GRID_ENGINE = "grid_engine";
+    public static final String GRID_LANGUAGE = "grid_language";
     public static final String GRID_TITLE = "grid_title";
     public static final String GRID_POINT = "grid_point";
     public static final String GRID_RATE = "grid_rate";

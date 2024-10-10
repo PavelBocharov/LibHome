@@ -15,6 +15,8 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Slf4j
 @UtilityClass
 public class FileUtils {
@@ -28,6 +30,10 @@ public class FileUtils {
     }
 
     public static @Nullable Map<String, String> getTitles(@NotNull ViewType viewType, @NotBlank @NotNull String filePath) {
+        if (viewType == null || isBlank(filePath)) {
+            throw new RuntimeException("Cannot load titles: viewType is null or filePath is blank.");
+        }
+
         EnumMap<ViewType, Map<String, String>> viewInfos = FileUtils.loadContentInfo(filePath);
         Map<String, String> gridConfig = viewInfos.get(viewType);
         return gridConfig;

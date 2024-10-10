@@ -2,6 +2,7 @@ package com.mar.ds.views.card;
 
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardTypeTag;
+import com.mar.ds.db.entity.Language;
 import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.utils.DeleteDialogWidget;
@@ -118,6 +119,14 @@ public class CardView implements ContentView {
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_ENGINE);
         }
+        if (gridConfig.containsKey(GRID_LANGUAGE)) {
+            grid.addColumn(card -> Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getIcon())
+                    .setHeader(gridConfig.get(GRID_LANGUAGE))
+                    .setAutoWidth(true).setFlexGrow(0)
+                    .setSortable(true)
+                    .setTextAlign(ColumnTextAlign.CENTER)
+                    .setId(GRID_LANGUAGE);
+        }
         if (gridConfig.containsKey(GRID_TITLE)) {
             grid.addColumn(Card::getTitle)
                     .setHeader(gridConfig.get(GRID_TITLE))
@@ -197,11 +206,7 @@ public class CardView implements ContentView {
                         // Edit BTN
                         Button edtBtn = new Button(
                                 new Icon(VaadinIcon.PENCIL),
-                                clk -> new UpdateCardView(
-                                        appLayout,
-                                        card,
-                                        () -> appLayout.setContent(appLayout.getCardsView().get(viewType).getContent())
-                                ).showDialog()
+                                clk -> new FastUpdateCardView(appLayout, card).showDialog()
                         );
                         edtBtn.addThemeVariants(LUMO_TERTIARY);
                         edtBtn.getStyle().set("margin", "0px");

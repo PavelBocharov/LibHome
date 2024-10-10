@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor
-public enum GameEngine implements Serializable, HasId {
+public enum GameEngine implements Serializable {
 
     DEFAULT("Default", "static/img/icon/engine/engine_icon.png"),
     HTML("HTML", "static/img/icon/engine/html_icon.png"),
@@ -26,11 +26,4 @@ public enum GameEngine implements Serializable, HasId {
     private String name;
     private String iconPath;
 
-    @Override
-    public Long getId() {
-        if (name == null) {
-            return 0L;
-        }
-        return (long) name.hashCode();
-    }
 }

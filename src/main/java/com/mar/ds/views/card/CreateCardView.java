@@ -5,6 +5,7 @@ import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
+import com.mar.ds.db.entity.Language;
 import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
@@ -41,6 +42,7 @@ import static com.mar.ds.data.GridInfo.GRID_DATE_GAME;
 import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
 import static com.mar.ds.data.GridInfo.GRID_ENGINE;
 import static com.mar.ds.data.GridInfo.GRID_INFO;
+import static com.mar.ds.data.GridInfo.GRID_LANGUAGE;
 import static com.mar.ds.data.GridInfo.GRID_LINK;
 import static com.mar.ds.data.GridInfo.GRID_POINT;
 import static com.mar.ds.data.GridInfo.GRID_STATUS;
@@ -60,7 +62,6 @@ public class CreateCardView extends CardDialogView {
     public CreateCardView(MainView mainView, ViewType viewType) {
         this.mainView = mainView;
         this.viewType = viewType;
-        this.titles = FileUtils.getTitles(viewType, mainView.getContentJSON());
         this.minPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.min", "0"));
         this.maxPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.max", "10"));
 
@@ -75,39 +76,43 @@ public class CreateCardView extends CardDialogView {
         createDialog.add(getTitle());
         // point
         // engine
-        if (nonNull(titles.get(GRID_POINT)) && nonNull(titles.get(GRID_ENGINE))) {
+        if (nonNull(getTitles().get(GRID_POINT)) && nonNull(getTitles().get(GRID_ENGINE))) {
             createDialog.add(new HorizontalLayout(getPointField(), getEngineSelector()));
         } else {
-            if (nonNull(titles.get(GRID_POINT))) {
+            if (nonNull(getTitles().get(GRID_POINT))) {
                 createDialog.add(getPointField());
             }
-            if (nonNull(titles.get(GRID_ENGINE))) {
+            if (nonNull(getTitles().get(GRID_ENGINE))) {
                 createDialog.add(getEngineSelector());
             }
         }
         // link
-        if (nonNull(titles.get(GRID_LINK))) {
+        if (nonNull(getTitles().get(GRID_LINK))) {
             createDialog.add(getLinkFiled());
+        }
+        // lang
+        if (nonNull(getTitles().get(GRID_LANGUAGE))) {
+            createDialog.add(getLanguageSelector());
         }
         // last update
         // last game
-        if (nonNull(titles.get(GRID_DATE_UPD)) && nonNull(titles.get(GRID_DATE_GAME))) {
+        if (nonNull(getTitles().get(GRID_DATE_UPD)) && nonNull(getTitles().get(GRID_DATE_GAME))) {
             createDialog.add(new HorizontalLayout(getUpdDate(), getGameDate()));
         } else {
-            if (nonNull(titles.get(GRID_DATE_UPD))) {
+            if (nonNull(getTitles().get(GRID_DATE_UPD))) {
                 createDialog.add(getUpdDate());
             }
-            if (nonNull(titles.get(GRID_DATE_GAME))) {
+            if (nonNull(getTitles().get(GRID_DATE_GAME))) {
                 createDialog.add(getGameDate());
             }
         }
 
         // status, type + tags
         List<Component> components = new LinkedList<>();
-        if (nonNull(titles.get(GRID_STATUS))) {
+        if (nonNull(getTitles().get(GRID_STATUS))) {
             components.add(getStatusSelector());
         }
-        if (nonNull(titles.get(GRID_TYPE)) && nonNull(titles.get(GRID_TAGS))) {
+        if (nonNull(getTitles().get(GRID_TYPE)) && nonNull(getTitles().get(GRID_TAGS))) {
             components.add(getTypeSelector());
             components.add(getTagMultiselector());
         }
@@ -119,7 +124,7 @@ public class CreateCardView extends CardDialogView {
             }
         }
         // info
-        if (nonNull(titles.get(GRID_INFO))) {
+        if (nonNull(getTitles().get(GRID_INFO))) {
             createDialog.add(getInfo());
         }
 
@@ -133,9 +138,7 @@ public class CreateCardView extends CardDialogView {
                                         .viewType(viewType)
                                         .title(getTextFieldValue(cardTitle))
                                         .info(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""))
-//                                        .info(getTextFieldValue(infoArea, ""))
                                         .link(getTextFieldValue(link))
-//                                        .engine(Optional.ofNullable(engineSelect.getValue()).orElse(GameEngine.DEFAULT))
                                         .engine(getValue(engineSelect, GameEngine.DEFAULT))
                                         .point(getDoubleValue(point))
                                         .lastUpdate(getValue(updDate, new Date()))
@@ -143,6 +146,7 @@ public class CreateCardView extends CardDialogView {
                                         .cardStatus(cardStatusListSelect.getValue())
                                         .cardType(cardTypeListSelect.getValue())
                                         .tagList(tags.getValue().stream().toList())
+                                        .language(getValue(languageSelect, Language.DEFAULT))
                                         .build()
                         );
             } catch (Exception ex) {
