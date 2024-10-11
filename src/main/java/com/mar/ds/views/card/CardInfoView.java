@@ -283,8 +283,12 @@ public class CardInfoView extends Dialog {
             }
 
             Grid<File> cardFiles = new Grid<>();
-            cardFiles.addComponentColumn(this::openFile).setHeader("File path").setAutoWidth(true);
-            cardFiles.addComponentColumn(this::getDeleteFileButton).setHeader("Delete").setTextAlign(ColumnTextAlign.END);
+            cardFiles.addComponentColumn(this::openFile).setHeader("File path")
+                    .setAutoWidth(true).setSortable(true).setComparator(file -> file.getName());
+            cardFiles.addColumn(file -> FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(file)))
+                    .setHeader("Size").setAutoWidth(true).setFlexGrow(0)
+                    .setSortable(true).setComparator(file -> FileUtils.sizeOf(file));
+            cardFiles.addComponentColumn(this::getDeleteFileButton).setHeader("Delete").setFlexGrow(0);
             cardFiles.setItems(FileUtils.listFiles(fileDir, null, true));
             cardFiles.setWidthFull();
             cardFiles.addThemeVariants(GridVariant.LUMO_COMPACT);

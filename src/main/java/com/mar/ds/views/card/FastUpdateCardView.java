@@ -23,6 +23,7 @@ import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
 import static com.mar.ds.data.GridInfo.GRID_LANGUAGE;
 import static com.mar.ds.utils.ViewUtils.getValue;
 import static com.mar.ds.utils.ViewUtils.setSelectValue;
+import static com.mar.ds.utils.ViewUtils.setValue;
 
 public class FastUpdateCardView extends CardDialogView {
 
@@ -47,11 +48,11 @@ public class FastUpdateCardView extends CardDialogView {
         }
         if (getTitles().containsKey(GRID_DATE_UPD)) {
             dialog.add(getUpdDate());
-            updDate.setValue(LocalDate.now());
+            setValue(updDate, card.getLastUpdate());
         }
         if (getTitles().containsKey(GRID_DATE_GAME)) {
             dialog.add(getGameDate());
-            gameDate.setValue(LocalDate.now());
+            setValue(gameDate, card.getLastGame());
         }
 
         Button updBtn = new Button("Update", new Icon(VaadinIcon.ROTATE_RIGHT));
@@ -68,7 +69,7 @@ public class FastUpdateCardView extends CardDialogView {
                     updCard.setLastGame(new Date());
                 }
             }
-            if (!getTitles().containsKey(GRID_DATE_GAME)) {
+            if (getTitles().containsKey(GRID_DATE_GAME)) {
                 updCard.setLastGame(getValue(gameDate, new Date()));
             }
             mainView.getRepositoryService().getCardRepository().save(updCard);

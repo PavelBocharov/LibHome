@@ -43,8 +43,10 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -200,6 +202,21 @@ public class ViewUtils {
             select.setItems(initDataProviderList);
             select.setValue(selectValue);
         }
+    }
+
+    public static DatePicker setValue(DatePicker datePicker, Date date) {
+        if (isNull(datePicker) || isNull(date)) {
+            throw new IllegalArgumentException("Cannot init datePicker: datePicker or date is null.");
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        datePicker.setValue(LocalDate.of(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH)
+        ));
+        return datePicker;
     }
 
     public static <E extends Enum> void setSelectValue(Select<E> select, E value, E[] selectData, E defaultValue) {

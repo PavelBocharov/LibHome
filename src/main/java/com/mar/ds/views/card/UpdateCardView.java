@@ -49,6 +49,7 @@ import static com.mar.ds.utils.ViewUtils.setBigDecimalFieldValue;
 import static com.mar.ds.utils.ViewUtils.setMultiSelectComboBoxValue;
 import static com.mar.ds.utils.ViewUtils.setSelectValue;
 import static com.mar.ds.utils.ViewUtils.setTextFieldValue;
+import static com.mar.ds.utils.ViewUtils.setValue;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -102,16 +103,16 @@ public class UpdateCardView extends CardDialogView {
         // last game
         if (nonNull(getTitles().get(GRID_DATE_UPD)) && nonNull(getTitles().get(GRID_DATE_GAME))) {
             updateDialog.add(new HorizontalLayout(getUpdDate(), getGameDate()));
-            updDate.setValue(getDate(updateCard.getLastUpdate()));
-            gameDate.setValue(getDate(updateCard.getLastGame()));
+            setValue(updDate, updateCard.getLastUpdate());
+            setValue(gameDate, updateCard.getLastGame());
         } else {
             if (nonNull(getTitles().get(GRID_DATE_UPD))) {
                 updateDialog.add(getUpdDate());
-                updDate.setValue(getDate(updateCard.getLastUpdate()));
+                setValue(updDate, updateCard.getLastUpdate());
             }
             if (nonNull(getTitles().get(GRID_DATE_GAME))) {
                 updateDialog.add(getGameDate());
-                gameDate.setValue(getDate(updateCard.getLastGame()));
+                setValue(gameDate, updateCard.getLastGame());
             }
         }
 
@@ -184,16 +185,6 @@ public class UpdateCardView extends CardDialogView {
     @Override
     public void closeDialog() {
         updateDialog.close();
-    }
-
-    private LocalDate getDate(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return LocalDate.of(
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.DAY_OF_MONTH)
-        );
     }
 
 }

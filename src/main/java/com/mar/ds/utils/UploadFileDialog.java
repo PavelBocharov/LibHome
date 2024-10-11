@@ -19,6 +19,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import javax.imageio.ImageIO;
@@ -118,8 +119,15 @@ public class UploadFileDialog extends Dialog {
     private void uploadImage(InputStream fileData, String fileName) throws IOException {
         String formatName = FilenameUtils.getExtension(fileName);
         String uploadFileName = isCover
-                ? "cover." + FilenameUtils.getExtension(fileName)
+                ? "cover." + formatName
                 : getName(valueOf(card.getId()), card.getTitle(), card.getCardType().getTitle(), formatName);
+
+        if (isCover) {
+            Collection<File> coverDirList = FileUtils.listFiles(new File(rootDir), null, true);
+            for (File file : coverDirList) {
+                FileUtils.delete(file);
+            }
+        }
 
         try (BufferedInputStream bis = new BufferedInputStream(fileData)) {
             BufferedImage inBufImg = ImageIO.read(bis);
