@@ -96,7 +96,7 @@ public class CardInfoView extends Dialog {
 
         HorizontalLayout headerInfo = new HorizontalLayout(
                 ViewUtils.getStatusIcon(card, false),
-                new Label("[" + card.getId() + "] " + card.getTitle())
+                new Label(card.getLanguage().getIcon() + " [" + card.getId() + "] " + card.getTitle())
         );
         headerInfo.setWidthFull();
 //        headerInfo.setAlignItems(FlexComponent.Alignment.END);

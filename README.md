@@ -43,6 +43,8 @@
    docker-compose up
    ```
 
+   > ℹ️ Info  
+   > Use `-d` for daemon mode.
 ## Screenshots
 
 ![](readme_files/1.png)
