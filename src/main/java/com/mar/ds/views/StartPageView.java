@@ -23,14 +23,14 @@ public class StartPageView implements ContentView {
 
     public Component getContent() {
         try {
-            Image image = getImageByResource("static/img/home_lib.png");
+            Image image = new Image("imgs/home_lib.png", "Alt text");
             VerticalLayout verticalLayout = new VerticalLayout(
                     new H3("LibHome - your book, game, music and other library."),
                     image
             );
             verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
             return verticalLayout;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             ViewUtils.showErrorMsg("ERROR: Load page.", e);
         }

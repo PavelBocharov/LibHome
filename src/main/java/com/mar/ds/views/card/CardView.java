@@ -325,13 +325,13 @@ public class CardView implements ContentView {
             if (card != null && card.getEngine() != null) {
                 engine = card.getEngine();
             }
-            Image icon = ViewUtils.getImageByResource(engine.getIconPath());
+            Image icon = new Image(engine.getIconPath(), engine.getName());
             icon.setTitle(engine.getName());
             icon.setHeight(32, Unit.PIXELS);
             icon.setWidth(32, Unit.PIXELS);
             icon.getStyle().set("margin", "0px");
             return icon;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             ViewUtils.showErrorMsg("Cannot load engine icon", e);
             return VaadinIcon.START_COG.create();
