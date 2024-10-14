@@ -1,0 +1,65 @@
+{
+  "GAME": {
+    "grid_status": "Статус",
+    "grid_engine": "Движок",
+    "grid_title": "Наименование",
+    "grid_point": "Оценка",
+    "grid_rate": "Рейтинг",
+    "grid_date_upd": "Дата последнего обновления",
+    "grid_date_game": "Дата последней игры",
+    "grid_type": "Тип игры",
+    "grid_tags": "Теги",
+    "grid_link": "\uD83D\uDD17",
+    "grid_btns": "",
+    "grid_info": "Информация",
+    "grid_image":"Скриншоты",
+    "grid_video": "Трейлеры и др. видео",
+    "grid_files": "Файлы",
+    "grid_language": "Язык"
+  },
+  "VIDEO": {
+    "grid_status": "Тип",
+    "grid_title": "Наименование",
+    "grid_type": "Тип контента",
+    "grid_tags": "Теги",
+
+    "grid_point": "Оценка",
+    "grid_date_upd": "Дата выпуска",
+    "grid_link": "\uD83D\uDD17",
+    "grid_btns": "",
+    "grid_info": "Информация",
+    "grid_image":"Скриншоты",
+    "grid_video": "Видео",
+    "grid_files": "Файлы"
+  },
+  "BOOK": {
+    "grid_status": "Тип",
+    "grid_title": "Наименование",
+    "grid_type": "Тип издания",
+    "grid_tags": "Теги",
+
+    "grid_point": "Оценка",
+    "grid_date_upd": "Дата выпуска",
+    "grid_btns": "",
+    "grid_info": "Информация",
+    "grid_image":"Скриншоты",
+    "grid_video": "Видео",
+    "grid_files": "Файлы"
+  },
+  "MUSIC": {
+    "grid_status": "Тип",
+    "grid_title": "Наименование",
+    "grid_type": "Тип издания",
+    "grid_tags": "Теги",
+
+    "grid_point": "Оценка",
+    "grid_date_upd": "Дата первого альбома",
+    "grid_date_game": "Дата крайнего альбома",
+    "grid_btns": "",
+    "grid_info": "Информация",
+    "grid_image":"Скриншоты",
+    "grid_video": "Видео и клипы",
+    "grid_files": "Файлы",
+    "grid_language": "Язык"
+  }
+}

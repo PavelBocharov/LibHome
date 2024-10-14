@@ -35,10 +35,10 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class JpaConfig {
 
-    @Value("${data.path:./}")
+    @Value("${app.data.path:./}")
     private String dataPath;
 
-    @Value("${db.file}")
+    @Value("${app.db.file}")
     private String dbFile;
 
     @Autowired

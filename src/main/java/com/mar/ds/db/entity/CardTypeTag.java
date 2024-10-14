@@ -33,7 +33,7 @@ public class CardTypeTag implements HasId, Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_type_tag_seq")
     private Long id;
 
-    @Column(name = "title", nullable = false, unique = true)
+    @Column(name = "title", nullable = false)
     private String title;
 
     @ManyToOne

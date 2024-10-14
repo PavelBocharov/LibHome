@@ -5,7 +5,7 @@
 ##       ## ##   ## ##     ## ##  ## ##    ## ##
 ##       ## ##   ## ##     ## ##  ## ##    ## ##
 ######## ## ######  ##     ##  ####  ##    ## #######
-LibHome version:        ${version}
+LibHome version:        ${app.version}
 Java version:           ${java.version}
 Vaadin version:         ${vaadin.version}
 Spring Boot version:    ${spring-boot.version}

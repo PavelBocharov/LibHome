@@ -79,7 +79,7 @@ public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaReposito
             crtBtn.setEnabled(true);
             return;
         }
-        appLayout.setContent(appLayout.getCardView().getContent());
+        appLayout.reloadContent();
         dialog.removeAll();
         dialog.add(
                 new Label(getLabel()),

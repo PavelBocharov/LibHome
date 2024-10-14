@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -42,28 +43,35 @@ public class Card implements Serializable, HasId {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "point", nullable = true)
+    @Column(name = "point")
     private Double point;
 
-    @Column(name = "info", nullable = false)
+    @Column(name = "info")
     private String info;
 
-    @Column(name = "link", nullable = true)
+    @Column(name = "link")
     private String link;
 
-    @Column(name = "last_game", nullable = false)
+    @Column(name = "last_game")
     private Date lastGame;
 
-    @Column(name = "last_update", nullable = false)
+    @Column(name = "last_update")
     private Date lastUpdate;
 
-    @Column(name = "engine", nullable = true)
+    @Column(name = "engine")
     private GameEngine engine;
 
-    @OneToOne(optional = false)
+    @Column(name = "language")
+    private Language language = Language.DEFAULT;
+
+    @Column(name = "view_type", nullable = false)
+    @ColumnDefault("1")
+    private ViewType viewType;
+
+    @OneToOne
     private CardType cardType;
 
-    @OneToOne(optional = false)
+    @OneToOne
     private CardStatus cardStatus;
 
     @ManyToMany

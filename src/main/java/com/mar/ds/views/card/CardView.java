@@ -2,6 +2,8 @@ package com.mar.ds.views.card;
 
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardTypeTag;
+import com.mar.ds.db.entity.Language;
+import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.FileUtils;
@@ -28,6 +30,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.klaudeta.PaginatedGrid;
@@ -35,12 +38,13 @@ import org.vaadin.klaudeta.PaginatedGrid;
 import java.awt.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static com.mar.ds.data.GridInfo.*;
+import static com.mar.ds.utils.FileUtils.getTitles;
 import static com.mar.ds.utils.ViewUtils.getStatusIcon;
 import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
@@ -57,6 +61,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class CardView implements ContentView {
 
     private final MainView appLayout;
+    @Getter
+    private final ViewType viewType;
 
     private int minPoint;
     private int maxPoint;
@@ -65,10 +71,10 @@ public class CardView implements ContentView {
     private PaginatedGrid<Card> grid;
 
     public VerticalLayout getContent() {
-        minPoint = Integer.parseInt(appLayout.getEnv().getProperty("card.point.min", "0"));
-        maxPoint = Integer.parseInt(appLayout.getEnv().getProperty("card.point.max", "10"));
+        minPoint = Integer.parseInt(appLayout.getEnv().getProperty("app.card.point.min", "0"));
+        maxPoint = Integer.parseInt(appLayout.getEnv().getProperty("app.card.point.max", "10"));
 
-        List<Card> cardList = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint();
+        List<Card> cardList = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
         for (Card card : cardList) {
             double rate = calcRate(card);
             if (rate < minRate) minRate = (int) rate;
@@ -76,105 +82,153 @@ public class CardView implements ContentView {
         }
         if (maxRate <= minRate) maxRate = minRate + 1;
 
+        Map<String, String> gridConfig = getTitles(viewType, appLayout.getContentJSON());
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         // TABLE
         grid = new PaginatedGrid<>();
 
         // column
-        grid.addColumn(Card::getId)
-                .setHeader("ID")
-                .setAutoWidth(true).setFlexGrow(0)
-                .setTextAlign(ColumnTextAlign.START);
-        grid.addComponentColumn(card -> {
-                    Icon icon = getStatusIcon(card, mathUpd(card));
-                    icon.getStyle().set("margin", "0px");
-                    return icon;
-                })
-                .setHeader("Status").setSortable(true)
-                // ~ -> last symbol in ASCII table (nope, 'DEL' is last).
-                .setComparator(Comparator.comparing(o -> mathUpd(o) ? "~" : o.getCardStatus().getTitle()))
-                .setAutoWidth(true).setFlexGrow(0)
-                .setTextAlign(ColumnTextAlign.CENTER);
-        grid.addComponentColumn(this::getEngineIcon)
-                .setHeader("Engine")
-                .setAutoWidth(true).setFlexGrow(0)
-                .setSortable(true)
-                .setComparator(Card::getEngine)
-                .setTextAlign(ColumnTextAlign.CENTER);
-        grid.addColumn(Card::getTitle)
-                .setHeader("Title")
-                .setAutoWidth(true)
-                .setTextAlign(ColumnTextAlign.CENTER);
-        grid.addComponentColumn(card -> getLabelWithColor(card::getPoint)).setHeader("Point")
-                .setAutoWidth(true).setFlexGrow(0)
-                .setSortable(true)
-                .setComparator(Card::getPoint)
-                .setTextAlign(ColumnTextAlign.CENTER);
-        grid.addComponentColumn(card -> getLabelWithColor(() -> calcRate(card), minRate, maxRate)).setHeader("Rate")
-                .setAutoWidth(true).setFlexGrow(0)
-                .setSortable(true)
-                .setComparator(this::calcRate)
-                .setTextAlign(ColumnTextAlign.CENTER);
-        grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
-                .setHeader("Last UPD").setSortable(true)
-                .setComparator(Comparator.comparingLong(value -> value.getLastUpdate().getTime()))
-                .setAutoWidth(true).setFlexGrow(0)
-                .setTextAlign(ColumnTextAlign.CENTER);
-        grid.addColumn(card -> dateFormat.format(card.getLastGame()))
-                .setHeader("Last game").setSortable(true)
-                .setComparator(Comparator.comparingLong(value -> value.getLastGame().getTime()))
-                .setAutoWidth(true).setFlexGrow(0)
-                .setTextAlign(ColumnTextAlign.CENTER);
-        grid.addColumn(card -> card.getCardType().getTitle())
-                .setAutoWidth(true).setFlexGrow(0)
-                .setHeader("Type")
-                .setSortable(true)
-                .setTextAlign(ColumnTextAlign.CENTER);
-        grid.addColumn(card -> card.getTagList() == null || card.getTagList().isEmpty()
-                        ? "---"
-                        : card.getTagList().stream()
-                        .map(CardTypeTag::getTitle)
-                        .collect(Collectors.joining(", "))
-                )
-                .setHeader("Tags")
-                .setAutoWidth(true)
-                .setTextAlign(ColumnTextAlign.CENTER);
-        grid.addComponentColumn(this::getLinkIcon)
-                .setAutoWidth(true).setFlexGrow(0)
-                .setHeader("Link")
-                .setTextAlign(ColumnTextAlign.END);
-        grid.addComponentColumn(card -> {
-                    // Open Info BTN
-                    Button infoBtn = new Button(new Icon(VaadinIcon.INFO_CIRCLE), clk -> openInfo(card));
-                    infoBtn.addThemeVariants(LUMO_TERTIARY);
-                    infoBtn.getStyle().set("color", "green").set("margin", "0px");
-                    // Edit BTN
-                    Button edtBtn = new Button(new Icon(VaadinIcon.PENCIL), clk -> new UpdateCardView(
-                            appLayout,
-                            card,
-                            () -> appLayout.setContent(appLayout.getCardView().getContent()))
-                    );
-                    edtBtn.addThemeVariants(LUMO_TERTIARY);
-                    edtBtn.getStyle().set("margin", "0px");
-                    // Delete BN
-                    Button dltBtn = new Button(new Icon(BAN), clk -> new DeleteDialogWidget(() -> {
-                        appLayout.getRepositoryService().getCardRepository().delete(card);
-                        appLayout.setContent(appLayout.getCardView().getContent());
+        if (gridConfig.containsKey(GRID_ID)) {
+            grid.addColumn(Card::getId)
+                    .setHeader(gridConfig.get(GRID_ID))
+                    .setAutoWidth(true).setFlexGrow(0)
+                    .setTextAlign(ColumnTextAlign.START)
+                    .setId(GRID_ID);
+        }
+        if (gridConfig.containsKey(GRID_STATUS)) {
+            grid.addComponentColumn(card -> {
+                        Icon icon = getStatusIcon(card, mathUpd(card));
+                        icon.getStyle().set("margin", "0px");
+                        return icon;
+                    })
+                    .setHeader(gridConfig.get(GRID_STATUS))
+                    .setSortable(true)
+                    // ~ -> last symbol in ASCII table (nope, 'DEL' is last).
+                    .setComparator(Comparator.comparing(o -> mathUpd(o) ? "~" : o.getCardStatus().getTitle()))
+                    .setAutoWidth(true).setFlexGrow(0)
+                    .setTextAlign(ColumnTextAlign.CENTER)
+                    .setId(GRID_STATUS);
+        }
+        if (gridConfig.containsKey(GRID_ENGINE)) {
+            grid.addComponentColumn(this::getEngineIcon)
+                    .setHeader(gridConfig.get(GRID_ENGINE))
+                    .setAutoWidth(true).setFlexGrow(0)
+                    .setSortable(true)
+                    .setComparator(Card::getEngine)
+                    .setTextAlign(ColumnTextAlign.CENTER)
+                    .setId(GRID_ENGINE);
+        }
+        if (gridConfig.containsKey(GRID_LANGUAGE)) {
+            grid.addColumn(card -> Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getIcon())
+                    .setHeader(gridConfig.get(GRID_LANGUAGE))
+                    .setAutoWidth(true).setFlexGrow(0)
+                    .setSortable(true)
+                    .setTextAlign(ColumnTextAlign.CENTER)
+                    .setId(GRID_LANGUAGE);
+        }
+        if (gridConfig.containsKey(GRID_TITLE)) {
+            grid.addColumn(Card::getTitle)
+                    .setHeader(gridConfig.get(GRID_TITLE))
+                    .setAutoWidth(true)
+                    .setTextAlign(ColumnTextAlign.CENTER)
+                    .setId(GRID_TITLE);
+        }
+        if (gridConfig.containsKey(GRID_POINT)) {
+            grid.addComponentColumn(card -> getLabelWithColor(card::getPoint))
+                    .setHeader(gridConfig.get(GRID_POINT))
+                    .setAutoWidth(true)
+                    .setFlexGrow(0)
+                    .setSortable(true)
+                    .setComparator(Card::getPoint)
+                    .setTextAlign(ColumnTextAlign.CENTER)
+                    .setId(GRID_POINT);
+        }
+        if (gridConfig.containsKey(GRID_RATE)) {
+            grid.addComponentColumn(card -> getLabelWithColor(() -> calcRate(card), minRate, maxRate))
+                    .setHeader(gridConfig.get(GRID_RATE))
+                    .setAutoWidth(true)
+                    .setFlexGrow(0)
+                    .setSortable(true)
+                    .setComparator(this::calcRate)
+                    .setTextAlign(ColumnTextAlign.CENTER)
+                    .setId(GRID_RATE);
+        }
+        if (gridConfig.containsKey(GRID_DATE_UPD)) {
+            grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
+                    .setHeader(gridConfig.get(GRID_DATE_UPD)).setSortable(true)
+                    .setComparator(Comparator.comparingLong(value -> value.getLastUpdate().getTime()))
+                    .setAutoWidth(true).setFlexGrow(0)
+                    .setTextAlign(ColumnTextAlign.CENTER)
+                    .setId(GRID_DATE_UPD);
+        }
+        if (gridConfig.containsKey(GRID_DATE_GAME)) {
+            grid.addColumn(card -> dateFormat.format(card.getLastGame()))
+                    .setHeader(gridConfig.get(GRID_DATE_GAME)).setSortable(true)
+                    .setComparator(Comparator.comparingLong(value -> value.getLastGame().getTime()))
+                    .setAutoWidth(true).setFlexGrow(0)
+                    .setTextAlign(ColumnTextAlign.CENTER)
+                    .setId(GRID_DATE_GAME);
+        }
+        if (gridConfig.containsKey(GRID_TYPE)) {
+            grid.addColumn(card -> card.getCardType().getTitle())
+                    .setAutoWidth(true).setFlexGrow(0)
+                    .setHeader(gridConfig.get(GRID_TYPE))
+                    .setSortable(true)
+                    .setTextAlign(ColumnTextAlign.CENTER)
+                    .setId(GRID_TYPE);
+        }
+        if (gridConfig.containsKey(GRID_TAGS)) {
+            grid.addColumn(card -> card.getTagList() == null || card.getTagList().isEmpty()
+                            ? "---"
+                            : card.getTagList().stream()
+                            .map(CardTypeTag::getTitle)
+                            .collect(Collectors.joining(", "))
+                    )
+                    .setHeader(gridConfig.get(GRID_TAGS))
+                    .setAutoWidth(true)
+                    .setTextAlign(ColumnTextAlign.CENTER)
+                    .setId(GRID_TAGS);
+        }
+        if (gridConfig.containsKey(GRID_LINK)) {
+            grid.addComponentColumn(this::getLinkIcon)
+                    .setAutoWidth(true).setFlexGrow(0)
+                    .setHeader(gridConfig.get(GRID_LINK))
+                    .setTextAlign(ColumnTextAlign.END)
+                    .setId(GRID_LINK);
+        }
+        if (gridConfig.containsKey(GRID_BTNS)) {
+            grid.addComponentColumn(card -> {
+                        // Open Info BTN
+                        Button infoBtn = new Button(new Icon(VaadinIcon.INFO_CIRCLE), clk -> openInfo(card));
+                        infoBtn.addThemeVariants(LUMO_TERTIARY);
+                        infoBtn.getStyle().set("color", "green").set("margin", "0px");
+                        // Edit BTN
+                        Button edtBtn = new Button(
+                                new Icon(VaadinIcon.PENCIL),
+                                clk -> new FastUpdateCardView(appLayout, card).showDialog()
+                        );
+                        edtBtn.addThemeVariants(LUMO_TERTIARY);
+                        edtBtn.getStyle().set("margin", "0px");
+                        // Delete BN
+                        Button dltBtn = new Button(new Icon(BAN), clk -> new DeleteDialogWidget(() -> {
+                            appLayout.getRepositoryService().getCardRepository().delete(card);
+                            appLayout.setContent(appLayout.getCardsView().get(viewType).getContent());
+                            FileUtils.deleteDir(appLayout.getEnv().getProperty("app.data.path") + "cards/" + card.getId());
+                        }));
+                        dltBtn.addThemeVariants(LUMO_TERTIARY);
+                        dltBtn.getStyle().set("color", "red").set("margin", "0px");
 
-                        FileUtils.deleteDir(appLayout.getEnv().getProperty("data.path") + "cards/" + card.getId());
-
-                    }));
-                    dltBtn.addThemeVariants(LUMO_TERTIARY);
-                    dltBtn.getStyle().set("color", "red").set("margin", "0px");
-
-                    return new HorizontalLayout(infoBtn, edtBtn, dltBtn);
-                })
-                .setAutoWidth(true).setFlexGrow(0)
-                .setTextAlign(ColumnTextAlign.END);
-
+                        return new HorizontalLayout(infoBtn, edtBtn, dltBtn);
+                    })
+                    .setHeader(gridConfig.get(GRID_BTNS))
+                    .setAutoWidth(true).setFlexGrow(0)
+                    .setTextAlign(ColumnTextAlign.END)
+                    .setId(GRID_BTNS);
+        }
         // settings
         grid.setWidthFull();
-        grid.setPageSize(15);
+        grid.setPageSize(appLayout.getEnv().getProperty("app.grid.row.count", Integer.class, 15));
         grid.setPaginatorSize(3);
         // edit
         grid.addItemDoubleClickListener(
@@ -190,7 +244,7 @@ public class CardView implements ContentView {
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.setClearButtonVisible(true);
         searchField.addValueChangeListener(e -> {
-            List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint();
+            List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
             String text = getTextFieldValue(searchField);
             if (text != null) {
                 String finalText = text.trim().toLowerCase();
@@ -211,10 +265,10 @@ public class CardView implements ContentView {
         });
 
         // value
-        reloadGrid();
+        reloadData();
 
         // create view
-        H3 label = new H3("Card list");
+        H3 label = new H3(viewType.getTitle());
         label.setWidthFull();
 
         Select<Button> settingButtons = new Select<>();
@@ -239,7 +293,11 @@ public class CardView implements ContentView {
     }
 
     private Button[] getBtns() {
-        Button crtBtn = new Button("Add", new Icon(PLUS), click -> new CreateCardView(appLayout));
+        Button crtBtn = new Button(
+                "Add",
+                new Icon(PLUS),
+                click -> new CreateCardView(appLayout, viewType).showDialog()
+        );
         crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
 
@@ -267,13 +325,13 @@ public class CardView implements ContentView {
             if (card != null && card.getEngine() != null) {
                 engine = card.getEngine();
             }
-            Image icon = ViewUtils.getImageByResource(engine.getIconPath());
+            Image icon = new Image(engine.getIconPath(), engine.getName());
             icon.setTitle(engine.getName());
             icon.setHeight(32, Unit.PIXELS);
             icon.setWidth(32, Unit.PIXELS);
             icon.getStyle().set("margin", "0px");
             return icon;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             ViewUtils.showErrorMsg("Cannot load engine icon", e);
             return VaadinIcon.START_COG.create();
@@ -330,8 +388,9 @@ public class CardView implements ContentView {
         return (int) color;
     }
 
-    public void reloadGrid() {
-        List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint();
+    @Override
+    public void reloadData() {
+        List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
         grid.setItems(cards);
     }
 

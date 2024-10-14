@@ -12,6 +12,7 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
@@ -38,15 +39,22 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
@@ -79,10 +87,11 @@ public class ViewUtils {
 
         VerticalLayout layout = new VerticalLayout();
         Accordion accordion = new Accordion();
-        accordion.add(title, new Label(ExceptionUtils.getRootCauseMessage(ex)));
+        accordion.add(title + ": ", new Label(ExceptionUtils.getRootCauseMessage(ex)));
         accordion.close();
 
-        Button clsBtn = new Button("Закрыть");
+        Button clsBtn = new Button();
+        clsBtn.setIcon(VaadinIcon.CLOSE.create());
         clsBtn.addClickListener(btnClick -> notification.close());
 
         layout.add(accordion, clsBtn);
@@ -188,10 +197,47 @@ public class ViewUtils {
         T selectValue = initDataProviderList.stream()
                 .filter(hasId -> hasId.getId().equals(value.getId()))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new RuntimeException("Cannot select " + value));
         if (nonNull(selectValue)) {
+            select.setItems(initDataProviderList);
             select.setValue(selectValue);
         }
+    }
+
+    public static DatePicker setValue(DatePicker datePicker, Date date) {
+        if (isNull(datePicker) || isNull(date)) {
+            throw new IllegalArgumentException("Cannot init datePicker: datePicker or date is null.");
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        datePicker.setValue(LocalDate.of(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH)
+        ));
+        return datePicker;
+    }
+
+    public static <E extends Enum> void setSelectValue(Select<E> select, E value, E[] selectData, E defaultValue) {
+        if (isNull(value) && nonNull(defaultValue)) {
+            setSelectValue(select, defaultValue, selectData);
+        } else {
+            setSelectValue(select, value, selectData);
+        }
+    }
+
+    public static <E extends Enum> void setSelectValue(Select<E> select, E value, E[] selectData) {
+        if (isNull(select) || isNull(value) || isEmpty(selectData)) {
+            return;
+        }
+
+        E selectValue = Arrays.stream(selectData)
+                .filter(e -> value.equals(e))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Cannot select " + value));
+        select.setItems(selectData);
+        select.setValue(selectValue);
     }
 
     public static float getFloatValue(BigDecimalField field) {
@@ -242,6 +288,20 @@ public class ViewUtils {
     public static String getTextFieldValue(TextArea field) {
         if (field == null || isBlank(field.getValue())) return null;
         return field.getValue().trim();
+    }
+
+    public static Date getValue(DatePicker date, Date defaultDate) {
+        if (date == null || date.getValue() == null) {
+            return defaultDate;
+        }
+        return Date.from(date.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
+    public static <T> T getValue(Select<T> selector, T defaultValue) {
+        if (selector == null) {
+            return defaultValue;
+        }
+        return Optional.ofNullable(selector.getValue()).orElse(defaultValue);
     }
 
     /**

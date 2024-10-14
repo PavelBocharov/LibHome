@@ -132,7 +132,7 @@ public class CardTagsView {
         if (cardType != null) {
             List<CardTypeTag> tagList = mainView.getRepositoryService().getCardTypeTagRepository().findByCardType(cardType);
             tagsGrid.setItems(tagList);
-            mainView.getCardView().reloadGrid();
+            mainView.getActiveView().reloadData();
         }
     }
 

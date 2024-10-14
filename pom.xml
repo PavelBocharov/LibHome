@@ -11,7 +11,7 @@
 
     <groupId>com.mar</groupId>
     <artifactId>lib-home</artifactId>
-    <version>1.10.0</version>
+    <version>2.2.0</version>
     <name>lib-home</name>
     <description>LibHome - your book, game, music and other library.</description>
 
@@ -97,11 +97,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>31.0.1-jre</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
