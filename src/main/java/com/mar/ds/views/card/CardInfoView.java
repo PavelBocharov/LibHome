@@ -3,6 +3,7 @@ package com.mar.ds.views.card;
 import com.brownie.videojs.VideoJS;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardTypeTag;
+import com.mar.ds.db.entity.Language;
 import com.mar.ds.utils.UploadFileDialog;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
@@ -40,6 +41,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.mar.ds.data.GridInfo.GRID_DATE_GAME;
@@ -95,7 +97,7 @@ public class CardInfoView extends Dialog {
 
         HorizontalLayout headerInfo = new HorizontalLayout(
                 ViewUtils.getStatusIcon(card, false),
-                new Label(card.getLanguage().getIcon() + " [" + card.getId() + "] " + card.getTitle())
+                new Label(Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getIcon() + " [" + card.getId() + "] " + card.getTitle())
         );
         headerInfo.setWidthFull();
 //        headerInfo.setAlignItems(FlexComponent.Alignment.END);

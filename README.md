@@ -1,17 +1,17 @@
-# <img src="src/main/resources/static/img/icon/database.svg" width="30"/> Lib Home
+# <img src="readme_files/icon/icon.png" width="30"/> Lib Home
 
 ![](readme_files/LibHome.png)
 
-## Links
+## 🔗 Links
 
 * [Docker HUB](https://hub.docker.com/r/marolok/lib_home)
 * [GitHub](https://github.com/PavelBocharov/LibHome)
 * [Build and run](#build-and-run)
 * [Problem and fix](#problem-and-fix)
 
-## Build and run
+## 🛠 Build and run
 
-### <img src="src/main/resources/static/img/icon/arrow-right.png" width="16"/> Start application local
+### <img src="readme_files/icon/arrow-right.png" width="16"/> Start application local
 
 1) Install min JDK17 - https://adoptopenjdk.net/
 2) Install NodeJS - https://nodejs.org/en/download/
@@ -19,7 +19,7 @@
 3) Start `Spring Run` profile.
     * In root generate files for **npm**.
 
-### <img src="src/main/resources/static/img/icon/docker-icon.png" width="16"/> Build Docker image
+### <img src="readme_files/icon/docker-icon.png" width="16"/> Build Docker image
 
 1) Build production **.jar**
    ```bash 
@@ -45,14 +45,16 @@
 
    > ℹ️ Info  
    > Use `-d` for daemon mode.
-## Screenshots
+
+## 🖼 Screenshots
 
 ![](readme_files/1.png)
 ![](readme_files/2.png)
 ![](readme_files/3.png)
 ![](readme_files/4.png)
+![](readme_files/5.png)
 
-## Problem and fix
+## 🐛 Problem and fix
 
 ### NodeJS code `ERR_OSSL_EVP_UNSUPPORTED`
 

@@ -62,7 +62,7 @@ public class Card implements Serializable, HasId {
     private GameEngine engine;
 
     @Column(name = "language")
-    private Language language;
+    private Language language = Language.DEFAULT;
 
     @Column(name = "view_type", nullable = false)
     @ColumnDefault("1")
