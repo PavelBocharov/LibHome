@@ -12,7 +12,6 @@ import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Anchor;
@@ -57,7 +56,7 @@ import static com.mar.ds.data.GridInfo.GRID_VIDEO;
 import static com.mar.ds.utils.ViewUtils.findImage;
 import static com.mar.ds.utils.ViewUtils.getAccordionContent;
 import static com.mar.ds.utils.ViewUtils.getImage;
-import static com.mar.ds.utils.ViewUtils.getImageByResource;
+import static java.lang.Float.parseFloat;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
@@ -180,9 +179,9 @@ public class CardInfoView extends Dialog {
         // Cover
         Image cover;
         try {
-            cover = findImage(dataDir + "cards/" + card.getId() + "/cover/", "static/img/not_cover.jpeg");
+            cover = findImage(dataDir + "cards/" + card.getId() + "/cover/", "imgs/not_cover.jpeg");
         } catch (FileNotFoundException ex) {
-            cover = getImageByResource("static/img/not_cover.jpeg");
+            cover = new Image("imgs/not_cover.jpeg", "Not cover");
         }
         cover.setMaxWidth(cover.getWidth());
         cover.setMaxHeight(cover.getHeight());
@@ -247,7 +246,13 @@ public class CardInfoView extends Dialog {
                             images.removeAll();
                             for (File file : imgFiles) {
                                 Image accImage = getImage(file.getAbsolutePath());
-                                accImage.setMaxWidth(accImage.getWidth());
+                                accImage.setMaxWidth(
+                                        parseFloat(accImage.getWidth().replace("px", ""))
+                                                / parseFloat(accImage.getHeight().replace("px", ""))
+                                                * 600
+                                        ,
+                                        Unit.PIXELS
+                                );
                                 accImage.setMaxHeight(600, Unit.PIXELS);
                                 accImage.setSizeFull();
                                 images.add(accImage);
