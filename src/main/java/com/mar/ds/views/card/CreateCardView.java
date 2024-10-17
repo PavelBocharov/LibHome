@@ -154,7 +154,7 @@ public class CreateCardView extends CardDialogView {
                 crtBtn.setEnabled(true);
                 return;
             }
-            mainView.reloadContent();
+            mainView.getActiveView().reloadData();
             createDialog.close();
         });
         crtBtn.setWidthFull();

@@ -1,6 +1,6 @@
 package com.mar.ds.db.entity;
 
-import com.vaadin.flow.component.Unit;
+import com.mar.ds.views.card.CardView;
 import com.vaadin.flow.component.html.Image;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.io.Serializable;
 public enum Language implements Serializable {
 
     DEFAULT("¯\\_(ツ)_/¯", "icons/lang/default.png"),
-    ENG("English", "icons/lang/eng.png"),
+    ENG("English", "icons/lang/uk.png"),
     RU("Русский", "icons/lang/ru.png");
 
     private String title;
@@ -23,15 +23,15 @@ public enum Language implements Serializable {
 
     public Image getImage() {
         Image langIcon = new Image(icon, title);
-        langIcon.setWidth(32, Unit.PIXELS);
-        langIcon.setHeight(32, Unit.PIXELS);
+        langIcon.setWidth(CardView.DEFAULT_GRID_ICON_SIZE_VAR);
+        langIcon.setHeight(CardView.DEFAULT_GRID_ICON_SIZE_VAR);
         return langIcon;
     }
 
     public Image getImage(int size) {
         Image langIcon = getImage();
-        langIcon.setWidth(size, Unit.PIXELS);
-        langIcon.setHeight(size, Unit.PIXELS);
+        langIcon.setWidth("var(--iron-icon-width, " + size + "px)");
+        langIcon.setHeight("var(--iron-icon-width, " + size + "px)");
         return langIcon;
     }
 

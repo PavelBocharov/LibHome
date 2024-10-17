@@ -89,6 +89,9 @@ public class CardView implements ContentView {
     private int maxRate = Integer.MIN_VALUE;
     private PaginatedGrid<Card> grid;
 
+    public static final int DEFAULT_GRID_ICON_SIZE_INT = 32;
+    public static final String DEFAULT_GRID_ICON_SIZE_VAR = "var(--iron-icon-width, " + DEFAULT_GRID_ICON_SIZE_INT + "px)";
+
     public static final String GRID_COLUMN_SORT_KEY = "grid-column-sort-key";
     public static final String GRID_COLUMN_PAGE_KEY = "grid-column-page-key";
     public static final String GRID_COLUMN_SEARCH_TEXT_KEY = "grid-column-search-text-key";
@@ -222,9 +225,8 @@ public class CardView implements ContentView {
             }
             Image icon = new Image(engine.getIconPath(), engine.getName());
             icon.setTitle(engine.getName());
-            icon.setHeight(32, Unit.PIXELS);
-            icon.setWidth(32, Unit.PIXELS);
-            icon.getStyle().set("margin", "0px");
+            icon.setHeight(DEFAULT_GRID_ICON_SIZE_VAR);
+            icon.setWidth(DEFAULT_GRID_ICON_SIZE_VAR);
             return icon;
         } catch (Exception e) {
             e.printStackTrace();
@@ -356,7 +358,11 @@ public class CardView implements ContentView {
                     .setId(GRID_ENGINE);
         }
         if (gridConfig.containsKey(GRID_LANGUAGE)) {
-            grid.addComponentColumn(card -> Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getImage())
+            grid.addComponentColumn(card -> Optional
+                            .ofNullable(card.getLanguage())
+                            .orElse(Language.DEFAULT)
+                            .getImage(DEFAULT_GRID_ICON_SIZE_INT)
+                    )
                     .setHeader(gridConfig.get(GRID_LANGUAGE))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setSortable(true)
@@ -450,7 +456,7 @@ public class CardView implements ContentView {
                         // Delete BN
                         Button dltBtn = new Button(new Icon(BAN), clk -> new DeleteDialogWidget(() -> {
                             appLayout.getRepositoryService().getCardRepository().delete(card);
-                            appLayout.setContent(appLayout.getCardsView().get(viewType).getContent());
+                            reloadData();
                             FileUtils.deleteDir(appLayout.getEnv().getProperty("app.data.path") + "cards/" + card.getId());
                         }));
                         dltBtn.addThemeVariants(LUMO_TERTIARY);

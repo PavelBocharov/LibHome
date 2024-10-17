@@ -97,11 +97,10 @@ public class CardInfoView extends Dialog {
 
         HorizontalLayout headerInfo = new HorizontalLayout(
                 ViewUtils.getStatusIcon(card, false),
-                Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getImage(26),
+                Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getImage(),
                 new Label( " [" + card.getId() + "] " + card.getTitle())
         );
         headerInfo.setWidthFull();
-//        headerInfo.setAlignItems(FlexComponent.Alignment.END);
         Button returnBtn = new Button(
                 VaadinIcon.ARROW_BACKWARD.create(),
                 buttonClickEvent -> closeBtn()
@@ -336,7 +335,7 @@ public class CardInfoView extends Dialog {
         Button updBtn = new Button("Update", VaadinIcon.PENCIL.create());
         updBtn.addClickListener(buttonClickEvent -> new UpdateCardView(appLayout, card, () -> {
                     this.reloadData();
-                    appLayout.reloadContent();
+                    appLayout.getActiveView().reloadData();
                 }).showDialog()
         );
         updBtn.setWidthFull();

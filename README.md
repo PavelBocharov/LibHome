@@ -20,18 +20,26 @@
     * In root generate files for **npm**.
 
 ### <img src="readme_files/icon/docker-icon.png" width="16"/> Build Docker image
-
+0) PreSetting for Linux
+   - Add user to docker group
+      ``` bash 
+      sudo usermod -a -G docker marolok
+      ```
+   - Login in Docker
+      ``` bash 
+      docker login --username=marolok
+      ```
 1) Build production **.jar**
    ```bash 
    mvn clean install -Pproduction
    ```
 2) Build image
    ```bash 
-   docker build --no-cache -t marolok/lib_home:2.3.2 .
+   docker build --no-cache -t marolok/lib_home:2.3.4 .
    ```
 3) Push image
    ```bash 
-   docker push marolok/lib_home:2.3.2
+   docker push marolok/lib_home:2.3.4
    ```
 4) Set image version in [docker-compose.yml](./docker-compose.yml)
 5) Start `docker-compose`

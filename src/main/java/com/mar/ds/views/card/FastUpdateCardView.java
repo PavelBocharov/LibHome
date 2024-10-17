@@ -73,7 +73,7 @@ public class FastUpdateCardView extends CardDialogView {
                 updCard.setLastGame(getValue(gameDate, new Date()));
             }
             mainView.getRepositoryService().getCardRepository().save(updCard);
-            mainView.reloadContent();
+            mainView.getActiveView().reloadData();
             dialog.close();
         });
 
