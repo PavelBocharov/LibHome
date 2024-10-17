@@ -1,1 +1,1 @@
-/home/marolok/.jdks/temurin-17.0.12/bin/java -jar -Ddata.path=/home/marolok/IdeaProjects/LibHome/data/test/ -Ddb.file=test.db -Dserver.port=8080 -Dspring.profiles.active=production ./target/lib-home*.jar
+java -jar -Dapp.data.content.file=C:/Users/Marolok/IdeaProjects/LibHome/content.json -Dapp.data.path=G:/Cache/Temp/DreamcastLib/ -Dapp.db.file=dreamcast_lib.db -Dserver.port=8080 -Dspring.profiles.active=production ./target/lib-home*.jar
