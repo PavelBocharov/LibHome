@@ -194,7 +194,7 @@ public abstract class CardDialogView {
         languageSelect = new Select<>(Language.values());
         languageSelect.setLabel("Language/Язык");
         languageSelect.setEmptySelectionAllowed(false);
-        languageSelect.setTextRenderer(language -> join(language.getIcon(), " ", language.getTitle()));
+        languageSelect.setTextRenderer(Language::getTitle);
         languageSelect.setWidthFull();
         languageSelect.setValue(Language.DEFAULT);
         return languageSelect;

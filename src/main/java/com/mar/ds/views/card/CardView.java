@@ -105,6 +105,10 @@ public class CardView implements ContentView {
             if (rate > maxRate) maxRate = (int) rate;
         }
         if (maxRate <= minRate) maxRate = minRate + 1;
+        // clean filter
+        VaadinSession.getCurrent().setAttribute(GRID_COLUMN_SORT_KEY, emptyList());
+        VaadinSession.getCurrent().setAttribute(GRID_COLUMN_PAGE_KEY, 1);
+        VaadinSession.getCurrent().setAttribute(GRID_COLUMN_SEARCH_TEXT_KEY, GRID_COLUMN_EMPTY);
 
         // TABLE
         grid = new PaginatedGrid<>();
@@ -352,10 +356,11 @@ public class CardView implements ContentView {
                     .setId(GRID_ENGINE);
         }
         if (gridConfig.containsKey(GRID_LANGUAGE)) {
-            grid.addColumn(card -> Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getIcon())
+            grid.addComponentColumn(card -> Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getImage())
                     .setHeader(gridConfig.get(GRID_LANGUAGE))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setSortable(true)
+                    .setComparator(Card::getLanguage)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_LANGUAGE);
         }
