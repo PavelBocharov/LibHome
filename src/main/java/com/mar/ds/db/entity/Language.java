@@ -25,6 +25,7 @@ public enum Language implements Serializable {
         Image langIcon = new Image(icon, title);
         langIcon.setWidth(CardView.DEFAULT_GRID_ICON_SIZE_VAR);
         langIcon.setHeight(CardView.DEFAULT_GRID_ICON_SIZE_VAR);
+        langIcon.getStyle().set("margin-bottom", "-6px");
         return langIcon;
     }
 

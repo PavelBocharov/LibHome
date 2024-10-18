@@ -89,15 +89,17 @@ public class CardView implements ContentView {
     private int maxRate = Integer.MIN_VALUE;
     private PaginatedGrid<Card> grid;
 
-    public static final int DEFAULT_GRID_ICON_SIZE_INT = 32;
+    public static final int DEFAULT_GRID_ICON_SIZE_INT = 36;
     public static final String DEFAULT_GRID_ICON_SIZE_VAR = "var(--iron-icon-width, " + DEFAULT_GRID_ICON_SIZE_INT + "px)";
 
     public static final String GRID_COLUMN_SORT_KEY = "grid-column-sort-key";
-    public static final String GRID_COLUMN_PAGE_KEY = "grid-column-page-key";
+    // TODO for custom pagination
+//    public static final String GRID_COLUMN_PAGE_KEY = "grid-column-page-key";
     public static final String GRID_COLUMN_SEARCH_TEXT_KEY = "grid-column-search-text-key";
     public static final String GRID_COLUMN_EMPTY = "";
 
     public VerticalLayout getContent() {
+        log.debug("Get content by {}", viewType);
         minPoint = Integer.parseInt(appLayout.getEnv().getProperty("app.card.point.min", "0"));
         maxPoint = Integer.parseInt(appLayout.getEnv().getProperty("app.card.point.max", "10"));
         // calc min/max rate
@@ -110,7 +112,7 @@ public class CardView implements ContentView {
         if (maxRate <= minRate) maxRate = minRate + 1;
         // clean filter
         VaadinSession.getCurrent().setAttribute(GRID_COLUMN_SORT_KEY, emptyList());
-        VaadinSession.getCurrent().setAttribute(GRID_COLUMN_PAGE_KEY, 1);
+//        VaadinSession.getCurrent().setAttribute(GRID_COLUMN_PAGE_KEY, 1);
         VaadinSession.getCurrent().setAttribute(GRID_COLUMN_SEARCH_TEXT_KEY, GRID_COLUMN_EMPTY);
 
         // TABLE
@@ -227,6 +229,7 @@ public class CardView implements ContentView {
             icon.setTitle(engine.getName());
             icon.setHeight(DEFAULT_GRID_ICON_SIZE_VAR);
             icon.setWidth(DEFAULT_GRID_ICON_SIZE_VAR);
+            icon.getStyle().set("margin-bottom", "-6px");
             return icon;
         } catch (Exception e) {
             e.printStackTrace();
@@ -280,14 +283,15 @@ public class CardView implements ContentView {
             color += colorStep;
             bufValue--;
         }
-//        log.debug("colorFrom: {}, colorTo: {}, cStep: {}, color: {}, steps: {}", colorFrom, colorTo, colorStep, color, steps);
         return (int) color;
     }
 
     @Override
     public void reloadData() {
         List<GridSortOrder<Card>> sort = (List<GridSortOrder<Card>>) VaadinSession.getCurrent().getAttribute(GRID_COLUMN_SORT_KEY);
-        int page = (int) Optional.ofNullable(VaadinSession.getCurrent().getAttribute(GRID_COLUMN_PAGE_KEY)).orElse(1);
+//        int page = (int) Optional.ofNullable(
+//                VaadinSession.getCurrent().getAttribute(GRID_COLUMN_PAGE_KEY))
+//                .orElse(1);
         String searchText = (String) VaadinSession.getCurrent().getAttribute(GRID_COLUMN_SEARCH_TEXT_KEY);
 
         List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
@@ -299,9 +303,9 @@ public class CardView implements ContentView {
         if (!isEmpty(sort)) {
             grid.sort(sort);
         }
-        if (page > 0) {
-            grid.setPage(page);
-        }
+//        if (page > 0) {
+//            grid.setPage(page);
+//        }
     }
 
     private void initGridListeners() {
@@ -313,9 +317,9 @@ public class CardView implements ContentView {
                 VaadinSession.getCurrent().setAttribute(GRID_COLUMN_SORT_KEY, emptyList());
             }
         });
-        grid.addPageChangeListener(event -> {
-            VaadinSession.getCurrent().setAttribute(GRID_COLUMN_PAGE_KEY, event.getNewPage());
-        });
+//        grid.addPageChangeListener(event -> {
+//            VaadinSession.getCurrent().setAttribute(GRID_COLUMN_PAGE_KEY, event.getNewPage());
+//        });
         grid.addItemDoubleClickListener(
                 dialogItemDoubleClickEvent -> {
                     openInfo(dialogItemDoubleClickEvent.getItem());
