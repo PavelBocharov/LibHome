@@ -11,6 +11,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -18,15 +19,19 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.PWA;
+import com.vaadin.flow.server.VaadinServletRequest;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import static com.vaadin.flow.component.icon.VaadinIcon.EXIT_O;
 
 @Route("")
 @PageTitle("LibHome")
@@ -70,6 +75,8 @@ public class MainView extends AppLayout {
             tabs.add(getTab(type.getTitle(), type.getIcon(), view));
             cardsView.put(type, view);
         }
+
+        tabs.add(getLogoutButton());
 
         String versions = loadProperties("application.properties").getProperty("app.version", "1.2.3-DEV.BUILD");
         Label version = new Label(versions);
@@ -122,5 +129,20 @@ public class MainView extends AppLayout {
 
     public String getContentJSON() {
         return this.getEnv().getProperty("app.data.content.file");
+    }
+
+    private Tab getLogoutButton() {
+        Icon logo = new Icon(EXIT_O);
+        logo.setColor("red");
+
+        Button button = new Button("Logout", logo);
+        button.setHeightFull();
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        button.addClickListener(buttonClickEvent -> {
+            SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+            logoutHandler.logout(VaadinServletRequest.getCurrent().getHttpServletRequest(), null, null);
+        });
+
+        return new Tab(button);
     }
 }
