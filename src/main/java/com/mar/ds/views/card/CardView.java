@@ -5,6 +5,7 @@ import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
 import com.mar.ds.db.entity.ViewType;
+import com.mar.ds.db.jpa.CardRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
@@ -30,6 +31,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.server.VaadinSession;
 import lombok.Getter;
@@ -45,6 +47,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -65,10 +68,13 @@ import static com.mar.ds.utils.FileUtils.getTitles;
 import static com.mar.ds.utils.ViewUtils.getStatusIcon;
 import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
+import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_DOWN;
+import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_UP;
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
 import static com.vaadin.flow.component.icon.VaadinIcon.COG;
 import static com.vaadin.flow.component.icon.VaadinIcon.COMPILE;
 import static com.vaadin.flow.component.icon.VaadinIcon.CUBES;
+import static com.vaadin.flow.component.icon.VaadinIcon.DATE_INPUT;
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
 import static java.lang.Math.abs;
 import static java.util.Collections.emptyList;
@@ -79,7 +85,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @RequiredArgsConstructor
 public class CardView implements ContentView {
 
-    private final MainView appLayout;
+    private final MainView mainView;
     @Getter
     private final ViewType viewType;
 
@@ -100,10 +106,10 @@ public class CardView implements ContentView {
 
     public VerticalLayout getContent() {
         log.debug("Get content by {}", viewType);
-        minPoint = Integer.parseInt(appLayout.getEnv().getProperty("app.card.point.min", "0"));
-        maxPoint = Integer.parseInt(appLayout.getEnv().getProperty("app.card.point.max", "10"));
+        minPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.min", "0"));
+        maxPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.max", "10"));
         // calc min/max rate
-        List<Card> cardList = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
+        List<Card> cardList = mainView.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
         for (Card card : cardList) {
             double rate = calcRate(card);
             if (rate < minRate) minRate = (int) rate;
@@ -123,7 +129,7 @@ public class CardView implements ContentView {
         initGridColumn();
         // settings
         grid.setWidthFull();
-        grid.setPageSize(appLayout.getEnv().getProperty("app.grid.row.count", Integer.class, 15));
+        grid.setPageSize(mainView.getEnv().getProperty("app.grid.row.count", Integer.class, 15));
         grid.setPaginatorSize(3);
 
         TextField searchField = new TextField();
@@ -133,7 +139,8 @@ public class CardView implements ContentView {
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.setClearButtonVisible(true);
         searchField.addValueChangeListener(e -> {
-            List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
+            log.debug("search text");
+            List<Card> cards = mainView.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
             String text = getTextFieldValue(searchField);
             if (text != null) {
                 String finalText = text.trim().toLowerCase();
@@ -151,7 +158,7 @@ public class CardView implements ContentView {
         });
 
         // value
-        reloadData();
+//        reloadData();
 
         // create view
         H3 label = new H3(viewType.getTitle());
@@ -196,23 +203,23 @@ public class CardView implements ContentView {
         Button crtBtn = new Button(
                 "Add",
                 new Icon(PLUS),
-                click -> new CreateCardView(appLayout, viewType).showDialog()
+                click -> new CreateCardView(mainView, viewType).showDialog()
         );
         crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
 
         Button cardStatusView = new Button(
-                "Status list", new Icon(COG), click -> new CardStatusViewDialog(appLayout)
+                "Status list", new Icon(COG), click -> new CardStatusViewDialog(mainView)
         );
         cardStatusView.setWidthFull();
 
         Button cardTypeView = new Button(
-                "Types", new Icon(COMPILE), click -> new CardTypeViewDialog(appLayout)
+                "Types", new Icon(COMPILE), click -> new CardTypeViewDialog(mainView)
         );
         cardTypeView.setWidthFull();
 
         Button cardTypeTagView = new Button(
-                "Type tags", new Icon(CUBES), click -> new CardTagsView(appLayout).showDialog()
+                "Type tags", new Icon(CUBES), click -> new CardTagsView(mainView).showDialog()
         );
         cardTypeTagView.setWidthFull();
 
@@ -239,7 +246,7 @@ public class CardView implements ContentView {
     }
 
     private void openInfo(Card card) {
-        CardInfoView info = new CardInfoView(appLayout, card);
+        CardInfoView info = new CardInfoView(mainView, card);
         info.open();
     }
 
@@ -288,13 +295,14 @@ public class CardView implements ContentView {
 
     @Override
     public void reloadData() {
+        log.debug("reloadData");
         List<GridSortOrder<Card>> sort = (List<GridSortOrder<Card>>) VaadinSession.getCurrent().getAttribute(GRID_COLUMN_SORT_KEY);
 //        int page = (int) Optional.ofNullable(
 //                VaadinSession.getCurrent().getAttribute(GRID_COLUMN_PAGE_KEY))
 //                .orElse(1);
         String searchText = (String) VaadinSession.getCurrent().getAttribute(GRID_COLUMN_SEARCH_TEXT_KEY);
 
-        List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
+        List<Card> cards = mainView.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
         if (!isBlank(searchText)) {
             setItemsByTextSearch(cards, searchText);
         } else {
@@ -325,10 +333,26 @@ public class CardView implements ContentView {
                     openInfo(dialogItemDoubleClickEvent.getItem());
                 }
         );
+        grid.setDataProvider(getDataProvider(mainView.getRepositoryService().getCardRepository()));
+    }
+
+    DataProvider<Card, String> getDataProvider(CardRepository service) {
+        DataProvider<Card, Predicate<Card>> predicateDataProvider = DataProvider.fromFilteringCallbacks(
+                query -> service.findWithOrderByPoint(viewType).stream(),
+                query -> service.findWithOrderByPoint(viewType).size()
+        );
+
+        DataProvider<Card, String> dataProvider = predicateDataProvider
+                .withConvertedFilter(text -> (card -> {
+                    log.debug("withConvertedFilter: {}", text);
+                    return card.getTitle().startsWith(text);
+                }));
+
+        return dataProvider;
     }
 
     private void initGridColumn() {
-        Map<String, String> gridConfig = getTitles(viewType, appLayout.getContentJSON());
+        Map<String, String> gridConfig = getTitles(viewType, mainView.getContentJSON());
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
         if (gridConfig.containsKey(GRID_ID)) {
@@ -401,10 +425,49 @@ public class CardView implements ContentView {
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_RATE);
         }
+
+        Icon mainIcon = new Icon(DATE_INPUT);
+        mainIcon.setId("date-upd-main-icon");
+        Button myHeader = new Button("Date", mainIcon);
+        myHeader.addClickListener(event -> {
+            log.debug("My header listener");
+            Icon icon = (Icon) myHeader.getIcon();
+            int order = 0;
+            switch (icon.getId().get()) {
+                case "date-upd-main-icon": {
+                    Icon upIcon = new Icon(ANGLE_UP);
+                    upIcon.setId("date-upd-up-icon");
+                    myHeader.setIcon(upIcon);
+                    order = 1;
+                    break;
+                }
+                case "date-upd-up-icon": {
+                    Icon downIcon = new Icon(ANGLE_DOWN);
+                    downIcon.setId("date-upd-down-icon");
+                    myHeader.setIcon(downIcon);
+                    order = -1;
+                    break;
+                }
+                default: {
+                    order = 0;
+                    myHeader.setIcon(mainIcon);
+                }
+            }
+            List<Card> data = mainView.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
+            if (order != 0) {
+                int finalOrder = order;
+                grid.setItems(data.stream().sorted((o1, o2) -> finalOrder * o1.getLastUpdate().compareTo(o2.getLastUpdate())));
+            } else {
+                grid.setItems(data);
+            }
+        });
+
         if (gridConfig.containsKey(GRID_DATE_UPD)) {
             grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
-                    .setHeader(gridConfig.get(GRID_DATE_UPD)).setSortable(true)
-                    .setComparator(Comparator.comparingLong(value -> value.getLastUpdate().getTime()))
+                    .setHeader(myHeader)
+//                    .setHeader(gridConfig.get(GRID_DATE_UPD))
+//                    .setSortable(true)
+//                    .setComparator(Comparator.comparingLong(value -> value.getLastUpdate().getTime()))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_DATE_UPD);
@@ -453,15 +516,15 @@ public class CardView implements ContentView {
                         // Edit BTN
                         Button edtBtn = new Button(
                                 new Icon(VaadinIcon.PENCIL),
-                                clk -> new FastUpdateCardView(appLayout, card).showDialog()
+                                clk -> new FastUpdateCardView(mainView, card).showDialog()
                         );
                         edtBtn.addThemeVariants(LUMO_TERTIARY);
                         edtBtn.getStyle().set("margin", "0px");
                         // Delete BN
                         Button dltBtn = new Button(new Icon(BAN), clk -> new DeleteDialogWidget(() -> {
-                            appLayout.getRepositoryService().getCardRepository().delete(card);
+                            mainView.getRepositoryService().getCardRepository().delete(card);
                             reloadData();
-                            FileUtils.deleteDir(appLayout.getEnv().getProperty("app.data.path") + "cards/" + card.getId());
+                            FileUtils.deleteDir(mainView.getEnv().getProperty("app.data.path") + "cards/" + card.getId());
                         }));
                         dltBtn.addThemeVariants(LUMO_TERTIARY);
                         dltBtn.getStyle().set("color", "red").set("margin", "0px");
