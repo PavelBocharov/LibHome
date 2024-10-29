@@ -97,7 +97,7 @@ public class CardInfoView extends Dialog {
 
         HorizontalLayout headerInfo = new HorizontalLayout(
                 ViewUtils.getStatusIcon(card, false),
-                Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getImage(),
+                Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getImage(26),
                 new Label( " [" + card.getId() + "] " + card.getTitle())
         );
         headerInfo.setWidthFull();

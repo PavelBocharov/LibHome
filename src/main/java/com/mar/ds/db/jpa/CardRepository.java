@@ -4,10 +4,15 @@ import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.ViewType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
@@ -22,4 +27,12 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Query(value = "SELECT card FROM Card card WHERE card.viewType = :view ORDER BY card.point DESC")
     List<Card> findWithOrderByPoint(@NotNull ViewType view);
 
+    default Page<Card> cardPage(@NotNull ViewType view, @Min(0) int page, @Min(1) int pageSize, @NotNull List<Sort.Order> sortOrders) {
+        Sort sort = Sort.by(sortOrders);
+        PageRequest pageRequest = PageRequest.of(page, pageSize, sort);
+        return findAllByView(view, pageRequest);
+    }
+
+    @Query(value = "SELECT card FROM Card card WHERE card.viewType = :view")
+    Page<Card> findAllByView(@NotNull ViewType view, Pageable pageable);
 }
