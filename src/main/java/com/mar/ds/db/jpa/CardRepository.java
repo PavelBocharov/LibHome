@@ -27,12 +27,21 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Query(value = "SELECT card FROM Card card WHERE card.viewType = :view ORDER BY card.point DESC")
     List<Card> findWithOrderByPoint(@NotNull ViewType view);
 
-    default Page<Card> cardPage(@NotNull ViewType view, @Min(0) int page, @Min(1) int pageSize, @NotNull List<Sort.Order> sortOrders) {
-        Sort sort = Sort.by(sortOrders);
-        PageRequest pageRequest = PageRequest.of(page, pageSize, sort);
-        return findAllByView(view, pageRequest);
-    }
-
     @Query(value = "SELECT card FROM Card card WHERE card.viewType = :view")
     Page<Card> findAllByView(@NotNull ViewType view, Pageable pageable);
+
+    @Query(value = """
+            SELECT 
+                card 
+            FROM Card card 
+            WHERE 
+                card.viewType = :view 
+                and (
+                    lower(card.title) like lower(concat('%', :searchText,'%'))
+                    or lower(card.info) like lower(concat('%', :searchText,'%'))
+//                    or lower(card.tagList.title) like lower(concat('%', :searchText,'%'))
+                )
+            """)
+    Page<Card> findAllByViewAndLikeTitle(@NotNull ViewType view, Pageable pageable, String searchText);
+
 }

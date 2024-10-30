@@ -40,6 +40,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -121,9 +123,21 @@ public class CardView implements ContentView {
 
         // TABLE
         grid = new Grid<>();
+        TextField searchField = new TextField();
         paginationGridService = new PaginationGridService<Card>(grid, pageSize,
-                data -> mainView.getRepositoryService().getCardRepository()
-                        .cardPage(viewType, data.page(), data.pageSize(), data.sortOrders())
+                data -> {
+                    String searchText = ViewUtils.getTextFieldValue(searchField);
+                    Sort sort = Sort.by(data.sortOrders());
+                    PageRequest pageRequest = PageRequest.of(data.page(), data.pageSize(), sort);
+
+                    if (isBlank(searchText)) {
+                        return mainView.getRepositoryService().getCardRepository()
+                                .findAllByView(viewType, pageRequest);
+                    } else {
+                        return mainView.getRepositoryService().getCardRepository()
+                                .findAllByViewAndLikeTitle(viewType, pageRequest, searchText);
+                    }
+                }
         );
         // listeners
         initGridListeners();
@@ -132,27 +146,13 @@ public class CardView implements ContentView {
         // settings
         grid.setWidthFull();
 
-        TextField searchField = new TextField();
         searchField.setWidth("50%");
         searchField.setPlaceholder("Search");
         searchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.setClearButtonVisible(true);
         searchField.addValueChangeListener(e -> {
-            log.debug("search text");
-            // TODO Search by text in DB
-            List<Card> cards = mainView.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
-            String text = getTextFieldValue(searchField);
-            if (text != null) {
-                String finalText = text.trim().toLowerCase();
-                if (!finalText.isEmpty()) {
-                    setItemsByTextSearch(cards, finalText);
-                } else {
-                    grid.setItems(cards);
-                }
-            } else {
-                grid.setItems(cards);
-            }
+            paginationGridService.reloadData();
         });
 
         // create view
@@ -178,20 +178,6 @@ public class CardView implements ContentView {
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.START, header);
 
         return verticalLayout;
-    }
-
-    private void setItemsByTextSearch(List<Card> cards, String textSearch) {
-        if (isBlank(textSearch)) {
-            grid.setItems(cards);
-        } else {
-            grid.setItems(cards.stream().filter(
-                    card -> card.getTitle().toLowerCase().contains(textSearch)
-                            || card.getInfo().toLowerCase().contains(textSearch)
-                            || String.valueOf(card.getId()).contains(textSearch)
-                            || card.getTagList().stream()
-                            .anyMatch(cardTypeTag -> cardTypeTag.getTitle().toLowerCase().contains(textSearch))
-            ));
-        }
     }
 
     private Button[] getBtns() {
