@@ -20,8 +20,7 @@ public enum GameEngine implements Serializable {
     SWITCH("Nintendo Switch", "imgs/engine/nintendo-switch-icon.png"),
     PS4("PlayStation 4", "imgs/engine/ps4-icon.png"),
     PS5("PlayStation 5", "imgs/engine/ps5-icon.png"),
-    XBOX("Xbox One", "imgs/engine/xbox-icon.png")
-    ;
+    XBOX("Xbox One", "imgs/engine/xbox-icon.png");
 
     private String name;
     private String iconPath;

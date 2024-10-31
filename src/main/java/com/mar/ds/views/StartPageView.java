@@ -10,10 +10,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.io.IOException;
-
-import static com.mar.ds.utils.ViewUtils.getImageByResource;
-
 @RequiredArgsConstructor
 public class StartPageView implements ContentView {
 

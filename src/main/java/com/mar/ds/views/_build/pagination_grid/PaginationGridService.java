@@ -5,6 +5,7 @@ import com.mar.ds.utils.ViewUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
@@ -24,6 +25,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
+import javax.validation.constraints.Min;
+
 import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_DOUBLE_LEFT;
 import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_DOUBLE_RIGHT;
 import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_DOWN;
@@ -32,6 +35,13 @@ import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_RIGHT;
 import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_UP;
 import static com.vaadin.flow.component.icon.VaadinIcon.ELLIPSIS_DOTS_H;
 
+/**
+ * EN: Service for working with Vaadin 14 table.
+ * Provides pagination with selection and manipulation of data on the backend.
+ * <br>RU: Сервис для работы с таблицей Vaadin 14.
+ * Предоставляет пагинации с выборкой и манипуляцией данных на бэкенде.
+ * @param <T> entity type for grid.
+ */
 @Slf4j
 public class PaginationGridService<T> {
 
@@ -46,6 +56,12 @@ public class PaginationGridService<T> {
     private final IntegerField pageField;
     private final Label countPageLabel;
 
+    /**
+     * Constructor.
+     * @param grid - table.
+     * @param gridPageSize count element on page.
+     * @param getDataFunction function for loading data.
+     */
     public PaginationGridService(Grid<T> grid, int gridPageSize, Function<GetData, Page<T>> getDataFunction) {
         this.grid = grid;
         this.gridPageSize = gridPageSize;
@@ -57,6 +73,14 @@ public class PaginationGridService<T> {
         initGridData(0);
     }
 
+    /**
+     * EN: Header for grid - sort function. It's not off default sorting.<br>
+     * RU: Заголовок столбца - дает возможность сортировать на бэке. Не убирает дефолтную сортировку.
+     * @param headerIcon icon header.
+     * @param text header text
+     * @param columnName entity column name, for sorting.
+     * @return Vaadin button with icon, text and sort listener.
+     */
     public Component getHeader(VaadinIcon headerIcon, String text, String columnName) {
         Icon mainIcon = new Icon(headerIcon);
         final String buttonId = UUID.randomUUID().toString();
@@ -84,9 +108,15 @@ public class PaginationGridService<T> {
 
             this.initGridData(0);
         });
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         return button;
     }
 
+    /**
+     * EN: Pagination buttons.<br>
+     * RU: Кнопки для пагинации.
+     * @return buttons for turning pages.
+     */
     public HorizontalLayout getPaginationButtons() {
         HorizontalLayout btns = new HorizontalLayout();
         btns.setAlignItems(FlexComponent.Alignment.CENTER);
@@ -161,11 +191,22 @@ public class PaginationGridService<T> {
         return btns;
     }
 
+    /**
+     * Reload grid.
+     */
     public void reloadData() {
         initGridData(saveCastInt(pageField.getValue() - 1, -1));
     }
 
-    private void initGridData(int page) {
+    /**
+     * Reload grid with open page.
+     * @param page number page.
+     */
+    public void reloadData(@Min(1) int page) {
+        initGridData(page - 1);
+    }
+
+    private void initGridData(@Min(0) int page) {
         List<Sort.Order> sortOrders = new ArrayList<>(directionMap.size());
         for (String columnName : directionMap.keySet()) {
             sortOrders.add(new Sort.Order(directionMap.get(columnName), columnName));
@@ -177,7 +218,7 @@ public class PaginationGridService<T> {
         grid.setItems(typeList);
 
         pageField.setValue(page + 1);
-        countPageLabel.setText(String.valueOf((int) Math.ceil(cardPage.getTotalElements() * 1.0 / gridPageSize)));
+        countPageLabel.setText(String.valueOf(cardPage.getTotalPages()));
     }
 
     private int saveParseInt(String number, int defNumb) {
@@ -195,5 +236,6 @@ public class PaginationGridService<T> {
         return number;
     }
 
-    public record GetData(int page, int pageSize, List<Sort.Order> sortOrders) { }
+    public record GetData(int page, int pageSize, List<Sort.Order> sortOrders) {
+    }
 }

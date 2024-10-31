@@ -38,8 +38,8 @@ import org.vaadin.olli.FileDownloadWrapper;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -122,8 +122,8 @@ public class ViewUtils {
         return result;
     }
 
-    public static Image findImage(String dir, String defaultImage) throws IOException {
-        File coverDir = new File(dir);
+    public static Image findImage(String coverPath) throws IOException {
+        File coverDir = new File(coverPath);
 
         if (coverDir.exists() && coverDir.isDirectory()) {
             Collection<File> covers = FileUtils.listFiles(coverDir, new String[]{"png", "jpg", "jpeg"}, false);
@@ -135,7 +135,7 @@ public class ViewUtils {
                                 image.getName(),
                                 () -> new ByteArrayInputStream(img)
                         ),
-                        String.format("Not load image: %s", dir)
+                        String.format("Not load image: %s", coverPath)
                 );
 
                 BufferedImage myPicture = ImageIO.read(image);
@@ -146,30 +146,7 @@ public class ViewUtils {
                 return result;
             }
         }
-        return getImage(defaultImage);
-    }
-
-    public static Map<String, byte[]> imageCache = Collections.synchronizedMap(new HashMap<>());
-
-    public static Image getImageByResource(String pathInResource) throws IOException {
-        final byte[] finalCacheImageByte = imageCache.get(pathInResource);
-        String fileName = FilenameUtils.getName(pathInResource);
-        if (!isEmpty(finalCacheImageByte)) {
-            return new Image(
-                    new StreamResource(fileName, () -> new ByteArrayInputStream(finalCacheImageByte)),
-                    String.format("Not load image: %s", pathInResource)
-            );
-        }
-
-        URL imgUrl = Resources.getResource(pathInResource);
-        byte[] imageByte = Resources.asByteSource(imgUrl).read();
-
-        Image res = new Image(
-                new StreamResource(fileName, () -> new ByteArrayInputStream(imageByte)),
-                String.format("Not load image: %s", pathInResource)
-        );
-        imageCache.putIfAbsent(pathInResource, imageByte);
-        return res;
+        throw new FileNotFoundException("Not find image in dir: " + coverPath);
     }
 
     public static TextField getTextField(String text, boolean enable) {

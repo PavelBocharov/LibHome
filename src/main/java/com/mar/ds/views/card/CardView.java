@@ -5,7 +5,6 @@ import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
 import com.mar.ds.db.entity.ViewType;
-import com.mar.ds.db.jpa.CardRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
@@ -20,7 +19,6 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
@@ -33,25 +31,20 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.server.VaadinSession;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -70,7 +63,6 @@ import static com.mar.ds.data.GridInfo.GRID_TITLE;
 import static com.mar.ds.data.GridInfo.GRID_TYPE;
 import static com.mar.ds.utils.FileUtils.getTitles;
 import static com.mar.ds.utils.ViewUtils.getStatusIcon;
-import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
 import static com.vaadin.flow.component.icon.VaadinIcon.COG;
@@ -83,13 +75,14 @@ import static com.vaadin.flow.component.icon.VaadinIcon.MEDAL;
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
 import static com.vaadin.flow.component.icon.VaadinIcon.TEXT_LABEL;
 import static java.lang.Math.abs;
-import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Slf4j
 @RequiredArgsConstructor
 public class CardView implements ContentView {
+
+    public static final int DEFAULT_GRID_ICON_SIZE_INT = 36;
+    public static final String DEFAULT_GRID_ICON_SIZE_VAR = "var(--iron-icon-width, " + DEFAULT_GRID_ICON_SIZE_INT + "px)";
 
     private final MainView mainView;
     @Getter
@@ -99,13 +92,9 @@ public class CardView implements ContentView {
     private int maxPoint;
     private int minRate = Integer.MAX_VALUE;
     private int maxRate = Integer.MIN_VALUE;
-
     private Grid<Card> grid;
     private PaginationGridService<Card> paginationGridService;
     private int pageSize;
-
-    public static final int DEFAULT_GRID_ICON_SIZE_INT = 36;
-    public static final String DEFAULT_GRID_ICON_SIZE_VAR = "var(--iron-icon-width, " + DEFAULT_GRID_ICON_SIZE_INT + "px)";
 
     public VerticalLayout getContent() {
         log.debug("Get content by {}", viewType);
@@ -135,7 +124,7 @@ public class CardView implements ContentView {
                                 .findAllByView(viewType, pageRequest);
                     } else {
                         return mainView.getRepositoryService().getCardRepository()
-                                .findAllByViewAndLikeTitle(viewType, pageRequest, searchText);
+                                .findAllByViewAndLikeTitle(viewType, searchText, pageRequest);
                     }
                 }
         );
@@ -151,9 +140,7 @@ public class CardView implements ContentView {
         searchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.setClearButtonVisible(true);
-        searchField.addValueChangeListener(e -> {
-            paginationGridService.reloadData();
-        });
+        searchField.addValueChangeListener(e -> paginationGridService.reloadData(1));
 
         // create view
         H3 label = new H3(viewType.getTitle());

@@ -5,14 +5,11 @@ import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.ViewType;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
@@ -32,16 +29,23 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
     @Query(value = """
             SELECT 
-                card 
-            FROM Card card 
-            WHERE 
-                card.viewType = :view 
-                and (
-                    lower(card.title) like lower(concat('%', :searchText,'%'))
-                    or lower(card.info) like lower(concat('%', :searchText,'%'))
-//                    or lower(card.tagList.title) like lower(concat('%', :searchText,'%'))
+                c
+            FROM Card c 
+            WHERE
+                c.id in (
+                    SELECT
+                        DISTINCT(card.id)
+                    FROM Card card
+                    JOIN card.tagList tags
+                    WHERE
+                        card.viewType = :view
+                        and (
+                            lower(card.title) like lower(concat('%', :searchText,'%'))
+                            or lower(card.info) like lower(concat('%', :searchText,'%'))
+                            or lower(tags.title) like lower(concat('%', :searchText,'%'))
+                        )
                 )
             """)
-    Page<Card> findAllByViewAndLikeTitle(@NotNull ViewType view, Pageable pageable, String searchText);
+    Page<Card> findAllByViewAndLikeTitle(@NotNull ViewType view, String searchText, Pageable pageable);
 
 }

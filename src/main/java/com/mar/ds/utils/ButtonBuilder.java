@@ -6,16 +6,17 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import static java.util.Objects.nonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ButtonBuilder {
 
     private Button button;
-
-    private ButtonBuilder() {}
 
     public static ButtonBuilder createButton() {
         ButtonBuilder bb = new ButtonBuilder();
