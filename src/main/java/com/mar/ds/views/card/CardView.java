@@ -10,6 +10,7 @@ import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
+import com.mar.ds.views._build.pagination_grid.PaginationGridService;
 import com.mar.ds.views.card.status.CardStatusViewDialog;
 import com.mar.ds.views.card.tags.CardTagsView;
 import com.mar.ds.views.card.type.CardTypeViewDialog;
@@ -17,7 +18,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
-import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
@@ -31,15 +32,14 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.server.VaadinSession;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.vaadin.klaudeta.PaginatedGrid;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -63,23 +63,28 @@ import static com.mar.ds.data.GridInfo.GRID_TITLE;
 import static com.mar.ds.data.GridInfo.GRID_TYPE;
 import static com.mar.ds.utils.FileUtils.getTitles;
 import static com.mar.ds.utils.ViewUtils.getStatusIcon;
-import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.vaadin.flow.component.button.ButtonVariant.LUMO_TERTIARY;
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
 import static com.vaadin.flow.component.icon.VaadinIcon.COG;
+import static com.vaadin.flow.component.icon.VaadinIcon.COGS;
+import static com.vaadin.flow.component.icon.VaadinIcon.COMMENT_O;
 import static com.vaadin.flow.component.icon.VaadinIcon.COMPILE;
 import static com.vaadin.flow.component.icon.VaadinIcon.CUBES;
+import static com.vaadin.flow.component.icon.VaadinIcon.DATE_INPUT;
+import static com.vaadin.flow.component.icon.VaadinIcon.MEDAL;
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
+import static com.vaadin.flow.component.icon.VaadinIcon.TEXT_LABEL;
 import static java.lang.Math.abs;
-import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Slf4j
 @RequiredArgsConstructor
 public class CardView implements ContentView {
 
-    private final MainView appLayout;
+    public static final int DEFAULT_GRID_ICON_SIZE_INT = 36;
+    public static final String DEFAULT_GRID_ICON_SIZE_VAR = "var(--iron-icon-width, " + DEFAULT_GRID_ICON_SIZE_INT + "px)";
+
+    private final MainView mainView;
     @Getter
     private final ViewType viewType;
 
@@ -87,71 +92,55 @@ public class CardView implements ContentView {
     private int maxPoint;
     private int minRate = Integer.MAX_VALUE;
     private int maxRate = Integer.MIN_VALUE;
-    private PaginatedGrid<Card> grid;
-
-    public static final int DEFAULT_GRID_ICON_SIZE_INT = 36;
-    public static final String DEFAULT_GRID_ICON_SIZE_VAR = "var(--iron-icon-width, " + DEFAULT_GRID_ICON_SIZE_INT + "px)";
-
-    public static final String GRID_COLUMN_SORT_KEY = "grid-column-sort-key";
-    // TODO for custom pagination
-//    public static final String GRID_COLUMN_PAGE_KEY = "grid-column-page-key";
-    public static final String GRID_COLUMN_SEARCH_TEXT_KEY = "grid-column-search-text-key";
-    public static final String GRID_COLUMN_EMPTY = "";
+    private Grid<Card> grid;
+    private PaginationGridService<Card> paginationGridService;
+    private int pageSize;
 
     public VerticalLayout getContent() {
         log.debug("Get content by {}", viewType);
-        minPoint = Integer.parseInt(appLayout.getEnv().getProperty("app.card.point.min", "0"));
-        maxPoint = Integer.parseInt(appLayout.getEnv().getProperty("app.card.point.max", "10"));
+        minPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.min", "0"));
+        maxPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.max", "10"));
         // calc min/max rate
-        List<Card> cardList = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
+        List<Card> cardList = mainView.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
         for (Card card : cardList) {
             double rate = calcRate(card);
             if (rate < minRate) minRate = (int) rate;
             if (rate > maxRate) maxRate = (int) rate;
         }
         if (maxRate <= minRate) maxRate = minRate + 1;
-        // clean filter
-        VaadinSession.getCurrent().setAttribute(GRID_COLUMN_SORT_KEY, emptyList());
-//        VaadinSession.getCurrent().setAttribute(GRID_COLUMN_PAGE_KEY, 1);
-        VaadinSession.getCurrent().setAttribute(GRID_COLUMN_SEARCH_TEXT_KEY, GRID_COLUMN_EMPTY);
+        pageSize = mainView.getEnv().getProperty("app.grid.row.count", Integer.class, 15);
 
         // TABLE
-        grid = new PaginatedGrid<>();
+        grid = new Grid<>();
+        TextField searchField = new TextField();
+        paginationGridService = new PaginationGridService<Card>(grid, pageSize,
+                data -> {
+                    String searchText = ViewUtils.getTextFieldValue(searchField);
+                    Sort sort = Sort.by(data.sortOrders());
+                    PageRequest pageRequest = PageRequest.of(data.page(), data.pageSize(), sort);
+
+                    if (isBlank(searchText)) {
+                        return mainView.getRepositoryService().getCardRepository()
+                                .findAllByView(viewType, pageRequest);
+                    } else {
+                        return mainView.getRepositoryService().getCardRepository()
+                                .findAllByViewAndLikeTitle(viewType, searchText, pageRequest);
+                    }
+                }
+        );
         // listeners
         initGridListeners();
         // column
         initGridColumn();
         // settings
         grid.setWidthFull();
-        grid.setPageSize(appLayout.getEnv().getProperty("app.grid.row.count", Integer.class, 15));
-        grid.setPaginatorSize(3);
 
-        TextField searchField = new TextField();
         searchField.setWidth("50%");
         searchField.setPlaceholder("Search");
         searchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
         searchField.setValueChangeMode(ValueChangeMode.EAGER);
         searchField.setClearButtonVisible(true);
-        searchField.addValueChangeListener(e -> {
-            List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
-            String text = getTextFieldValue(searchField);
-            if (text != null) {
-                String finalText = text.trim().toLowerCase();
-                if (!finalText.isEmpty()) {
-                    VaadinSession.getCurrent().setAttribute(GRID_COLUMN_SEARCH_TEXT_KEY, finalText);
-                    setItemsByTextSearch(cards, finalText);
-                } else {
-                    VaadinSession.getCurrent().setAttribute(GRID_COLUMN_SEARCH_TEXT_KEY, GRID_COLUMN_EMPTY);
-                    grid.setItems(cards);
-                }
-            } else {
-                VaadinSession.getCurrent().setAttribute(GRID_COLUMN_SEARCH_TEXT_KEY, GRID_COLUMN_EMPTY);
-                grid.setItems(cards);
-            }
-        });
-
-        // value
-        reloadData();
+        searchField.addValueChangeListener(e -> paginationGridService.reloadData(1));
 
         // create view
         H3 label = new H3(viewType.getTitle());
@@ -171,48 +160,34 @@ public class CardView implements ContentView {
         header.setMaxHeight(40, Unit.PIXELS);
         grid.setSizeFull();
 
-        VerticalLayout verticalLayout = new VerticalLayout(header, grid);
+        VerticalLayout verticalLayout = new VerticalLayout(header, grid, paginationGridService.getPaginationButtons());
         verticalLayout.setSizeFull();
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.START, header);
 
         return verticalLayout;
     }
 
-    private void setItemsByTextSearch(List<Card> cards, String textSearch) {
-        if (isBlank(textSearch)) {
-            grid.setItems(cards);
-        } else {
-            grid.setItems(cards.stream().filter(
-                    card -> card.getTitle().toLowerCase().contains(textSearch)
-                            || card.getInfo().toLowerCase().contains(textSearch)
-                            || String.valueOf(card.getId()).contains(textSearch)
-                            || card.getTagList().stream()
-                            .anyMatch(cardTypeTag -> cardTypeTag.getTitle().toLowerCase().contains(textSearch))
-            ));
-        }
-    }
-
     private Button[] getBtns() {
         Button crtBtn = new Button(
                 "Add",
                 new Icon(PLUS),
-                click -> new CreateCardView(appLayout, viewType).showDialog()
+                click -> new CreateCardView(mainView, viewType).showDialog()
         );
         crtBtn.setWidthFull();
         crtBtn.getStyle().set("color", "green");
 
         Button cardStatusView = new Button(
-                "Status list", new Icon(COG), click -> new CardStatusViewDialog(appLayout)
+                "Status list", new Icon(COG), click -> new CardStatusViewDialog(mainView)
         );
         cardStatusView.setWidthFull();
 
         Button cardTypeView = new Button(
-                "Types", new Icon(COMPILE), click -> new CardTypeViewDialog(appLayout)
+                "Types", new Icon(COMPILE), click -> new CardTypeViewDialog(mainView)
         );
         cardTypeView.setWidthFull();
 
         Button cardTypeTagView = new Button(
-                "Type tags", new Icon(CUBES), click -> new CardTagsView(appLayout).showDialog()
+                "Type tags", new Icon(CUBES), click -> new CardTagsView(mainView).showDialog()
         );
         cardTypeTagView.setWidthFull();
 
@@ -239,7 +214,7 @@ public class CardView implements ContentView {
     }
 
     private void openInfo(Card card) {
-        CardInfoView info = new CardInfoView(appLayout, card);
+        CardInfoView info = new CardInfoView(mainView, card);
         info.open();
     }
 
@@ -288,38 +263,15 @@ public class CardView implements ContentView {
 
     @Override
     public void reloadData() {
-        List<GridSortOrder<Card>> sort = (List<GridSortOrder<Card>>) VaadinSession.getCurrent().getAttribute(GRID_COLUMN_SORT_KEY);
-//        int page = (int) Optional.ofNullable(
-//                VaadinSession.getCurrent().getAttribute(GRID_COLUMN_PAGE_KEY))
-//                .orElse(1);
-        String searchText = (String) VaadinSession.getCurrent().getAttribute(GRID_COLUMN_SEARCH_TEXT_KEY);
-
-        List<Card> cards = appLayout.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
-        if (!isBlank(searchText)) {
-            setItemsByTextSearch(cards, searchText);
-        } else {
-            grid.setItems(cards);
-        }
-        if (!isEmpty(sort)) {
-            grid.sort(sort);
-        }
-//        if (page > 0) {
-//            grid.setPage(page);
+        paginationGridService.reloadData();
+//        if (!isBlank(searchText)) {
+//            setItemsByTextSearch(cards, searchText);
+//        } else {
+//            grid.setItems(cards);
 //        }
     }
 
     private void initGridListeners() {
-        grid.addSortListener(event -> {
-            Collection<GridSortOrder<Card>> sortList = event.getSortOrder();
-            if (!isEmpty(sortList)) {
-                VaadinSession.getCurrent().setAttribute(GRID_COLUMN_SORT_KEY, event.getSortOrder());
-            } else {
-                VaadinSession.getCurrent().setAttribute(GRID_COLUMN_SORT_KEY, emptyList());
-            }
-        });
-//        grid.addPageChangeListener(event -> {
-//            VaadinSession.getCurrent().setAttribute(GRID_COLUMN_PAGE_KEY, event.getNewPage());
-//        });
         grid.addItemDoubleClickListener(
                 dialogItemDoubleClickEvent -> {
                     openInfo(dialogItemDoubleClickEvent.getItem());
@@ -328,7 +280,7 @@ public class CardView implements ContentView {
     }
 
     private void initGridColumn() {
-        Map<String, String> gridConfig = getTitles(viewType, appLayout.getContentJSON());
+        Map<String, String> gridConfig = getTitles(viewType, mainView.getContentJSON());
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
         if (gridConfig.containsKey(GRID_ID)) {
@@ -345,6 +297,7 @@ public class CardView implements ContentView {
                         return icon;
                     })
                     .setHeader(gridConfig.get(GRID_STATUS))
+                    // TODO Status sort ??? - сортировка опирается на наличие обновлений - если есть то они в топе.
                     .setSortable(true)
                     // ~ -> last symbol in ASCII table (nope, 'DEL' is last).
                     .setComparator(Comparator.comparing(o -> mathUpd(o) ? "~" : o.getCardStatus().getTitle()))
@@ -354,10 +307,8 @@ public class CardView implements ContentView {
         }
         if (gridConfig.containsKey(GRID_ENGINE)) {
             grid.addComponentColumn(this::getEngineIcon)
-                    .setHeader(gridConfig.get(GRID_ENGINE))
+                    .setHeader(paginationGridService.getHeader(COGS, gridConfig.get(GRID_ENGINE), "engine"))
                     .setAutoWidth(true).setFlexGrow(0)
-                    .setSortable(true)
-                    .setComparator(Card::getEngine)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_ENGINE);
         }
@@ -367,27 +318,26 @@ public class CardView implements ContentView {
                             .orElse(Language.DEFAULT)
                             .getImage(DEFAULT_GRID_ICON_SIZE_INT)
                     )
-                    .setHeader(gridConfig.get(GRID_LANGUAGE))
+                    .setHeader(paginationGridService.getHeader(
+                            COMMENT_O, gridConfig.get(GRID_LANGUAGE), "language"
+                    ))
                     .setAutoWidth(true).setFlexGrow(0)
-                    .setSortable(true)
-                    .setComparator(Card::getLanguage)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_LANGUAGE);
         }
         if (gridConfig.containsKey(GRID_TITLE)) {
             grid.addColumn(Card::getTitle)
-                    .setHeader(gridConfig.get(GRID_TITLE))
+                    .setHeader(paginationGridService.getHeader(
+                            TEXT_LABEL, gridConfig.get(GRID_TITLE), "title"
+                    ))
                     .setAutoWidth(true)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_TITLE);
         }
         if (gridConfig.containsKey(GRID_POINT)) {
             grid.addComponentColumn(card -> getLabelWithColor(card::getPoint))
-                    .setHeader(gridConfig.get(GRID_POINT))
-                    .setAutoWidth(true)
-                    .setFlexGrow(0)
-                    .setSortable(true)
-                    .setComparator(Card::getPoint)
+                    .setHeader(paginationGridService.getHeader(MEDAL, gridConfig.get(GRID_POINT), "point"))
+                    .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_POINT);
         }
@@ -396,23 +346,25 @@ public class CardView implements ContentView {
                     .setHeader(gridConfig.get(GRID_RATE))
                     .setAutoWidth(true)
                     .setFlexGrow(0)
+                    // TODO Calc and sort by rate in DB
                     .setSortable(true)
                     .setComparator(this::calcRate)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_RATE);
         }
+
         if (gridConfig.containsKey(GRID_DATE_UPD)) {
             grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
-                    .setHeader(gridConfig.get(GRID_DATE_UPD)).setSortable(true)
-                    .setComparator(Comparator.comparingLong(value -> value.getLastUpdate().getTime()))
+                    .setHeader(paginationGridService.getHeader(DATE_INPUT, "UPD date", "lastUpdate"))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_DATE_UPD);
         }
         if (gridConfig.containsKey(GRID_DATE_GAME)) {
             grid.addColumn(card -> dateFormat.format(card.getLastGame()))
-                    .setHeader(gridConfig.get(GRID_DATE_GAME)).setSortable(true)
-                    .setComparator(Comparator.comparingLong(value -> value.getLastGame().getTime()))
+                    .setHeader(paginationGridService.getHeader(
+                            DATE_INPUT, gridConfig.get(GRID_DATE_GAME), "lastGame"
+                    ))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_DATE_GAME);
@@ -420,8 +372,9 @@ public class CardView implements ContentView {
         if (gridConfig.containsKey(GRID_TYPE)) {
             grid.addColumn(card -> card.getCardType().getTitle())
                     .setAutoWidth(true).setFlexGrow(0)
-                    .setHeader(gridConfig.get(GRID_TYPE))
-                    .setSortable(true)
+                    .setHeader(paginationGridService.getHeader(
+                            COMPILE, gridConfig.get(GRID_TYPE), "cardType.title"
+                    ))
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_TYPE);
         }
@@ -453,15 +406,15 @@ public class CardView implements ContentView {
                         // Edit BTN
                         Button edtBtn = new Button(
                                 new Icon(VaadinIcon.PENCIL),
-                                clk -> new FastUpdateCardView(appLayout, card).showDialog()
+                                clk -> new FastUpdateCardView(mainView, card).showDialog()
                         );
                         edtBtn.addThemeVariants(LUMO_TERTIARY);
                         edtBtn.getStyle().set("margin", "0px");
                         // Delete BN
                         Button dltBtn = new Button(new Icon(BAN), clk -> new DeleteDialogWidget(() -> {
-                            appLayout.getRepositoryService().getCardRepository().delete(card);
+                            mainView.getRepositoryService().getCardRepository().delete(card);
                             reloadData();
-                            FileUtils.deleteDir(appLayout.getEnv().getProperty("app.data.path") + "cards/" + card.getId());
+                            FileUtils.deleteDir(mainView.getEnv().getProperty("app.data.path") + "cards/" + card.getId());
                         }));
                         dltBtn.addThemeVariants(LUMO_TERTIARY);
                         dltBtn.getStyle().set("color", "red").set("margin", "0px");

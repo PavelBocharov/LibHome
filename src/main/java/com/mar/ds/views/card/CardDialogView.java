@@ -9,12 +9,18 @@ import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.math.BigDecimal;
@@ -39,17 +45,13 @@ import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.join;
 
 public abstract class CardDialogView {
-
-    private volatile Map<String, String> titles;
 
     protected MainView mainView;
     protected ViewType viewType;
     protected int minPoint;
     protected int maxPoint;
-
     protected TextField cardTitle;
     protected BigDecimalField point;
     protected Select<GameEngine> engineSelect;
@@ -61,8 +63,10 @@ public abstract class CardDialogView {
     protected MultiselectComboBox<CardTypeTag> tags;
     protected TextArea infoArea;
     protected Select<Language> languageSelect;
+    private volatile Map<String, String> titles;
 
     public abstract void showDialog();
+
     public abstract void closeDialog();
 
     protected Map<String, String> getTitles() {
@@ -115,7 +119,16 @@ public abstract class CardDialogView {
         engineSelect = new Select<>(GameEngine.values());
         engineSelect.setLabel(getTitles().get(GRID_ENGINE));
         engineSelect.setEmptySelectionAllowed(false);
-        engineSelect.setTextRenderer(GameEngine::getName);
+        engineSelect.setRenderer(new ComponentRenderer<>(
+                gameEngine -> {
+                    Image icon = new Image();
+                    icon.setSrc(gameEngine.getIconPath());
+                    icon.setWidth(24, Unit.PIXELS);
+                    icon.setHeight(24, Unit.PIXELS);
+                    return new HorizontalLayout(icon, new Label(gameEngine.getName()));
+                }
+        ));
+//        engineSelect.setTextRenderer(GameEngine::getName);
         engineSelect.setWidthFull();
         engineSelect.setValue(GameEngine.RENPY);
         return engineSelect;
@@ -192,12 +205,17 @@ public abstract class CardDialogView {
 
     protected Component getLanguageSelector() {
         languageSelect = new Select<>(Language.values());
+        languageSelect.setRenderer(
+                new ComponentRenderer<>(language -> new HorizontalLayout(
+                        language.getImage(24),
+                        new Label(language.getTitle())
+                ))
+        );
         languageSelect.setLabel("Language/Язык");
         languageSelect.setEmptySelectionAllowed(false);
-        languageSelect.setTextRenderer(Language::getTitle);
         languageSelect.setWidthFull();
         languageSelect.setValue(Language.DEFAULT);
         return languageSelect;
     }
-    
+
 }

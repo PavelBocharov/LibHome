@@ -97,8 +97,8 @@ public class CardInfoView extends Dialog {
 
         HorizontalLayout headerInfo = new HorizontalLayout(
                 ViewUtils.getStatusIcon(card, false),
-                Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getImage(),
-                new Label( " [" + card.getId() + "] " + card.getTitle())
+                Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getImage(26),
+                new Label(" [" + card.getId() + "] " + card.getTitle())
         );
         headerInfo.setWidthFull();
         Button returnBtn = new Button(
@@ -181,7 +181,7 @@ public class CardInfoView extends Dialog {
         // Cover
         Image cover;
         try {
-            cover = findImage(dataDir + "cards/" + card.getId() + "/cover/", "imgs/not_cover.jpeg");
+            cover = findImage(dataDir + "cards/" + card.getId() + "/cover/");
         } catch (FileNotFoundException ex) {
             cover = new Image("imgs/not_cover.jpeg", "Not cover");
         }
