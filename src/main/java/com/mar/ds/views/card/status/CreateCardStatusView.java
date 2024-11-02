@@ -25,7 +25,7 @@ public class CreateCardStatusView {
         textField.setLabel("Title");
 
         TextField colorField = new TextField();
-        colorField.setHelperText("Use HEX or string text (red, green ant etc.)");
+        colorField.setHelperText("Use HEX or string text (red, green and etc.)");
         colorField.setWidthFull();
         colorField.setLabel("Color");
 

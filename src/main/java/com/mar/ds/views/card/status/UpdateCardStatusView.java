@@ -26,7 +26,7 @@ public class UpdateCardStatusView {
         ViewUtils.setTextFieldValue(textField, updatedStatus.getTitle());
 
         TextField colorField = new TextField();
-        colorField.setHelperText("Use HEX or string text (red, green ant etc.)");
+        colorField.setHelperText("Use HEX or string text (red, green and etc.)");
         colorField.setWidthFull();
         colorField.setLabel("Color");
         ViewUtils.setTextFieldValue(colorField, updatedStatus.getColor());

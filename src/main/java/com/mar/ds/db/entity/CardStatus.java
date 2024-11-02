@@ -44,4 +44,10 @@ public class CardStatus implements Serializable, HasId {
     @ColumnDefault("true")
     private Boolean isRate;
 
+    @Column(name = "tech_id")
+    private String tech;
+
+    @Column(name = "sort_order")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_status_order")
+    private Long order;
 }
