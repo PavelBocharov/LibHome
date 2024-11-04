@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.google.common.io.Resources;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.HasId;
 import com.vaadin.flow.component.Component;
@@ -30,7 +29,6 @@ import com.vaadin.flow.server.StreamResource;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.vaadin.gatanaso.MultiselectComboBox;
 import org.vaadin.olli.FileDownloadWrapper;
@@ -41,19 +39,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -331,23 +325,18 @@ public class ViewUtils {
         return buttonWrapper;
     }
 
-    public static Icon getStatusIcon(Card card, boolean hasUpd) {
+    public static Icon getStatusIcon(Card card) {
         Icon icon;
 
         if (card != null && card.getCardStatus() != null && isNotBlank(card.getCardStatus().getColor())) {
-            if (hasUpd) {
-                icon = VaadinIcon.BELL.create();
-                icon.setColor("#0B6623");
-            } else {
-                icon = getIconByText(card.getCardStatus().getIcon(), VaadinIcon.BULLSEYE.create());
-                icon.setColor(card.getCardStatus().getColor());
-            }
+            icon = getIconByText(card.getCardStatus().getIcon(), VaadinIcon.BULLSEYE.create());
+            icon.setColor(card.getCardStatus().getColor());
             icon.getElement().setAttribute("title", card.getInfo());
         } else {
             icon = VaadinIcon.BULLSEYE.create();
             icon.setColor("grey");
         }
-
+        icon.getStyle().set("margin", "0px");
         return icon;
     }
 

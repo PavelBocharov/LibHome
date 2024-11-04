@@ -9,17 +9,16 @@ import com.mar.ds.db.jpa.TechWorkRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
-
-import static com.mar.ds.db.entity.LibHomeSequence.CARD_STATUS_ORDER_SEQ_NAME;
 
 @Slf4j
 @Service
 public class TechWorkService {
+
+    public static final String CARD_STATUS_ORDER_SEQ_NAME = "card-status-order";
 
     public static final String TECH_HASE_UPD_ID = "CARD_HAS_UPD";
 
@@ -71,10 +70,10 @@ public class TechWorkService {
 
     @Transactional
     private long updateCardsStatus() {
-        LibHomeSequence orderSortSeq = libHomeSeqRepository.getById(CARD_STATUS_ORDER_SEQ_NAME);
+        LibHomeSequence orderSortSeq = libHomeSeqRepository.findBySeqName(CARD_STATUS_ORDER_SEQ_NAME).orElse(null);
         if (orderSortSeq == null) {
             libHomeSeqRepository.save(LibHomeSequence.builder().seqName(CARD_STATUS_ORDER_SEQ_NAME).build());
-            orderSortSeq = libHomeSeqRepository.getById(CARD_STATUS_ORDER_SEQ_NAME);
+            orderSortSeq = libHomeSeqRepository.findBySeqName(CARD_STATUS_ORDER_SEQ_NAME).orElseThrow();
         }
         long order = orderSortSeq.getSeqValue();
 

@@ -17,8 +17,6 @@ import java.util.UUID;
 @Table(name = "lib_home_sequence")
 public class LibHomeSequence implements Serializable {
 
-    public static final String CARD_STATUS_ORDER_SEQ_NAME = "card-status-order";
-
     @Id
     private String id;
 
@@ -26,7 +24,6 @@ public class LibHomeSequence implements Serializable {
     private String seqName;
 
     @Column(name = "seq_val")
-    @ColumnDefault("0")
     private Long seqValue;
 
     @PrePersist

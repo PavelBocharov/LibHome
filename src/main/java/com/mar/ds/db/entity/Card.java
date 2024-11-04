@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -24,12 +23,13 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Getter
 @Setter
 @Entity
 @Builder
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "card")
@@ -53,9 +53,11 @@ public class Card implements Serializable, HasId {
     private String link;
 
     @Column(name = "last_game")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date lastGame;
 
     @Column(name = "last_update")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdate;
 
     @Column(name = "engine")
@@ -82,4 +84,21 @@ public class Card implements Serializable, HasId {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<CardTypeTag> tagList;
 
+    @Override
+    public String toString() {
+        return "Card{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", point=" + point +
+                ", link='" + link + '\'' +
+                ", lastGame=" + lastGame +
+                ", lastUpdate=" + lastUpdate +
+                ", engine=" + engine +
+                ", language=" + language +
+                ", viewType=" + viewType +
+                ", cardType=" + cardType +
+                ", cardStatus=" + cardStatus +
+                ", tagList=" + tagList +
+                '}';
+    }
 }

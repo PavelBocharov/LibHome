@@ -4,12 +4,16 @@ import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.ViewType;
+import com.mar.ds.views.card.CardView;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
@@ -24,13 +28,46 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Query(value = "SELECT card FROM Card card WHERE card.viewType = :view ORDER BY card.point DESC")
     List<Card> findWithOrderByPoint(@NotNull ViewType view);
 
-    @Query(value = "SELECT card FROM Card card WHERE card.viewType = :view")
-    Page<Card> findAllByView(@NotNull ViewType view, Pageable pageable);
-
     @Query(value = """
-            SELECT 
-                c
-            FROM Card c 
+            SELECT
+                c as crd,
+                case
+                    when cs.isRate = true
+                        then (c.lastGame / c.point)
+                    else 0
+                end as rate
+            FROM Card c
+            JOIN c.cardStatus cs
+            WHERE c.viewType = :view
+            """)
+    Page<Map<String, Object>> findAllByView(@NotNull ViewType view, Pageable pageable);
+
+    default Page<CardView.CardViewData> findAllByView_Dto(@NotNull ViewType view, Pageable pageable) {
+        Page<Map<String, Object>> cards = findAllByView(view, pageable);
+
+        ArrayList<CardView.CardViewData> cardViewList = new ArrayList<>(cards.getContent().size());
+        for (Map<String, Object> cardInfo : cards.getContent()) {
+            cardViewList.add(new CardView.CardViewData(
+                    (Card) cardInfo.get("crd"),
+                    Float.parseFloat(String.valueOf(cardInfo.get("rate")))
+            ));
+        }
+
+        return new PageImpl<>(cardViewList, cards.getPageable(), cards.getTotalElements());
+    }
+
+    // TODO fix rate sort
+//  then (abs(unixepoch(date(c.lastGame / 1000, 'unixepoch', 'localtime')) - unixepoch(date())) / power(c.point, -1))
+    @Query(value = """
+            SELECT
+                c as crd,
+                case
+                    when cs.isRate = true
+                        then (c.lastGame * c.point)
+                    else 0
+                end as rate
+            FROM Card c
+            JOIN c.cardStatus cs
             WHERE
                 c.id in (
                     SELECT
@@ -46,6 +83,20 @@ public interface CardRepository extends JpaRepository<Card, Long> {
                         )
                 )
             """)
-    Page<Card> findAllByViewAndLikeTitle(@NotNull ViewType view, String searchText, Pageable pageable);
+    Page<Map<String, Object>> findAllByViewAndLikeTitleMap(@NotNull ViewType view, String searchText, Pageable pageable);
+
+    default Page<CardView.CardViewData> findAllByViewAndLikeTitleMap_Dto(@NotNull ViewType view, String searchText, Pageable pageable) {
+        Page<Map<String, Object>> cards = findAllByViewAndLikeTitleMap(view, searchText, pageable);
+
+        ArrayList<CardView.CardViewData> cardViewList = new ArrayList<>(cards.getContent().size());
+        for (Map<String, Object> cardInfo : cards.getContent()) {
+            cardViewList.add(new CardView.CardViewData(
+                    (Card) cardInfo.get("crd"),
+                    Float.parseFloat(String.valueOf(cardInfo.get("rate")))
+            ));
+        }
+
+        return new PageImpl<>(cardViewList, cards.getPageable(), cards.getTotalElements());
+    }
 
 }

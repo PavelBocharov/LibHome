@@ -115,23 +115,22 @@ public class CreateCardView extends CardDialogView {
         crtBtn.addClickListener(click -> {
             try {
                 checkValues();
-                mainView.getRepositoryService().getCardRepository()
-                        .save(
-                                Card.builder()
-                                        .viewType(viewType)
-                                        .title(getTextFieldValue(cardTitle))
-                                        .info(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""))
-                                        .link(getTextFieldValue(link))
-                                        .engine(getValue(engineSelect, GameEngine.DEFAULT))
-                                        .point(getDoubleValue(point))
-                                        .lastUpdate(getValue(updDate, new Date()))
-                                        .lastGame(getValue(gameDate, new Date()))
-                                        .cardStatus(cardStatusListSelect.getValue())
-                                        .cardType(cardTypeListSelect.getValue())
-                                        .tagList(tags.getValue().stream().toList())
-                                        .language(getValue(languageSelect, Language.DEFAULT))
-                                        .build()
-                        );
+                mainView.getRepositoryService().getCardRepository().save(
+                        Card.builder()
+                                .viewType(viewType)
+                                .title(getTextFieldValue(cardTitle))
+                                .info(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""))
+                                .link(getTextFieldValue(link))
+                                .engine(getValue(engineSelect, GameEngine.DEFAULT))
+                                .point(getDoubleValue(point))
+                                .lastUpdate(getValue(updDate, new Date()))
+                                .lastGame(getValue(gameDate, new Date()))
+                                .cardStatus(cardStatusListSelect.getValue())
+                                .cardType(cardTypeListSelect.getValue())
+                                .tagList(tags.getValue().stream().toList())
+                                .language(getValue(languageSelect, Language.DEFAULT))
+                                .build()
+                );
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("An error occurred while creating", ex);
                 crtBtn.setEnabled(true);
