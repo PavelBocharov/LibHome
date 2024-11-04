@@ -1,8 +1,10 @@
 package com.mar.ds.service;
 
 import com.mar.ds.db.entity.CardStatus;
+import com.mar.ds.db.entity.LibHomeSequence;
 import com.mar.ds.db.entity.TechWork;
 import com.mar.ds.db.jpa.CardStatusRepository;
+import com.mar.ds.db.jpa.LibHomeSeqRepository;
 import com.mar.ds.db.jpa.TechWorkRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
+
+import static com.mar.ds.db.entity.LibHomeSequence.CARD_STATUS_ORDER_SEQ_NAME;
 
 @Slf4j
 @Service
@@ -23,6 +28,9 @@ public class TechWorkService {
 
     @Autowired
     private CardStatusRepository cardStatusRepository;
+
+    @Autowired
+    private LibHomeSeqRepository libHomeSeqRepository;
 
     @PostConstruct
     public void techWork() {
@@ -61,16 +69,26 @@ public class TechWorkService {
         return 1L;
     }
 
+    @Transactional
     private long updateCardsStatus() {
+        LibHomeSequence orderSortSeq = libHomeSeqRepository.getById(CARD_STATUS_ORDER_SEQ_NAME);
+        if (orderSortSeq == null) {
+            libHomeSeqRepository.save(LibHomeSequence.builder().seqName(CARD_STATUS_ORDER_SEQ_NAME).build());
+            orderSortSeq = libHomeSeqRepository.getById(CARD_STATUS_ORDER_SEQ_NAME);
+        }
+        long order = orderSortSeq.getSeqValue();
 
         List<CardStatus> cardStatusList = cardStatusRepository.findAll();
         for (CardStatus cardStatus : cardStatusList) {
             if (cardStatus.getOrder() == null) {
-                long sortOrder = cardStatusRepository.getNextSortOrderNumber();
-                cardStatus.setOrder(sortOrder);
+                cardStatus.setOrder(order);
+                order += 10;
             }
         }
         cardStatusRepository.saveAll(cardStatusList);
+
+        orderSortSeq.setSeqValue(order);
+        libHomeSeqRepository.save(orderSortSeq);
 
         techWorkRepository.save(
                 TechWork.builder()

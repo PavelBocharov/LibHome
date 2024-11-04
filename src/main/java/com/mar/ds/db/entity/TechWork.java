@@ -36,7 +36,6 @@ public class TechWork implements Serializable {
     private String title;
 
     @Column(name = "create_date")
-    @CreatedDate
     private Date createDate;
 
     @Column(name = "tech_id", nullable = false, unique = true)
