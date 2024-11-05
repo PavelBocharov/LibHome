@@ -7,6 +7,7 @@ import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
 import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.utils.FileUtils;
+import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
@@ -141,14 +142,12 @@ public abstract class CardDialogView {
     }
 
     protected Component getUpdDate() {
-        updDate = new DatePicker(getTitles().get(GRID_DATE_UPD), LocalDate.now());
-        updDate.setWidthFull();
+        updDate = ViewUtils.getDatePicker(getTitles().get(GRID_DATE_UPD), LocalDate.now());
         return updDate;
     }
 
     protected Component getGameDate() {
-        gameDate = new DatePicker(getTitles().get(GRID_DATE_GAME), LocalDate.now());
-        gameDate.setWidthFull();
+        gameDate = ViewUtils.getDatePicker(getTitles().get(GRID_DATE_GAME), LocalDate.now());
         return gameDate;
     }
 

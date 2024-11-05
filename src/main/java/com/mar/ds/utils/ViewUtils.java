@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,6 +56,7 @@ import javax.imageio.ImageIO;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
 import static com.vaadin.flow.component.icon.VaadinIcon.CLOSE_SMALL;
 import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
 import static java.lang.String.format;
@@ -175,6 +177,13 @@ public class ViewUtils {
         }
     }
 
+    public static DatePicker getDatePicker(String title, LocalDate initDate) {
+        DatePicker datePicker = new DatePicker(title, initDate);
+        datePicker.setLocale(new Locale("ru", "RU"));
+        datePicker.setWidthFull();
+        return datePicker;
+    }
+
     public static DatePicker setValue(DatePicker datePicker, Date date) {
         if (isNull(datePicker) || isNull(date)) {
             throw new IllegalArgumentException("Cannot init datePicker: datePicker or date is null.");
@@ -221,10 +230,13 @@ public class ViewUtils {
         return field.getValue().doubleValue();
     }
 
+    public static long getLongValueGet(BigDecimalField field, Long defValue) {
+        return getLongValue(field).orElse(defValue);
+    }
 
-    public static long getLongValue(BigDecimalField field) {
-        if (field == null || field.getValue() == null) return 0;
-        return field.getValue().longValue();
+    public static Optional<Long> getLongValue(BigDecimalField field) {
+        if (field == null || field.getValue() == null) return Optional.empty();
+        return Optional.of(field.getValue().longValue());
     }
 
     public static void setBigDecimalFieldValue(BigDecimalField field, Float value) {

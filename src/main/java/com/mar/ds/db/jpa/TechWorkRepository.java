@@ -11,4 +11,6 @@ public interface TechWorkRepository extends JpaRepository<TechWork, Long> {
     @Query("SELECT MAX(tw.techId) FROM TechWork tw")
     Optional<Long> findWithMaxTechId();
 
+    Optional<TechWork> findByTechId(Long techId);
+
 }

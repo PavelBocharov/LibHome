@@ -126,7 +126,7 @@ public class CardInfoView extends Dialog {
             );
         }
         if (titles.containsKey(GRID_DATE_UPD)) {
-            DatePicker lastUpdDate = new DatePicker(titles.get(GRID_DATE_UPD), LocalDate.now());
+            DatePicker lastUpdDate = ViewUtils.getDatePicker(titles.get(GRID_DATE_UPD), LocalDate.now());
             lastUpdDate.setWidthFull();
             lastUpdDate.setRequired(true);
             lastUpdDate.setReadOnly(true);
@@ -137,7 +137,7 @@ public class CardInfoView extends Dialog {
             cardInfo.add(lastUpdDate);
         }
         if (titles.containsKey(GRID_DATE_GAME)) {
-            DatePicker lastGameDate = new DatePicker(titles.get(GRID_DATE_GAME), LocalDate.now());
+            DatePicker lastGameDate = ViewUtils.getDatePicker(titles.get(GRID_DATE_GAME), LocalDate.now());
             lastGameDate.setWidthFull();
             lastGameDate.setRequired(true);
             lastGameDate.setReadOnly(true);

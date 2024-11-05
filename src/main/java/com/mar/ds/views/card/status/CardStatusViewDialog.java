@@ -5,15 +5,17 @@ import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.jpa.CardStatusRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
+import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -23,12 +25,14 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @Slf4j
 public class CardStatusViewDialog {
     private final MainView appLayout;
+    private final ContentView parentView;
     private Dialog dialog;
-    private VerticalLayout cardStatusList;
+    private Grid<CardStatus> cardStatusList;
     private Button crtBtn;
 
-    public CardStatusViewDialog(MainView appLayout) {
+    public CardStatusViewDialog(MainView appLayout, ContentView parentView) {
         this.appLayout = appLayout;
+        this.parentView = parentView;
 
         dialog = new Dialog();
 
@@ -43,50 +47,57 @@ public class CardStatusViewDialog {
 
 
     private void initProducts() {
-        cardStatusList = new VerticalLayout();
+        cardStatusList = new Grid<>();
+        cardStatusList.setWidthFull();
 
-        List<CardStatus> cardStatusList = getRepository().findAll();
+        cardStatusList.addColumn(CardStatus::getTitle)
+                .setHeader("Title")
+                .setSortable(true);
+        cardStatusList.addColumn(CardStatus::getOrder)
+                .setHeader("Order")
+                .setSortable(true);
+        cardStatusList.addColumn(CardStatus::getIsRate)
+                .setHeader("Is rate")
+                .setSortable(true);
+        cardStatusList.addComponentColumn(cardStatus -> {
+                    Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> {
+                        try {
+                            new DeleteDialogWidget(() -> {
+                                List<Card> cards = appLayout.getRepositoryService().getCardRepository().findByCardStatus(cardStatus);
+                                if (isEmpty(cards)) {
+                                    log.info("Not find cards by status: {}. Delete status.", cardStatus);
+                                    getRepository().delete(cardStatus);
+                                    reloadData();
+                                } else {
+                                    log.warn("Find cards by status: {}, list: {}", cardStatus, cards);
+                                    ViewUtils.showErrorMsg(
+                                            "Delete card status ERROR",
+                                            new Exception(String.format("Find cards with status: '%s', count: %d.", cardStatus.getTitle(), cards.size()))
+                                    );
+                                }
 
-        for (CardStatus cardStatus : cardStatusList) {
-            TextField name = new TextField();
-            name.setTitle("Name");
-            name.setEnabled(false);
-            name.setWidthFull();
-            name.setValue(cardStatus.getTitle());
-
-            Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> {
-                try {
-                    new DeleteDialogWidget(() -> {
-                        List<Card> cards = appLayout.getRepositoryService().getCardRepository().findByCardStatus(cardStatus);
-                        if (isEmpty(cards)) {
-                            log.info("Not find cards by status: {}. Delete status.", cardStatus);
-                            getRepository().delete(cardStatus);
-                            reloadData();
-                        } else {
-                            log.warn("Find cards by status: {}, list: {}", cardStatus, cards);
-                            ViewUtils.showErrorMsg(
-                                    "Delete card status ERROR",
-                                    new Exception(String.format("Find cards with status: '%s', count: %d.", cardStatus.getTitle(), cards.size()))
-                            );
+                            });
+                        } catch (Exception ex) {
+                            ViewUtils.showErrorMsg("ERROR", ex);
+                            return;
                         }
-
                     });
-                } catch (Exception ex) {
-                    ViewUtils.showErrorMsg("ERROR", ex);
-                    return;
-                }
-            });
-            dltBtn.getStyle().set("color", "red");
+                    dltBtn.getStyle().set("color", "red");
 
-            Button uptBtn = new Button(
-                    new Icon(VaadinIcon.PENCIL),
-                    buttonClickEvent -> new UpdateCardStatusView(this, cardStatus)
-            );
-            this.cardStatusList.add(new HorizontalLayout(name, uptBtn, dltBtn));
-        }
+                    Button uptBtn = new Button(
+                            new Icon(VaadinIcon.PENCIL),
+                            buttonClickEvent -> new UpdateCardStatusView(this, cardStatus)
+                    );
+                    return new HorizontalLayout(uptBtn, dltBtn);
+                })
+                .setTextAlign(ColumnTextAlign.END);
+
+        cardStatusList.setItems(getRepository().findByWithTechIdIsNull());
     }
 
     public void reloadData() {
+        parentView.reloadData();
+        dialog.removeAll();
         try {
             initProducts();
         } catch (Exception ex) {
@@ -94,8 +105,9 @@ public class CardStatusViewDialog {
             crtBtn.setEnabled(true);
             return;
         }
-        appLayout.reloadContent();
-        dialog.removeAll();
+        dialog.setSizeFull();
+        dialog.setMaxHeight(50, Unit.PERCENTAGE);
+        dialog.setMaxWidth(50, Unit.PERCENTAGE);
         dialog.add(
                 new Label("Card status list"),
                 cardStatusList,

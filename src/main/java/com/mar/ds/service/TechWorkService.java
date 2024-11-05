@@ -1,8 +1,10 @@
 package com.mar.ds.service;
 
+import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.LibHomeSequence;
 import com.mar.ds.db.entity.TechWork;
+import com.mar.ds.db.jpa.CardRepository;
 import com.mar.ds.db.jpa.CardStatusRepository;
 import com.mar.ds.db.jpa.LibHomeSeqRepository;
 import com.mar.ds.db.jpa.TechWorkRepository;
@@ -29,6 +31,9 @@ public class TechWorkService {
     private CardStatusRepository cardStatusRepository;
 
     @Autowired
+    private CardRepository cardRepository;
+
+    @Autowired
     private LibHomeSeqRepository libHomeSeqRepository;
 
     @PostConstruct
@@ -41,8 +46,13 @@ public class TechWorkService {
             log.debug("Crate tech card status 'Has UPD'. END.");
         }
         if (lastTechId < 2) {
+            log.debug("Update card orders ...");
+            lastTechId = updateCardsOrder();
+            log.debug("Update card orders. END.");
+        }
+        if (lastTechId < 3) {
             log.debug("Update card status ...");
-            lastTechId = updateCardsStatus();
+            lastTechId = updateCardStatus();
             log.debug("Update card status. END.");
         }
 
@@ -69,7 +79,7 @@ public class TechWorkService {
     }
 
     @Transactional
-    private long updateCardsStatus() {
+    private long updateCardsOrder() {
         LibHomeSequence orderSortSeq = libHomeSeqRepository.findBySeqName(CARD_STATUS_ORDER_SEQ_NAME).orElse(null);
         if (orderSortSeq == null) {
             libHomeSeqRepository.save(LibHomeSequence.builder().seqName(CARD_STATUS_ORDER_SEQ_NAME).build());
@@ -91,11 +101,37 @@ public class TechWorkService {
 
         techWorkRepository.save(
                 TechWork.builder()
-                        .title("Update card status.")
+                        .title("Update card orders.")
                         .techId(2L)
                         .build()
         );
         return 2;
+    }
+
+    @Transactional
+    private long updateCardStatus() {
+//      Fix text
+        TechWork techWork = techWorkRepository.findByTechId(2L).orElseThrow();
+        techWork.setTitle("Update card orders.");
+        techWorkRepository.save(techWork);
+//      ----------------
+
+        CardStatus hasUpdStatus = cardStatusRepository.findByTechId(TECH_HASE_UPD_ID);
+        List<Card> cards = cardRepository.findAll();
+        for (Card card : cards) {
+            if (card.getLastUpdate().after(card.getLastGame())) {
+                card.setCardStatus(hasUpdStatus);
+            }
+        }
+        cardRepository.saveAll(cards);
+
+        techWorkRepository.save(
+                TechWork.builder()
+                        .title("Update card status.")
+                        .techId(3L)
+                        .build()
+        );
+        return 3L;
     }
 
 }

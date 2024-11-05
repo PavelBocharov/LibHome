@@ -9,6 +9,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.ROTATE_RIGHT;
@@ -37,6 +38,10 @@ public class UpdateCardStatusView {
         iconField.setLabel("Icon");
         ViewUtils.setTextFieldValue(iconField, updatedStatus.getIcon());
 
+        BigDecimalField orderField = new BigDecimalField("Order");
+        orderField.setWidthFull();
+        ViewUtils.setBigDecimalFieldValue(orderField, updatedStatus.getOrder());
+
         Checkbox isRate = new Checkbox("Is rate", updatedStatus.getIsRate());
 
         Button updBtn = new Button("Update", new Icon(ROTATE_RIGHT));
@@ -46,6 +51,7 @@ public class UpdateCardStatusView {
                 updatedStatus.setColor(ViewUtils.getTextFieldValue(colorField));
                 updatedStatus.setIcon(ViewUtils.getTextFieldValue(iconField));
                 updatedStatus.setIsRate(isRate.getValue());
+                updatedStatus.setOrder(ViewUtils.getLongValue(orderField).orElseThrow(() -> new RuntimeException("Not set card state order.")));
                 cardStatusView.getRepository().save(updatedStatus);
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);
@@ -64,6 +70,7 @@ public class UpdateCardStatusView {
                 textField,
                 colorField,
                 iconField,
+                orderField,
                 isRate,
                 new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
         );

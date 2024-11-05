@@ -9,6 +9,8 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.BigDecimalField;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
@@ -34,6 +36,9 @@ public class CreateCardStatusView {
         iconField.setWidthFull();
         iconField.setLabel("Icon");
 
+        BigDecimalField orderField = new BigDecimalField("Order");
+        orderField.setWidthFull();
+
         Checkbox isRate = new Checkbox("Is rate", false);
 
         Button createBtn = new Button("Create", new Icon(PLUS));
@@ -45,6 +50,7 @@ public class CreateCardStatusView {
                                 .color(ViewUtils.getTextFieldValue(colorField))
                                 .icon(ViewUtils.getTextFieldValue(iconField))
                                 .isRate(isRate.getValue())
+                                .order(ViewUtils.getLongValue(orderField).orElseThrow(() -> new RuntimeException("Not set card status order.")))
                                 .build()
                 );
             } catch (Exception ex) {
@@ -64,6 +70,7 @@ public class CreateCardStatusView {
                 textField,
                 colorField,
                 iconField,
+                orderField,
                 isRate,
                 new HorizontalLayout(createBtn, ViewUtils.getCloseButton(createDialog))
         );

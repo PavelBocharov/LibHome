@@ -190,7 +190,7 @@ public class CardView implements ContentView {
         crtBtn.getStyle().set("color", "green");
 
         Button cardStatusView = new Button(
-                "Status list", new Icon(COG), click -> new CardStatusViewDialog(mainView)
+                "Status list", new Icon(COG), click -> new CardStatusViewDialog(mainView, this)
         );
         cardStatusView.setWidthFull();
 
@@ -311,7 +311,7 @@ public class CardView implements ContentView {
         if (gridConfig.containsKey(GRID_STATUS)) {
             grid.addComponentColumn(cardViewData -> ViewUtils.getStatusIcon(cardViewData.card()))
                     .setHeader(paginationGridService.getHeader(
-                            MEDAL, gridConfig.get(GRID_STATUS), "cardStatus.order"
+                            MEDAL, gridConfig.get(GRID_STATUS), "cs.order"
                     ))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
