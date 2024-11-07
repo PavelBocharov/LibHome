@@ -56,7 +56,6 @@ import javax.imageio.ImageIO;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
 import static com.vaadin.flow.component.icon.VaadinIcon.CLOSE_SMALL;
 import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
 import static java.lang.String.format;

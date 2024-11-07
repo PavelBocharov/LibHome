@@ -3,7 +3,6 @@ package com.mar.ds.db.service;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
-import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.db.jpa.CardRepository;
 import com.mar.ds.db.jpa.CardStatusRepository;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 
 import static com.mar.ds.service.TechWorkService.TECH_HASE_UPD_ID;

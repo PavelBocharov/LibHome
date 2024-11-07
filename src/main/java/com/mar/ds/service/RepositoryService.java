@@ -1,6 +1,5 @@
 package com.mar.ds.service;
 
-import com.mar.ds.db.jpa.CardRepository;
 import com.mar.ds.db.jpa.CardStatusRepository;
 import com.mar.ds.db.jpa.CardTypeRepository;
 import com.mar.ds.db.jpa.CardTypeTagRepository;

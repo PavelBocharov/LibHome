@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
-
 import javax.validation.constraints.Min;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_DOUBLE_LEFT;
@@ -40,6 +39,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.ELLIPSIS_DOTS_H;
  * Provides pagination with selection and manipulation of data on the backend.
  * <br>RU: Сервис для работы с таблицей Vaadin 14.
  * Предоставляет пагинации с выборкой и манипуляцией данных на бэкенде.
+ *
  * @param <T> entity type for grid.
  */
 @Slf4j
@@ -58,8 +58,9 @@ public class PaginationGridService<T> {
 
     /**
      * Constructor.
-     * @param grid - table.
-     * @param gridPageSize count element on page.
+     *
+     * @param grid            - table.
+     * @param gridPageSize    count element on page.
      * @param getDataFunction function for loading data.
      */
     public PaginationGridService(Grid<T> grid, int gridPageSize, Function<GetData, Page<T>> getDataFunction) {
@@ -76,8 +77,9 @@ public class PaginationGridService<T> {
     /**
      * EN: Header for grid - sort function. It's not off default sorting.<br>
      * RU: Заголовок столбца - дает возможность сортировать на бэке. Не убирает дефолтную сортировку.
+     *
      * @param headerIcon icon header.
-     * @param text header text
+     * @param text       header text
      * @param columnName entity column name, for sorting.
      * @return Vaadin button with icon, text and sort listener.
      */
@@ -115,6 +117,7 @@ public class PaginationGridService<T> {
     /**
      * EN: Pagination buttons.<br>
      * RU: Кнопки для пагинации.
+     *
      * @return buttons for turning pages.
      */
     public HorizontalLayout getPaginationButtons() {
@@ -200,6 +203,7 @@ public class PaginationGridService<T> {
 
     /**
      * Reload grid with open page.
+     *
      * @param page number page.
      */
     public void reloadData(@Min(1) int page) {
