@@ -56,7 +56,7 @@ public class CardTagsView {
                             Button dltBtn = new Button(
                                     VaadinIcon.CLOSE_CIRCLE.create(),
                                     event -> {
-                                        List<Card> cards = mainView.getRepositoryService().getCardRepository().findByTagIn(tag.getId());
+                                        List<Card> cards = mainView.getCardService().findByTag(tag.getId());
                                         if (isEmpty(cards)) {
                                             log.info("Delete card status tag: {}", tag);
                                             mainView.getRepositoryService().getCardTypeTagRepository().delete(tag);

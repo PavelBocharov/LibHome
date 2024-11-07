@@ -8,6 +8,7 @@ import com.mar.ds.db.jpa.CardRepository;
 import com.mar.ds.db.jpa.CardStatusRepository;
 import com.mar.ds.db.jpa.LibHomeSeqRepository;
 import com.mar.ds.db.jpa.TechWorkRepository;
+import com.mar.ds.db.service.CardService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class TechWorkService {
     private CardStatusRepository cardStatusRepository;
 
     @Autowired
-    private CardRepository cardRepository;
+    private CardService cardService;
 
     @Autowired
     private LibHomeSeqRepository libHomeSeqRepository;
@@ -117,13 +118,14 @@ public class TechWorkService {
 //      ----------------
 
         CardStatus hasUpdStatus = cardStatusRepository.findByTechId(TECH_HASE_UPD_ID);
-        List<Card> cards = cardRepository.findAll();
+        List<Card> cards = cardService.findAll();
         for (Card card : cards) {
             if (card.getLastUpdate().after(card.getLastGame())) {
+                card.setOldCardStatus(card.getCardStatus());
                 card.setCardStatus(hasUpdStatus);
             }
         }
-        cardRepository.saveAll(cards);
+        cardService.saveAll(cards);
 
         techWorkRepository.save(
                 TechWork.builder()

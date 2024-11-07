@@ -102,42 +102,23 @@ public class CardView implements ContentView {
         paginationGridService = new PaginationGridService<CardViewData>(grid, pageSize,
                 data -> {
                     // calc min/max rate
-                    List<Card> cardList = mainView.getRepositoryService().getCardRepository().findWithOrderByPoint(viewType);
+                    List<Card> cardList = mainView.getCardService().findWithOrderByPoint(viewType);
                     for (Card card : cardList) {
                         double rate = calcRate(card);
                         if (rate < minRate) minRate = (long) rate;
                         if (rate > maxRate) maxRate = (long) Math.ceil(rate);
                     }
                     if (maxRate <= minRate) maxRate = minRate + 1;
-//                    log.info("Calc card rate - min: {}, max: {}", minRate, maxRate);
 
                     String searchText = ViewUtils.getTextFieldValue(searchField);
                     Sort sort = Sort.by(data.sortOrders());
                     PageRequest pageRequest = PageRequest.of(data.page(), data.pageSize(), sort);
-//                    List<Map<String, Object>> dts = mainView.getRepositoryService().getCardRepository()
-//                            .findAllByViewAndLikeTitleMap(viewType, searchText, pageRequest).getContent();
-//
-//                    for (Map<String, Object> dt : dts) {
-//                        log.debug("DATA: ");
-//                        for (String key : dt.keySet()) {
-//                            Object ent = dt.get(key);
-//                            if (ent instanceof Map) {
-//                                Map<String, Object> ctr = (Map<String, Object>) ent;
-//                                for (String crtKey : ctr.keySet()) {
-//                                    log.debug("\t\t{}: {}", crtKey, ctr.get(crtKey));
-//                                }
-//                            } else {
-//                                log.debug("\t{}: {}", key, ent);
-//                            }
-//                        }
-//                        log.debug("-----");
-//                    }
                     if (isBlank(searchText)) {
-                        return mainView.getRepositoryService().getCardRepository()
-                                .findAllByView_Dto(viewType, pageRequest);
+                        return mainView.getCardService()
+                                .findAllByView(viewType, pageRequest);
                     } else {
-                        return mainView.getRepositoryService().getCardRepository()
-                                .findAllByViewAndLikeTitleMap_Dto(viewType, searchText, pageRequest);
+                        return mainView.getCardService()
+                                .findAllByViewAndLikeTitleMap(viewType, searchText, pageRequest);
                     }
                 }
         );
@@ -145,8 +126,6 @@ public class CardView implements ContentView {
         initGridListeners();
         // column
         initGridColumn();
-        // settings
-        grid.setWidthFull();
 
         searchField.setWidth("50%");
         searchField.setPlaceholder("Search");
@@ -290,7 +269,7 @@ public class CardView implements ContentView {
         menu.addItem("View", event -> event.getItem().ifPresent(this::openInfo));
         menu.addItem("Fast edit", event -> event.getItem().ifPresent(card -> new FastUpdateCardView(mainView, card.card).showDialog()));
         menu.addItem("Delete", event -> event.getItem().ifPresent(card -> new DeleteDialogWidget(() -> {
-                    mainView.getRepositoryService().getCardRepository().delete(event.getItem().orElseThrow().card());
+                    mainView.getCardService().delete(event.getItem().orElseThrow().card());
                     reloadData();
                     FileUtils.deleteDir(mainView.getEnv().getProperty("app.data.path") + "cards/" + event.getItem().get().card().getId());
                 }))
@@ -369,7 +348,9 @@ public class CardView implements ContentView {
 
         if (gridConfig.containsKey(GRID_DATE_UPD)) {
             grid.addColumn(cardViewData -> dateFormat.format(cardViewData.card().getLastUpdate()))
-                    .setHeader(paginationGridService.getHeader(DATE_INPUT, "UPD date", "lastUpdate"))
+                    .setHeader(paginationGridService.getHeader(
+                            DATE_INPUT, gridConfig.get(GRID_DATE_UPD), "lastUpdate")
+                    )
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_DATE_UPD);

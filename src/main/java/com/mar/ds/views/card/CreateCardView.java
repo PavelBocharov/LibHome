@@ -115,7 +115,7 @@ public class CreateCardView extends CardDialogView {
         crtBtn.addClickListener(click -> {
             try {
                 checkValues();
-                mainView.getRepositoryService().getCardRepository().save(
+                mainView.getCardService().save(
                         Card.builder()
                                 .viewType(viewType)
                                 .title(getTextFieldValue(cardTitle))

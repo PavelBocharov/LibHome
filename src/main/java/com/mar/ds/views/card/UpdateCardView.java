@@ -153,7 +153,7 @@ public class UpdateCardView extends CardDialogView {
                 updateCard.setLastGame(getValue(gameDate, new Date()));
                 updateCard.setTagList(tags.getValue().stream().toList());
                 updateCard.setLanguage(getValue(languageSelect, Language.DEFAULT));
-                mainView.getRepositoryService().getCardRepository().save(updateCard);
+                mainView.getCardService().save(updateCard);
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);
                 updBtn.setEnabled(true);

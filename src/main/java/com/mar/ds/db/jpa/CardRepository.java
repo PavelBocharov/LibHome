@@ -14,10 +14,12 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
 
+    @Query(value = "SELECT card FROM Card card WHERE card.cardStatus = :cardStatus or card.oldCardStatus = :cardStatus")
     List<Card> findByCardStatus(@NotNull CardStatus cardStatus);
 
     List<Card> findByCardType(@NotNull CardType cardType);
@@ -32,7 +34,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
             SELECT
                 c as crd,
                 case
-                    when cs.isRate = true
+                    when cs.isRate = true and c.point > 0
                         then (c.lastGame / c.point)
                     else 0
                 end as rate
@@ -42,27 +44,13 @@ public interface CardRepository extends JpaRepository<Card, Long> {
             """)
     Page<Map<String, Object>> findAllByView(@NotNull ViewType view, Pageable pageable);
 
-    default Page<CardView.CardViewData> findAllByView_Dto(@NotNull ViewType view, Pageable pageable) {
-        Page<Map<String, Object>> cards = findAllByView(view, pageable);
-
-        ArrayList<CardView.CardViewData> cardViewList = new ArrayList<>(cards.getContent().size());
-        for (Map<String, Object> cardInfo : cards.getContent()) {
-            cardViewList.add(new CardView.CardViewData(
-                    (Card) cardInfo.get("crd"),
-                    Float.parseFloat(String.valueOf(cardInfo.get("rate")))
-            ));
-        }
-
-        return new PageImpl<>(cardViewList, cards.getPageable(), cards.getTotalElements());
-    }
-
     // TODO fix rate sort
 //  then (abs(unixepoch(date(c.lastGame / 1000, 'unixepoch', 'localtime')) - unixepoch(date())) / power(c.point, -1))
     @Query(value = """
             SELECT
                 c as crd,
                 case
-                    when cs.isRate = true
+                    when cs.isRate = true and c.point > 0
                         then (c.lastGame * c.point)
                     else 0
                 end as rate
@@ -84,19 +72,5 @@ public interface CardRepository extends JpaRepository<Card, Long> {
                 )
             """)
     Page<Map<String, Object>> findAllByViewAndLikeTitleMap(@NotNull ViewType view, String searchText, Pageable pageable);
-
-    default Page<CardView.CardViewData> findAllByViewAndLikeTitleMap_Dto(@NotNull ViewType view, String searchText, Pageable pageable) {
-        Page<Map<String, Object>> cards = findAllByViewAndLikeTitleMap(view, searchText, pageable);
-
-        ArrayList<CardView.CardViewData> cardViewList = new ArrayList<>(cards.getContent().size());
-        for (Map<String, Object> cardInfo : cards.getContent()) {
-            cardViewList.add(new CardView.CardViewData(
-                    (Card) cardInfo.get("crd"),
-                    Float.parseFloat(String.valueOf(cardInfo.get("rate")))
-            ));
-        }
-
-        return new PageImpl<>(cardViewList, cards.getPageable(), cards.getTotalElements());
-    }
 
 }

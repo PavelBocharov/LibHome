@@ -76,6 +76,9 @@ public class Card implements Serializable, HasId {
     @OneToOne
     private CardStatus cardStatus;
 
+    @OneToOne
+    private CardStatus oldCardStatus;
+
     @ManyToMany
     @JoinTable(
             name = "card_tag_join",
@@ -98,6 +101,7 @@ public class Card implements Serializable, HasId {
                 ", viewType=" + viewType +
                 ", cardType=" + cardType +
                 ", cardStatus=" + cardStatus +
+                ", oldCardStatus=" + oldCardStatus +
                 ", tagList=" + tagList +
                 '}';
     }

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RepositoryService {
 
-    private final CardRepository cardRepository;
     private final CardTypeRepository cardTypeRepository;
     private final CardStatusRepository cardStatusRepository;
     private final CardTypeTagRepository cardTypeTagRepository;

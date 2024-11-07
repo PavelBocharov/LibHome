@@ -12,13 +12,19 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -48,7 +54,9 @@ public class CardStatusViewDialog {
 
     private void initProducts() {
         cardStatusList = new Grid<>();
-        cardStatusList.setWidthFull();
+        cardStatusList.setSizeFull();
+        cardStatusList.setMaxHeight(80, Unit.PERCENTAGE);
+        cardStatusList.setVerticalScrollingEnabled(true);
 
         cardStatusList.addColumn(CardStatus::getTitle)
                 .setHeader("Title")
@@ -63,7 +71,7 @@ public class CardStatusViewDialog {
                     Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> {
                         try {
                             new DeleteDialogWidget(() -> {
-                                List<Card> cards = appLayout.getRepositoryService().getCardRepository().findByCardStatus(cardStatus);
+                                List<Card> cards = appLayout.getCardService().findByCardStatus(cardStatus);
                                 if (isEmpty(cards)) {
                                     log.info("Not find cards by status: {}. Delete status.", cardStatus);
                                     getRepository().delete(cardStatus);
@@ -105,14 +113,17 @@ public class CardStatusViewDialog {
             crtBtn.setEnabled(true);
             return;
         }
-        dialog.setSizeFull();
         dialog.setMaxHeight(50, Unit.PERCENTAGE);
         dialog.setMaxWidth(50, Unit.PERCENTAGE);
-        dialog.add(
+        dialog.setSizeFull();
+
+        Div dialogComponents = new Div(
                 new Label("Card status list"),
                 cardStatusList,
                 new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(dialog))
         );
+        dialogComponents.setSizeFull();
+        dialog.add(dialogComponents);
     }
 
     public CardStatusRepository getRepository() {
