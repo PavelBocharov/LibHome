@@ -25,7 +25,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Query(value = "SELECT card FROM Card card WHERE card.viewType = :view ORDER BY card.point DESC")
     List<Card> findWithOrderByPoint(@NotNull ViewType view);
 
-    @Query(value = "SELECT c FROM Card c WHERE c.viewType = :view")
+    @Query(value = "SELECT c FROM Card c JOIN c.cardStatus cs WHERE c.viewType = :view")
     Page<Card> findAllByView(@NotNull ViewType view, Pageable pageable);
 
     @Query(value = """
@@ -38,13 +38,13 @@ public interface CardRepository extends JpaRepository<Card, Long> {
                     SELECT
                         DISTINCT(card.id)
                     FROM Card card
-                    JOIN card.tagList tags
+                    LEFT JOIN card.tagList tags
                     WHERE
                         card.viewType = :view
-                        and (
+                        AND (
                             lower(card.title) like lower(concat('%', :searchText,'%'))
-                            or lower(card.info) like lower(concat('%', :searchText,'%'))
-                            or lower(tags.title) like lower(concat('%', :searchText,'%'))
+                            OR lower(card.info) like lower(concat('%', :searchText,'%'))
+                            OR lower(tags.title) like lower(concat('%', :searchText,'%'))
                         )
                 )
             """)

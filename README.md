@@ -35,11 +35,11 @@
    ```
 2) Build image
    ```bash 
-   docker build --no-cache -t marolok/lib_home:PRE-3.0.0-004 .
+   docker build --no-cache -t marolok/lib_home:PRE-3.0.0-005 .
    ```
 3) Push image
    ```bash 
-   docker push marolok/lib_home:PRE-3.0.0-004
+   docker push marolok/lib_home:PRE-3.0.0-005
    ```
 4) Set image version in [docker-compose.yml](./docker-compose.yml)
 5) Start `docker-compose`
