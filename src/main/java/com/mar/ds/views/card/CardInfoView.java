@@ -59,6 +59,7 @@ import static com.mar.ds.utils.ViewUtils.findImage;
 import static com.mar.ds.utils.ViewUtils.getAccordionContent;
 import static com.mar.ds.utils.ViewUtils.getImage;
 import static java.lang.Float.parseFloat;
+import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
@@ -117,7 +118,14 @@ public class CardInfoView extends Dialog {
             cardInfo.add(getTextField(titles.get(GRID_TYPE), card.getCardType().getTitle()));
         }
         if (titles.containsKey(GRID_STATUS)) {
-            cardInfo.add(getTextField(titles.get(GRID_STATUS), card.getCardStatus().getTitle()));
+            cardInfo.add(
+                    getTextField(
+                            titles.get(GRID_STATUS),
+                            card.getOldCardStatus() == null
+                                    ? card.getCardStatus().getTitle()
+                                    : format("%s (%s)", card.getCardStatus().getTitle(), card.getOldCardStatus().getTitle())
+                    )
+            );
         }
         if (titles.containsKey(GRID_ENGINE)) {
             cardInfo.add(getTextField(

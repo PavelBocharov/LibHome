@@ -70,6 +70,9 @@ public class Card implements Serializable, HasId {
     @ColumnDefault("1")
     private ViewType viewType;
 
+    @Column(name = "card_rate")
+    private Double rate;
+
     @OneToOne
     private CardType cardType;
 
@@ -102,6 +105,7 @@ public class Card implements Serializable, HasId {
                 ", cardType=" + cardType +
                 ", cardStatus=" + cardStatus +
                 ", oldCardStatus=" + oldCardStatus +
+                ", rate=" + rate +
                 ", tagList=" + tagList +
                 '}';
     }

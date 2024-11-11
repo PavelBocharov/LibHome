@@ -4,10 +4,10 @@ import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.LibHomeSequence;
 import com.mar.ds.db.entity.TechWork;
-import com.mar.ds.db.jpa.CardStatusRepository;
 import com.mar.ds.db.jpa.LibHomeSeqRepository;
 import com.mar.ds.db.jpa.TechWorkRepository;
 import com.mar.ds.db.service.CardService;
+import com.mar.ds.db.service.CardStatusService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class TechWorkService {
     private TechWorkRepository techWorkRepository;
 
     @Autowired
-    private CardStatusRepository cardStatusRepository;
+    private CardStatusService cardStatusService;
 
     @Autowired
     private CardService cardService;
@@ -55,11 +55,16 @@ public class TechWorkService {
             lastTechId = updateCardStatus();
             log.debug("Update card status. END.");
         }
+        if (lastTechId < 4) {
+            log.debug("Fix not upd card status and calc rate ...");
+            lastTechId = fixCannotUpdCardStatus();
+            log.debug("Fix not upd card status. END.");
+        }
 
     }
 
     private long createTechStatus_HaseUpd() {
-        CardStatus cardStatus = cardStatusRepository.save(
+        CardStatus cardStatus = cardStatusService.save(
                 CardStatus.builder()
                         .tech(TECH_HASE_UPD_ID)
                         .title("Has UPD")
@@ -67,6 +72,7 @@ public class TechWorkService {
                         .isRate(true)
                         .color("#0B6623")
                         .order(-1L)
+                        .hasUpdStatus(false)
                         .build()
         );
         techWorkRepository.save(
@@ -87,14 +93,14 @@ public class TechWorkService {
         }
         long order = orderSortSeq.getSeqValue();
 
-        List<CardStatus> cardStatusList = cardStatusRepository.findAll();
+        List<CardStatus> cardStatusList = cardStatusService.findAll();
         for (CardStatus cardStatus : cardStatusList) {
             if (cardStatus.getOrder() == null) {
                 cardStatus.setOrder(order);
                 order += 10;
             }
         }
-        cardStatusRepository.saveAll(cardStatusList);
+        cardStatusService.saveAll(cardStatusList);
 
         orderSortSeq.setSeqValue(order);
         libHomeSeqRepository.save(orderSortSeq);
@@ -116,7 +122,7 @@ public class TechWorkService {
         techWorkRepository.save(techWork);
 //      ----------------
 
-        CardStatus hasUpdStatus = cardStatusRepository.findByTechId(TECH_HASE_UPD_ID);
+        CardStatus hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
         List<Card> cards = cardService.findAll();
         for (Card card : cards) {
             if (card.getLastUpdate().after(card.getLastGame())) {
@@ -133,6 +139,18 @@ public class TechWorkService {
                         .build()
         );
         return 3L;
+    }
+
+    private long fixCannotUpdCardStatus() {
+        cardService.checkAndUpdateAllCards();
+
+        techWorkRepository.save(
+                TechWork.builder()
+                        .title("Fix not upd card status and calc rate.")
+                        .techId(4L)
+                        .build()
+        );
+        return 4L;
     }
 
 }

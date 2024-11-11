@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
@@ -26,30 +25,12 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Query(value = "SELECT card FROM Card card WHERE card.viewType = :view ORDER BY card.point DESC")
     List<Card> findWithOrderByPoint(@NotNull ViewType view);
 
-    @Query(value = """
-            SELECT
-                c as crd,
-                case
-                    when cs.isRate = true and c.point > 0
-                        then (c.lastGame / c.point)
-                    else 0
-                end as rate
-            FROM Card c
-            JOIN c.cardStatus cs
-            WHERE c.viewType = :view
-            """)
-    Page<Map<String, Object>> findAllByView(@NotNull ViewType view, Pageable pageable);
+    @Query(value = "SELECT c FROM Card c WHERE c.viewType = :view")
+    Page<Card> findAllByView(@NotNull ViewType view, Pageable pageable);
 
-    // TODO fix rate sort
-//  then (abs(unixepoch(date(c.lastGame / 1000, 'unixepoch', 'localtime')) - unixepoch(date())) / power(c.point, -1))
     @Query(value = """
             SELECT
-                c as crd,
-                case
-                    when cs.isRate = true and c.point > 0
-                        then (c.lastGame * c.point)
-                    else 0
-                end as rate
+                c
             FROM Card c
             JOIN c.cardStatus cs
             WHERE
@@ -67,6 +48,6 @@ public interface CardRepository extends JpaRepository<Card, Long> {
                         )
                 )
             """)
-    Page<Map<String, Object>> findAllByViewAndLikeTitleMap(@NotNull ViewType view, String searchText, Pageable pageable);
+    Page<Card> findAllByViewAndLikeTitleMap(@NotNull ViewType view, String searchText, Pageable pageable);
 
 }

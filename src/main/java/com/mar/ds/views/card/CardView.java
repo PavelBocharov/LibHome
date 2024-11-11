@@ -40,7 +40,6 @@ import org.springframework.data.domain.Sort;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,6 +58,7 @@ import static com.mar.ds.data.GridInfo.GRID_TAGS;
 import static com.mar.ds.data.GridInfo.GRID_TITLE;
 import static com.mar.ds.data.GridInfo.GRID_TYPE;
 import static com.mar.ds.utils.FileUtils.getTitles;
+import static com.vaadin.flow.component.icon.VaadinIcon.BAR_CHART;
 import static com.vaadin.flow.component.icon.VaadinIcon.COG;
 import static com.vaadin.flow.component.icon.VaadinIcon.COGS;
 import static com.vaadin.flow.component.icon.VaadinIcon.COMMENT_O;
@@ -69,6 +69,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.MEDAL;
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
 import static com.vaadin.flow.component.icon.VaadinIcon.TEXT_LABEL;
 import static java.lang.Math.abs;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
@@ -86,8 +87,8 @@ public class CardView implements ContentView {
     private int maxPoint;
     private long minRate = Integer.MAX_VALUE;
     private long maxRate = Integer.MIN_VALUE;
-    private Grid<CardViewData> grid;
-    private PaginationGridService<CardViewData> paginationGridService;
+    private Grid<Card> grid;
+    private PaginationGridService<Card> paginationGridService;
     private int pageSize;
 
     public VerticalLayout getContent() {
@@ -99,12 +100,12 @@ public class CardView implements ContentView {
         // TABLE
         grid = new Grid<>();
         TextField searchField = new TextField();
-        paginationGridService = new PaginationGridService<CardViewData>(grid, pageSize,
+        paginationGridService = new PaginationGridService<Card>(grid, pageSize,
                 data -> {
                     // calc min/max rate
                     List<Card> cardList = mainView.getCardService().findWithOrderByPoint(viewType);
                     for (Card card : cardList) {
-                        double rate = calcRate(card);
+                        double rate = card.getRate();
                         if (rate < minRate) minRate = (long) rate;
                         if (rate > maxRate) maxRate = (long) Math.ceil(rate);
                     }
@@ -205,9 +206,9 @@ public class CardView implements ContentView {
         }
     }
 
-    private void openInfo(CardViewData card) {
+    private void openInfo(Card card) {
         if (card != null) {
-            CardInfoView info = new CardInfoView(mainView, card.card());
+            CardInfoView info = new CardInfoView(mainView, card);
             info.open();
         }
     }
@@ -265,13 +266,13 @@ public class CardView implements ContentView {
                 dialogItemDoubleClickEvent -> openInfo(dialogItemDoubleClickEvent.getItem())
         );
 
-        GridContextMenu<CardViewData> menu = grid.addContextMenu();
+        GridContextMenu<Card> menu = grid.addContextMenu();
         menu.addItem("View", event -> event.getItem().ifPresent(this::openInfo));
-        menu.addItem("Fast edit", event -> event.getItem().ifPresent(card -> new FastUpdateCardView(mainView, card.card).showDialog()));
+        menu.addItem("Fast edit", event -> event.getItem().ifPresent(card -> new FastUpdateCardView(mainView, card).showDialog()));
         menu.addItem("Delete", event -> event.getItem().ifPresent(card -> new DeleteDialogWidget(() -> {
-                    mainView.getCardService().delete(event.getItem().orElseThrow().card());
+                    mainView.getCardService().delete(event.getItem().orElseThrow());
                     reloadData();
-                    FileUtils.deleteDir(mainView.getEnv().getProperty("app.data.path") + "cards/" + event.getItem().get().card().getId());
+                    FileUtils.deleteDir(mainView.getEnv().getProperty("app.data.path") + "cards/" + event.getItem().get().getId());
                 }))
         );
     }
@@ -280,15 +281,17 @@ public class CardView implements ContentView {
         Map<String, String> gridConfig = getTitles(viewType, mainView.getContentJSON());
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
+        assert nonNull(gridConfig);
+
         if (gridConfig.containsKey(GRID_ID)) {
-            grid.addColumn(cardViewData -> cardViewData.card.getId())
+            grid.addColumn(Card::getId)
                     .setHeader(gridConfig.get(GRID_ID))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.START)
                     .setId(GRID_ID);
         }
         if (gridConfig.containsKey(GRID_STATUS)) {
-            grid.addComponentColumn(cardViewData -> ViewUtils.getStatusIcon(cardViewData.card()))
+            grid.addComponentColumn(ViewUtils::getStatusIcon)
                     .setHeader(paginationGridService.getHeader(
                             MEDAL, gridConfig.get(GRID_STATUS), "cs.order"
                     ))
@@ -297,15 +300,15 @@ public class CardView implements ContentView {
                     .setId(GRID_STATUS);
         }
         if (gridConfig.containsKey(GRID_ENGINE)) {
-            grid.addComponentColumn(cardViewData -> getEngineIcon(cardViewData.card()))
+            grid.addComponentColumn(this::getEngineIcon)
                     .setHeader(paginationGridService.getHeader(COGS, gridConfig.get(GRID_ENGINE), "engine"))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_ENGINE);
         }
         if (gridConfig.containsKey(GRID_LANGUAGE)) {
-            grid.addComponentColumn(cardViewData -> Optional
-                            .ofNullable(cardViewData.card().getLanguage())
+            grid.addComponentColumn(card -> Optional
+                            .ofNullable(card.getLanguage())
                             .orElse(Language.DEFAULT)
                             .getImage(DEFAULT_GRID_ICON_SIZE_INT)
                     )
@@ -317,7 +320,7 @@ public class CardView implements ContentView {
                     .setId(GRID_LANGUAGE);
         }
         if (gridConfig.containsKey(GRID_TITLE)) {
-            grid.addColumn(cardViewData -> cardViewData.card().getTitle())
+            grid.addColumn(Card::getTitle)
                     .setHeader(paginationGridService.getHeader(
                             TEXT_LABEL, gridConfig.get(GRID_TITLE), "title"
                     ))
@@ -326,28 +329,24 @@ public class CardView implements ContentView {
                     .setId(GRID_TITLE);
         }
         if (gridConfig.containsKey(GRID_POINT)) {
-            grid.addComponentColumn(cardViewData -> getLabelWithColor(cardViewData.card()::getPoint))
+            grid.addComponentColumn(card -> getLabelWithColor(card::getPoint))
                     .setHeader(paginationGridService.getHeader(MEDAL, gridConfig.get(GRID_POINT), "point"))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_POINT);
         }
         if (gridConfig.containsKey(GRID_RATE)) {
-            grid.addComponentColumn(cardViewData -> {
-//                        log.info("Real rate for sort: {}, title: {}", cardViewData.rate, cardViewData.card.getTitle());
-                        return getLabelWithColor(() -> calcRate(cardViewData.card()), minRate, maxRate);
-                    })
-//                    .setHeader(paginationGridService.getHeader(
-//                            BAR_CHART, gridConfig.get(GRID_RATE), "rate"
-//                    ))
-                    .setHeader(gridConfig.get(GRID_RATE))
+            grid.addComponentColumn(card -> getLabelWithColor(card::getRate, minRate, maxRate))
+                    .setHeader(paginationGridService.getHeader(
+                            BAR_CHART, gridConfig.get(GRID_RATE), "rate"
+                    ))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_RATE);
         }
 
         if (gridConfig.containsKey(GRID_DATE_UPD)) {
-            grid.addColumn(cardViewData -> dateFormat.format(cardViewData.card().getLastUpdate()))
+            grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
                     .setHeader(paginationGridService.getHeader(
                             DATE_INPUT, gridConfig.get(GRID_DATE_UPD), "lastUpdate")
                     )
@@ -356,7 +355,7 @@ public class CardView implements ContentView {
                     .setId(GRID_DATE_UPD);
         }
         if (gridConfig.containsKey(GRID_DATE_GAME)) {
-            grid.addColumn(cardViewData -> dateFormat.format(cardViewData.card().getLastGame()))
+            grid.addColumn(card -> dateFormat.format(card.getLastGame()))
                     .setHeader(paginationGridService.getHeader(
                             DATE_INPUT, gridConfig.get(GRID_DATE_GAME), "lastGame"
                     ))
@@ -365,7 +364,7 @@ public class CardView implements ContentView {
                     .setId(GRID_DATE_GAME);
         }
         if (gridConfig.containsKey(GRID_TYPE)) {
-            grid.addColumn(cardViewData -> cardViewData.card().getCardType().getTitle())
+            grid.addColumn(card -> card.getCardType().getTitle())
                     .setAutoWidth(true).setFlexGrow(0)
                     .setHeader(paginationGridService.getHeader(
                             COMPILE, gridConfig.get(GRID_TYPE), "cardType.title"
@@ -374,9 +373,9 @@ public class CardView implements ContentView {
                     .setId(GRID_TYPE);
         }
         if (gridConfig.containsKey(GRID_TAGS)) {
-            grid.addColumn(cardViewData -> cardViewData.card().getTagList() == null || cardViewData.card().getTagList().isEmpty()
+            grid.addColumn(card -> card.getTagList() == null || card.getTagList().isEmpty()
                             ? "---"
-                            : cardViewData.card().getTagList().stream()
+                            : card.getTagList().stream()
                             .map(CardTypeTag::getTitle)
                             .collect(Collectors.joining(", "))
                     )
@@ -387,21 +386,4 @@ public class CardView implements ContentView {
         }
     }
 
-    private double calcRate(Card card) {
-        if (card == null || !card.getCardStatus().getIsRate()) {
-            return 0.0f;
-        }
-
-        long deltaGame = -1;
-        if (card.getLastGame() != null) {
-            long now = new Date().getTime() / 86400000;
-            long lastGameTime = card.getLastGame().getTime() / 86400000;
-            deltaGame = now - lastGameTime;
-        }
-
-        return (float) (card.getPoint() * deltaGame * 0.01);
-    }
-
-    public record CardViewData(Card card, float rate) {
-    }
 }

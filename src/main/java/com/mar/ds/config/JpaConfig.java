@@ -16,6 +16,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.sqlite.SQLiteDataSource;
 
@@ -33,6 +34,7 @@ import javax.sql.DataSource;
         entityManagerFactoryRef = "localContainerEntityManagerFactoryBean"
 )
 @EnableTransactionManagement
+@EnableScheduling
 public class JpaConfig {
 
     @Value("${app.data.path:./}")

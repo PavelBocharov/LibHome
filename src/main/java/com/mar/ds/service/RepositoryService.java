@@ -1,6 +1,5 @@
 package com.mar.ds.service;
 
-import com.mar.ds.db.jpa.CardStatusRepository;
 import com.mar.ds.db.jpa.CardTypeRepository;
 import com.mar.ds.db.jpa.CardTypeTagRepository;
 import lombok.Getter;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 public class RepositoryService {
 
     private final CardTypeRepository cardTypeRepository;
-    private final CardStatusRepository cardStatusRepository;
     private final CardTypeTagRepository cardTypeTagRepository;
 
 }

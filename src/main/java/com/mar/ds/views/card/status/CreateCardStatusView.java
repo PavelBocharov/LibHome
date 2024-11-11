@@ -39,16 +39,18 @@ public class CreateCardStatusView {
         orderField.setWidthFull();
 
         Checkbox isRate = new Checkbox("Is rate", false);
+        Checkbox hasUpd = new Checkbox("Has UPD", false);
 
         Button createBtn = new Button("Create", new Icon(PLUS));
         createBtn.addClickListener(btnEvent -> {
             try {
-                cardStatusView.getRepository().save(
+                cardStatusView.getService().save(
                         CardStatus.builder()
                                 .title(ViewUtils.getTextFieldValue(textField))
                                 .color(ViewUtils.getTextFieldValue(colorField))
                                 .icon(ViewUtils.getTextFieldValue(iconField))
                                 .isRate(isRate.getValue())
+                                .hasUpdStatus(hasUpd.getValue())
                                 .order(ViewUtils.getLongValue(orderField).orElseThrow(() -> new RuntimeException("Not set card status order.")))
                                 .build()
                 );
@@ -70,7 +72,7 @@ public class CreateCardStatusView {
                 colorField,
                 iconField,
                 orderField,
-                isRate,
+                new HorizontalLayout(isRate, hasUpd),
                 new HorizontalLayout(createBtn, ViewUtils.getCloseButton(createDialog))
         );
 

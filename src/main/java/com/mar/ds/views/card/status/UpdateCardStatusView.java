@@ -42,7 +42,10 @@ public class UpdateCardStatusView {
         orderField.setWidthFull();
         ViewUtils.setBigDecimalFieldValue(orderField, updatedStatus.getOrder());
 
+        boolean oldRate = updatedStatus.getIsRate();
+        boolean oldHasUpd = updatedStatus.getHasUpdStatus();
         Checkbox isRate = new Checkbox("Is rate", updatedStatus.getIsRate());
+        Checkbox hasUpd = new Checkbox("Has UPD", updatedStatus.getHasUpdStatus());
 
         Button updBtn = new Button("Update", new Icon(ROTATE_RIGHT));
         updBtn.addClickListener(btnEvent -> {
@@ -51,8 +54,9 @@ public class UpdateCardStatusView {
                 updatedStatus.setColor(ViewUtils.getTextFieldValue(colorField));
                 updatedStatus.setIcon(ViewUtils.getTextFieldValue(iconField));
                 updatedStatus.setIsRate(isRate.getValue());
+                updatedStatus.setHasUpdStatus(hasUpd.getValue());
                 updatedStatus.setOrder(ViewUtils.getLongValue(orderField).orElseThrow(() -> new RuntimeException("Not set card state order.")));
-                cardStatusView.getRepository().save(updatedStatus);
+                cardStatusView.getService().update(updatedStatus, CardStatus.builder().hasUpdStatus(oldHasUpd).isRate(oldRate).build());
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);
                 updBtn.setEnabled(true);
@@ -71,7 +75,7 @@ public class UpdateCardStatusView {
                 colorField,
                 iconField,
                 orderField,
-                isRate,
+                new HorizontalLayout(isRate, hasUpd),
                 new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
         );
 

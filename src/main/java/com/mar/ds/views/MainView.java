@@ -2,6 +2,7 @@ package com.mar.ds.views;
 
 import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.db.service.CardService;
+import com.mar.ds.db.service.CardStatusService;
 import com.mar.ds.service.RepositoryService;
 import com.mar.ds.views.card.CardView;
 import com.vaadin.flow.component.ClickEvent;
@@ -48,6 +49,10 @@ public class MainView extends AppLayout {
     @Getter
     @Autowired
     private CardService cardService;
+
+    @Getter
+    @Autowired
+    private CardStatusService cardStatusService;
 
     @Getter
     @Autowired

@@ -1,8 +1,7 @@
 package com.mar.ds.views.card.status;
 
-import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
-import com.mar.ds.db.jpa.CardStatusRepository;
+import com.mar.ds.db.service.CardStatusService;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
@@ -19,20 +18,16 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
-import static org.springframework.util.CollectionUtils.isEmpty;
-
 @Slf4j
 public class CardStatusViewDialog {
-    private final MainView appLayout;
+    private final MainView mainView;
     private final ContentView parentView;
     private Dialog dialog;
     private Grid<CardStatus> cardStatusList;
     private Button crtBtn;
 
     public CardStatusViewDialog(MainView appLayout, ContentView parentView) {
-        this.appLayout = appLayout;
+        this.mainView = appLayout;
         this.parentView = parentView;
 
         dialog = new Dialog();
@@ -62,23 +57,19 @@ public class CardStatusViewDialog {
         cardStatusList.addColumn(CardStatus::getIsRate)
                 .setHeader("Is rate")
                 .setSortable(true);
+        cardStatusList.addColumn(CardStatus::getHasUpdStatus)
+                .setHeader("Has UPD")
+                .setSortable(true);
         cardStatusList.addComponentColumn(cardStatus -> {
                     Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> {
                         try {
                             new DeleteDialogWidget(() -> {
-                                List<Card> cards = appLayout.getCardService().findByCardStatus(cardStatus);
-                                if (isEmpty(cards)) {
-                                    log.info("Not find cards by status: {}. Delete status.", cardStatus);
-                                    getRepository().delete(cardStatus);
+                                try {
+                                    getService().delete(cardStatus);
                                     reloadData();
-                                } else {
-                                    log.warn("Find cards by status: {}, list: {}", cardStatus, cards);
-                                    ViewUtils.showErrorMsg(
-                                            "Delete card status ERROR",
-                                            new Exception(String.format("Find cards with status: '%s', count: %d.", cardStatus.getTitle(), cards.size()))
-                                    );
+                                } catch (Exception e) {
+                                    ViewUtils.showErrorMsg("Delete card status ERROR", e);
                                 }
-
                             });
                         } catch (Exception ex) {
                             ViewUtils.showErrorMsg("ERROR", ex);
@@ -95,7 +86,7 @@ public class CardStatusViewDialog {
                 })
                 .setTextAlign(ColumnTextAlign.END);
 
-        cardStatusList.setItems(getRepository().findByWithTechIdIsNull());
+        cardStatusList.setItems(getService().findByWithTechIdIsNull());
     }
 
     public void reloadData() {
@@ -121,7 +112,7 @@ public class CardStatusViewDialog {
         dialog.add(dialogComponents);
     }
 
-    public CardStatusRepository getRepository() {
-        return appLayout.getRepositoryService().getCardStatusRepository();
+    public CardStatusService getService() {
+        return mainView.getCardStatusService();
     }
 }

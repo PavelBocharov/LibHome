@@ -151,7 +151,7 @@ public abstract class CardDialogView {
     }
 
     protected Component getStatusSelector() {
-        List<CardStatus> cardStatusList = mainView.getRepositoryService().getCardStatusRepository().findAll();
+        List<CardStatus> cardStatusList = mainView.getCardStatusService().findAll();
         cardStatusListSelect = new Select<>();
         cardStatusListSelect.setLabel(getTitles().get(GRID_STATUS));
         cardStatusListSelect.setEmptySelectionAllowed(false);
