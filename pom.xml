@@ -11,7 +11,7 @@
 
     <groupId>com.mar</groupId>
     <artifactId>lib-home</artifactId>
-    <version>PRE-3.0.0-005</version>
+    <version>PRE-3.0.0-006</version>
     <name>lib-home</name>
     <description>LibHome - your book, game, music and other library.</description>
 
@@ -52,6 +52,10 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <!--    JPA    -->
         <dependency>

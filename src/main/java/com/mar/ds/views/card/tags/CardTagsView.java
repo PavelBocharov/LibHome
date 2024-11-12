@@ -10,7 +10,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -39,7 +39,7 @@ public class CardTagsView {
 
         List<CardType> cardTypeList = mainView.getRepositoryService().getCardTypeRepository().findAll();
         cardTypeListSelect = new Select<>();
-        cardTypeListSelect.setLabel("Type");
+        cardTypeListSelect.setPlaceholder("Type");
         cardTypeListSelect.setEmptySelectionAllowed(false);
         cardTypeListSelect.setTextRenderer(CardType::getTitle);
         cardTypeListSelect.setDataProvider(new ListDataProvider<>(cardTypeList));
@@ -105,10 +105,10 @@ public class CardTagsView {
                 );
         btns.setWidthFull();
 
-        H3 lable = new H3("Type tag list");
-        lable.setSizeFull();
+        Label label = new Label("Type tag list");
+        label.setSizeFull();
         HorizontalLayout head = new HorizontalLayout(
-                lable,
+                label,
                 cardTypeListSelect
         );
         head.getStyle().set("padding", "0px");

@@ -12,25 +12,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import javax.validation.constraints.NotNull;
 
 import static com.mar.ds.service.TechWorkService.TECH_HASE_UPD_ID;
+import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 
 @Slf4j
 @Service
 public class CardService {
 
-    @Autowired
-    private CardRepository cardRepository;
+    private final CardRepository cardRepository;
+    private final CardStatusService cardStatusService;
 
-    @Lazy
     @Autowired
-    private CardStatusService cardStatusService;
+    public CardService(CardRepository cardRepository, @Lazy CardStatusService cardStatusService) {
+        this.cardRepository = cardRepository;
+        this.cardStatusService = cardStatusService;
+    }
 
     public void checkAndUpdateAllCards() {
         List<Card> cards = cardRepository.findAll();
@@ -51,37 +51,38 @@ public class CardService {
         return cardRepository.findAllByViewAndLikeTitleMap(view, searchText, pageable);
     }
 
-    private Card checkCard(Card card) {
+    public Card checkCard(Card card) {
         assert nonNull(card);
         assert nonNull(card.getCardStatus());
+
         // update status
         CardStatus status = card.getCardStatus();
         CardStatus oldStatus = card.getOldCardStatus();
-        if (status.isTech() && !oldStatus.getHasUpdStatus()) {
-            card.setCardStatus(oldStatus);
+
+        if (nonNull(card.getLastGame()) && nonNull(card.getLastUpdate())
+                && card.getLastUpdate().after(card.getLastGame())
+        ) {
+            if (!status.isTech() && TRUE.equals(status.getHasUpdStatus())) {
+                CardStatus hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
+                card.setOldCardStatus(status);
+                card.setCardStatus(hasUpdStatus);
+            }
+        } else {
+            if (status.isTech()) {
+                card.setCardStatus(oldStatus);
+            }
             card.setOldCardStatus(null);
         }
 
-        if (status.getHasUpdStatus()) {
-            if (nonNull(card.getLastGame()) && nonNull(card.getLastUpdate())
-                    && card.getLastUpdate().after(card.getLastGame())
-            ) {
-                CardStatus hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
-                card.setOldCardStatus(card.getCardStatus());
-                card.setCardStatus(hasUpdStatus);
-            } else {
-                if (status.isTech()) {
-                    card.setCardStatus(card.getOldCardStatus());
-                    card.setOldCardStatus(null);
-                }
-            }
-        }
-        if (!card.getCardStatus().isTech()) {
+        if (card.getCardStatus().isTech() && !card.getOldCardStatus().getHasUpdStatus()) {
+            card.setCardStatus(card.getOldCardStatus());
             card.setOldCardStatus(null);
         }
-        // update rate
+        if (!card.getCardStatus().isTech() && !card.getCardStatus().getHasUpdStatus()) {
+            card.setOldCardStatus(null);
+        }
+
         calcRate(card);
-        // -------
         return card;
     }
 
@@ -118,7 +119,7 @@ public class CardService {
     }
 
     private void calcRate(Card card) {
-        if (!card.getCardStatus().getIsRate()) {
+        if (!Optional.ofNullable(card.getCardStatus().getIsRate()).orElse(false)) {
             card.setRate(0.0);
             return;
         }

@@ -94,15 +94,15 @@ public class PaginationGridService<T> {
             String id = icon.getId().orElse("").trim();
 
             if (buttonId.equals(id)) {
-                Icon downIcon = new Icon(ANGLE_DOWN);
-                downIcon.setId(buttonId + GRID_COLUMN_SORT_DESC_SUFFIX);
-                button.setIcon(downIcon);
-                directionMap.put(columnName, Sort.Direction.DESC);
-            } else if (id.endsWith(GRID_COLUMN_SORT_DESC_SUFFIX)) {
                 Icon upIcon = new Icon(ANGLE_UP);
                 upIcon.setId(buttonId + GRID_COLUMN_SORT_ASC_SUFFIX);
                 button.setIcon(upIcon);
                 directionMap.put(columnName, Sort.Direction.ASC);
+            } else if (id.endsWith(GRID_COLUMN_SORT_ASC_SUFFIX)) {
+                Icon downIcon = new Icon(ANGLE_DOWN);
+                downIcon.setId(buttonId + GRID_COLUMN_SORT_DESC_SUFFIX);
+                button.setIcon(downIcon);
+                directionMap.put(columnName, Sort.Direction.DESC);
             } else {
                 directionMap.remove(columnName);
                 button.setIcon(mainIcon);

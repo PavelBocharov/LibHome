@@ -18,6 +18,8 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import lombok.extern.slf4j.Slf4j;
 
+import static java.lang.Boolean.TRUE;
+
 @Slf4j
 public class CardStatusViewDialog {
     private final MainView mainView;
@@ -54,10 +56,16 @@ public class CardStatusViewDialog {
         cardStatusList.addColumn(CardStatus::getOrder)
                 .setHeader("Order")
                 .setSortable(true);
-        cardStatusList.addColumn(CardStatus::getIsRate)
+        cardStatusList
+                .addComponentColumn(cardStatus ->
+                        TRUE.equals(cardStatus.getIsRate()) ? trueIcon() : falseIcon()
+                )
                 .setHeader("Is rate")
                 .setSortable(true);
-        cardStatusList.addColumn(CardStatus::getHasUpdStatus)
+        cardStatusList
+                .addComponentColumn(cardStatus ->
+                        TRUE.equals(cardStatus.getHasUpdStatus()) ? trueIcon() : falseIcon()
+                )
                 .setHeader("Has UPD")
                 .setSortable(true);
         cardStatusList.addComponentColumn(cardStatus -> {
@@ -110,6 +118,18 @@ public class CardStatusViewDialog {
         );
         dialogComponents.setSizeFull();
         dialog.add(dialogComponents);
+    }
+
+    private Icon trueIcon() {
+        Icon icon = VaadinIcon.PLUS_SQUARE_O.create();
+        icon.setColor("green");
+        return icon;
+    }
+
+    private Icon falseIcon() {
+        Icon icon = VaadinIcon.MINUS_SQUARE_O.create();
+        icon.setColor("red");
+        return icon;
     }
 
     public CardStatusService getService() {
