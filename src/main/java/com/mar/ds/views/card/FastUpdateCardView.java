@@ -70,7 +70,7 @@ public class FastUpdateCardView extends CardDialogView {
             if (getTitles().containsKey(GRID_DATE_GAME)) {
                 updCard.setLastGame(getValue(gameDate, new Date()));
             }
-            mainView.getRepositoryService().getCardRepository().save(updCard);
+            mainView.getCardService().save(updCard);
             mainView.getActiveView().reloadData();
             dialog.close();
         });

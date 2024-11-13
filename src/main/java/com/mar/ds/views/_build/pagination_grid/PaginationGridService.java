@@ -14,17 +14,14 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
-
 import javax.validation.constraints.Min;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_DOUBLE_LEFT;
@@ -40,6 +37,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.ELLIPSIS_DOTS_H;
  * Provides pagination with selection and manipulation of data on the backend.
  * <br>RU: Сервис для работы с таблицей Vaadin 14.
  * Предоставляет пагинации с выборкой и манипуляцией данных на бэкенде.
+ *
  * @param <T> entity type for grid.
  */
 @Slf4j
@@ -51,21 +49,33 @@ public class PaginationGridService<T> {
     private final Grid<T> grid;
     private final int gridPageSize;
     private final Function<GetData, Page<T>> getDataFunction;
-    private final Map<String, Sort.Direction> directionMap = new HashMap<>();
+    private final List<OrderSort> directionList;
 
     private final IntegerField pageField;
     private final Label countPageLabel;
 
+    @Data
+    @AllArgsConstructor
+    static class OrderSort {
+        Long order;
+        String columnId;
+        Sort.Direction sort;
+        String headText;
+        Button headButton;
+    }
+
     /**
      * Constructor.
-     * @param grid - table.
-     * @param gridPageSize count element on page.
+     *
+     * @param grid            - table.
+     * @param gridPageSize    count element on page.
      * @param getDataFunction function for loading data.
      */
     public PaginationGridService(Grid<T> grid, int gridPageSize, Function<GetData, Page<T>> getDataFunction) {
         this.grid = grid;
         this.gridPageSize = gridPageSize;
         this.getDataFunction = getDataFunction;
+        this.directionList = Collections.synchronizedList(new LinkedList<>());
 
         pageField = new IntegerField();
         countPageLabel = new Label("???");
@@ -73,11 +83,24 @@ public class PaginationGridService<T> {
         initGridData(0);
     }
 
+    private Long putOrderSort(String columnId, Sort.Direction sort, String headText, Button headButton) {
+        OrderSort orderSort = directionList.stream().filter(os -> os.columnId.equals(columnId))
+                .findFirst().orElse(null);
+        if (orderSort == null) {
+            orderSort = new OrderSort((long) (directionList.size() + 1), columnId, sort, headText, headButton);
+            directionList.add(orderSort);
+        } else {
+            orderSort.setSort(sort);
+        }
+        return orderSort.getOrder();
+    }
+
     /**
      * EN: Header for grid - sort function. It's not off default sorting.<br>
      * RU: Заголовок столбца - дает возможность сортировать на бэке. Не убирает дефолтную сортировку.
+     *
      * @param headerIcon icon header.
-     * @param text header text
+     * @param text       header text
      * @param columnName entity column name, for sorting.
      * @return Vaadin button with icon, text and sort listener.
      */
@@ -90,31 +113,57 @@ public class PaginationGridService<T> {
         button.addClickListener(event -> {
             Icon icon = (Icon) button.getIcon();
             String id = icon.getId().orElse("").trim();
-
+            Long order = null;
             if (buttonId.equals(id)) {
-                Icon downIcon = new Icon(ANGLE_DOWN);
-                downIcon.setId(buttonId + GRID_COLUMN_SORT_DESC_SUFFIX);
-                button.setIcon(downIcon);
-                directionMap.put(columnName, Sort.Direction.DESC);
-            } else if (id.endsWith(GRID_COLUMN_SORT_DESC_SUFFIX)) {
                 Icon upIcon = new Icon(ANGLE_UP);
                 upIcon.setId(buttonId + GRID_COLUMN_SORT_ASC_SUFFIX);
                 button.setIcon(upIcon);
-                directionMap.put(columnName, Sort.Direction.ASC);
+                order = putOrderSort(columnName, Sort.Direction.ASC, text, button);
+            } else if (id.endsWith(GRID_COLUMN_SORT_ASC_SUFFIX)) {
+                Icon downIcon = new Icon(ANGLE_DOWN);
+                downIcon.setId(buttonId + GRID_COLUMN_SORT_DESC_SUFFIX);
+                button.setIcon(downIcon);
+                order = putOrderSort(columnName, Sort.Direction.DESC, text, button);
             } else {
-                directionMap.remove(columnName);
+                removeOrderSort(columnName);
                 button.setIcon(mainIcon);
             }
-
+            button.setText(text + PaginationPageUtils.getUpperNumbWithBrackets(order));
             this.initGridData(0);
         });
         button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         return button;
     }
 
+    private synchronized void removeOrderSort(String columnId) {
+        OrderSort orderSort = directionList.stream().filter(os -> os.columnId.equals(columnId))
+                .findFirst().orElse(null);
+
+        if (orderSort == null) {
+            return;
+        }
+
+        List<OrderSort> newOrderSortList = new LinkedList<>();
+        for (OrderSort sort : directionList) {
+            if (!sort.equals(orderSort)) {
+                if (sort.getOrder() > orderSort.getOrder()) {
+                    sort.setOrder(sort.getOrder() - 1);
+                    sort.getHeadButton().setText(
+                            sort.getHeadText() + PaginationPageUtils.getUpperNumbWithBrackets(sort.getOrder())
+                    );
+                }
+                newOrderSortList.add(sort);
+            }
+        }
+
+        directionList.clear();
+        directionList.addAll(newOrderSortList);
+    }
+
     /**
      * EN: Pagination buttons.<br>
      * RU: Кнопки для пагинации.
+     *
      * @return buttons for turning pages.
      */
     public HorizontalLayout getPaginationButtons() {
@@ -200,6 +249,7 @@ public class PaginationGridService<T> {
 
     /**
      * Reload grid with open page.
+     *
      * @param page number page.
      */
     public void reloadData(@Min(1) int page) {
@@ -207,11 +257,10 @@ public class PaginationGridService<T> {
     }
 
     private void initGridData(@Min(0) int page) {
-        List<Sort.Order> sortOrders = new ArrayList<>(directionMap.size());
-        for (String columnName : directionMap.keySet()) {
-            sortOrders.add(new Sort.Order(directionMap.get(columnName), columnName));
-        }
-
+        List<Sort.Order> sortOrders = directionList.stream()
+                .sorted(Comparator.comparing(OrderSort::getOrder))
+                .map(orderSort -> new Sort.Order(orderSort.getSort(), orderSort.getColumnId()))
+                .toList();
         Page<T> cardPage = getDataFunction.apply(new GetData(page, gridPageSize, sortOrders));
         List<T> typeList = cardPage.getContent();
 

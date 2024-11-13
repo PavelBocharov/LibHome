@@ -44,4 +44,18 @@ public class CardStatus implements Serializable, HasId {
     @ColumnDefault("true")
     private Boolean isRate;
 
+    @Column(name = "has_upd_status", nullable = false)
+    @ColumnDefault("false")
+    private Boolean hasUpdStatus;
+
+    @Column(name = "tech_id")
+    private String tech;
+
+    @Column(name = "sort_order")
+    private Long order;
+
+    public boolean isTech() {
+        return tech != null && !tech.isBlank();
+    }
+
 }

@@ -112,7 +112,7 @@ public class UpdateCardView extends CardDialogView {
         List<Component> components = new LinkedList<>();
         if (nonNull(getTitles().get(GRID_STATUS))) {
             components.add(getStatusSelector());
-            List<CardStatus> cardStatusList = mainView.getRepositoryService().getCardStatusRepository().findAll();
+            List<CardStatus> cardStatusList = mainView.getCardStatusService().findAll();
             setSelectValue(cardStatusListSelect, updateCard.getCardStatus(), cardStatusList);
         }
         if (nonNull(getTitles().get(GRID_TYPE)) && nonNull(getTitles().get(GRID_TAGS))) {
@@ -153,7 +153,7 @@ public class UpdateCardView extends CardDialogView {
                 updateCard.setLastGame(getValue(gameDate, new Date()));
                 updateCard.setTagList(tags.getValue().stream().toList());
                 updateCard.setLanguage(getValue(languageSelect, Language.DEFAULT));
-                mainView.getRepositoryService().getCardRepository().save(updateCard);
+                mainView.getCardService().save(updateCard);
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);
                 updBtn.setEnabled(true);

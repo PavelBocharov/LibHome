@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
 
+    @Query(value = "SELECT card FROM Card card WHERE card.cardStatus = :cardStatus or card.oldCardStatus = :cardStatus")
     List<Card> findByCardStatus(@NotNull CardStatus cardStatus);
 
     List<Card> findByCardType(@NotNull CardType cardType);
@@ -24,28 +25,29 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Query(value = "SELECT card FROM Card card WHERE card.viewType = :view ORDER BY card.point DESC")
     List<Card> findWithOrderByPoint(@NotNull ViewType view);
 
-    @Query(value = "SELECT card FROM Card card WHERE card.viewType = :view")
+    @Query(value = "SELECT c FROM Card c JOIN c.cardStatus cs WHERE c.viewType = :view")
     Page<Card> findAllByView(@NotNull ViewType view, Pageable pageable);
 
     @Query(value = """
-            SELECT 
+            SELECT
                 c
-            FROM Card c 
+            FROM Card c
+            JOIN c.cardStatus cs
             WHERE
                 c.id in (
                     SELECT
                         DISTINCT(card.id)
                     FROM Card card
-                    JOIN card.tagList tags
+                    LEFT JOIN card.tagList tags
                     WHERE
                         card.viewType = :view
-                        and (
+                        AND (
                             lower(card.title) like lower(concat('%', :searchText,'%'))
-                            or lower(card.info) like lower(concat('%', :searchText,'%'))
-                            or lower(tags.title) like lower(concat('%', :searchText,'%'))
+                            OR lower(card.info) like lower(concat('%', :searchText,'%'))
+                            OR lower(tags.title) like lower(concat('%', :searchText,'%'))
                         )
                 )
             """)
-    Page<Card> findAllByViewAndLikeTitle(@NotNull ViewType view, String searchText, Pageable pageable);
+    Page<Card> findAllByViewAndLikeTitleMap(@NotNull ViewType view, String searchText, Pageable pageable);
 
 }

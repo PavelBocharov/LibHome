@@ -14,7 +14,7 @@ public enum Language implements Serializable {
     DEFAULT("¯\\_(ツ)_/¯", "icons/lang/default.png"),
     ENG("English", "icons/lang/uk.png"),
     RU("Русский", "icons/lang/ru.png"),
-//    https://www.flaticon.com/packs/flags-10
+    //    https://www.flaticon.com/packs/flags-10
 //    CA("Català", "icons/lang/ca.png"),
     DE("Deutsch", "icons/lang/de.png"),
     ES("Español", "icons/lang/es.png"),

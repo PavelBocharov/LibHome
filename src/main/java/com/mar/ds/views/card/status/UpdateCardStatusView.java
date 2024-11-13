@@ -9,6 +9,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.ROTATE_RIGHT;
@@ -26,7 +27,7 @@ public class UpdateCardStatusView {
         ViewUtils.setTextFieldValue(textField, updatedStatus.getTitle());
 
         TextField colorField = new TextField();
-        colorField.setHelperText("Use HEX or string text (red, green ant etc.)");
+        colorField.setHelperText("Use HEX or string text (red, green and etc.)");
         colorField.setWidthFull();
         colorField.setLabel("Color");
         ViewUtils.setTextFieldValue(colorField, updatedStatus.getColor());
@@ -37,7 +38,14 @@ public class UpdateCardStatusView {
         iconField.setLabel("Icon");
         ViewUtils.setTextFieldValue(iconField, updatedStatus.getIcon());
 
+        BigDecimalField orderField = new BigDecimalField("Order");
+        orderField.setWidthFull();
+        ViewUtils.setBigDecimalFieldValue(orderField, updatedStatus.getOrder());
+
+        boolean oldRate = updatedStatus.getIsRate();
+        boolean oldHasUpd = updatedStatus.getHasUpdStatus();
         Checkbox isRate = new Checkbox("Is rate", updatedStatus.getIsRate());
+        Checkbox hasUpd = new Checkbox("Has UPD", updatedStatus.getHasUpdStatus());
 
         Button updBtn = new Button("Update", new Icon(ROTATE_RIGHT));
         updBtn.addClickListener(btnEvent -> {
@@ -46,7 +54,9 @@ public class UpdateCardStatusView {
                 updatedStatus.setColor(ViewUtils.getTextFieldValue(colorField));
                 updatedStatus.setIcon(ViewUtils.getTextFieldValue(iconField));
                 updatedStatus.setIsRate(isRate.getValue());
-                cardStatusView.getRepository().save(updatedStatus);
+                updatedStatus.setHasUpdStatus(hasUpd.getValue());
+                updatedStatus.setOrder(ViewUtils.getLongValue(orderField).orElseThrow(() -> new RuntimeException("Not set card state order.")));
+                cardStatusView.getService().update(updatedStatus, CardStatus.builder().hasUpdStatus(oldHasUpd).isRate(oldRate).build());
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);
                 updBtn.setEnabled(true);
@@ -64,7 +74,8 @@ public class UpdateCardStatusView {
                 textField,
                 colorField,
                 iconField,
-                isRate,
+                orderField,
+                new HorizontalLayout(isRate, hasUpd),
                 new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
         );
 
