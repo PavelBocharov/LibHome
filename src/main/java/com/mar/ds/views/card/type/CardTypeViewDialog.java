@@ -44,7 +44,7 @@ public class CardTypeViewDialog extends ViewDialog<CardType, CardTypeRepository,
     protected void deleteData(CardType entity) {
         try {
             new DeleteDialogWidget(() -> {
-                List<Card> cards = appLayout.getRepositoryService().getCardRepository().findByCardType(entity);
+                List<Card> cards = appLayout.getCardService().findByCardType(entity);
                 if (isEmpty(cards)) {
                     log.info("Delete card type: {}", entity);
                     List<CardTypeTag> tags = appLayout.getRepositoryService().getCardTypeTagRepository().findByCardType(entity);
