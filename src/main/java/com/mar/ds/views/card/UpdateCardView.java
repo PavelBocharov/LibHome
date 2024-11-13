@@ -6,7 +6,6 @@ import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
-import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Component;
@@ -18,15 +17,8 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.provider.ListDataProvider;
 import lombok.extern.slf4j.Slf4j;
-import org.vaadin.gatanaso.MultiselectComboBox;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -120,7 +112,7 @@ public class UpdateCardView extends CardDialogView {
         List<Component> components = new LinkedList<>();
         if (nonNull(getTitles().get(GRID_STATUS))) {
             components.add(getStatusSelector());
-            List<CardStatus> cardStatusList = mainView.getRepositoryService().getCardStatusRepository().findAll();
+            List<CardStatus> cardStatusList = mainView.getCardStatusService().findAll();
             setSelectValue(cardStatusListSelect, updateCard.getCardStatus(), cardStatusList);
         }
         if (nonNull(getTitles().get(GRID_TYPE)) && nonNull(getTitles().get(GRID_TAGS))) {
@@ -161,7 +153,7 @@ public class UpdateCardView extends CardDialogView {
                 updateCard.setLastGame(getValue(gameDate, new Date()));
                 updateCard.setTagList(tags.getValue().stream().toList());
                 updateCard.setLanguage(getValue(languageSelect, Language.DEFAULT));
-                mainView.getRepositoryService().getCardRepository().save(updateCard);
+                mainView.getCardService().save(updateCard);
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);
                 updBtn.setEnabled(true);

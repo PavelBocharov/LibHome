@@ -2,7 +2,6 @@ package com.mar.ds.views.card;
 
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.Language;
-import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
@@ -14,7 +13,6 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
@@ -72,7 +70,7 @@ public class FastUpdateCardView extends CardDialogView {
             if (getTitles().containsKey(GRID_DATE_GAME)) {
                 updCard.setLastGame(getValue(gameDate, new Date()));
             }
-            mainView.getRepositoryService().getCardRepository().save(updCard);
+            mainView.getCardService().save(updCard);
             mainView.getActiveView().reloadData();
             dialog.close();
         });

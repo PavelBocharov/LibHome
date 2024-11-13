@@ -31,15 +31,13 @@ import static java.lang.String.valueOf;
 public class UploadFileDialog extends Dialog {
 
     public static final List<String> nameWordExc = List.of("\\", "/", ":", "*", "?", "\"", "<", ">", "|", "+", " ");
-
-    private MainView mainView;
-    private Upload uploadFile;
-
     private final Card card;
     private final String rootDir;
     private final int countFiles;
     private final boolean isCover;
     private final Set<String> uploadFileTypes;
+    private MainView mainView;
+    private Upload uploadFile;
 
     public UploadFileDialog(MainView mainView, String rootDir, Card card, boolean isCover, int countFiles, Set<String> uploadFileTypes, Runnable afterUploadEvent) {
         this.mainView = mainView;

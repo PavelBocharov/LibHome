@@ -59,6 +59,7 @@ import static com.mar.ds.utils.ViewUtils.findImage;
 import static com.mar.ds.utils.ViewUtils.getAccordionContent;
 import static com.mar.ds.utils.ViewUtils.getImage;
 import static java.lang.Float.parseFloat;
+import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
@@ -96,9 +97,9 @@ public class CardInfoView extends Dialog {
         imageAndTitle.setPadding(false);
 
         HorizontalLayout headerInfo = new HorizontalLayout(
-                ViewUtils.getStatusIcon(card, false),
-                Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getImage(),
-                new Label( " [" + card.getId() + "] " + card.getTitle())
+                ViewUtils.getStatusIcon(card),
+                Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getImage(26),
+                new Label(" [" + card.getId() + "] " + card.getTitle())
         );
         headerInfo.setWidthFull();
         Button returnBtn = new Button(
@@ -117,7 +118,14 @@ public class CardInfoView extends Dialog {
             cardInfo.add(getTextField(titles.get(GRID_TYPE), card.getCardType().getTitle()));
         }
         if (titles.containsKey(GRID_STATUS)) {
-            cardInfo.add(getTextField(titles.get(GRID_STATUS), card.getCardStatus().getTitle()));
+            cardInfo.add(
+                    getTextField(
+                            titles.get(GRID_STATUS),
+                            card.getOldCardStatus() == null
+                                    ? card.getCardStatus().getTitle()
+                                    : format("%s (%s)", card.getCardStatus().getTitle(), card.getOldCardStatus().getTitle())
+                    )
+            );
         }
         if (titles.containsKey(GRID_ENGINE)) {
             cardInfo.add(getTextField(
@@ -126,7 +134,7 @@ public class CardInfoView extends Dialog {
             );
         }
         if (titles.containsKey(GRID_DATE_UPD)) {
-            DatePicker lastUpdDate = new DatePicker(titles.get(GRID_DATE_UPD), LocalDate.now());
+            DatePicker lastUpdDate = ViewUtils.getDatePicker(titles.get(GRID_DATE_UPD), LocalDate.now());
             lastUpdDate.setWidthFull();
             lastUpdDate.setRequired(true);
             lastUpdDate.setReadOnly(true);
@@ -137,7 +145,7 @@ public class CardInfoView extends Dialog {
             cardInfo.add(lastUpdDate);
         }
         if (titles.containsKey(GRID_DATE_GAME)) {
-            DatePicker lastGameDate = new DatePicker(titles.get(GRID_DATE_GAME), LocalDate.now());
+            DatePicker lastGameDate = ViewUtils.getDatePicker(titles.get(GRID_DATE_GAME), LocalDate.now());
             lastGameDate.setWidthFull();
             lastGameDate.setRequired(true);
             lastGameDate.setReadOnly(true);
@@ -181,7 +189,7 @@ public class CardInfoView extends Dialog {
         // Cover
         Image cover;
         try {
-            cover = findImage(dataDir + "cards/" + card.getId() + "/cover/", "imgs/not_cover.jpeg");
+            cover = findImage(dataDir + "cards/" + card.getId() + "/cover/");
         } catch (FileNotFoundException ex) {
             cover = new Image("imgs/not_cover.jpeg", "Not cover");
         }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.google.common.io.Resources;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.HasId;
 import com.vaadin.flow.component.Component;
@@ -30,7 +29,6 @@ import com.vaadin.flow.server.StreamResource;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.vaadin.gatanaso.MultiselectComboBox;
 import org.vaadin.olli.FileDownloadWrapper;
@@ -38,22 +36,19 @@ import org.vaadin.olli.FileDownloadWrapper;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -122,8 +117,8 @@ public class ViewUtils {
         return result;
     }
 
-    public static Image findImage(String dir, String defaultImage) throws IOException {
-        File coverDir = new File(dir);
+    public static Image findImage(String coverPath) throws IOException {
+        File coverDir = new File(coverPath);
 
         if (coverDir.exists() && coverDir.isDirectory()) {
             Collection<File> covers = FileUtils.listFiles(coverDir, new String[]{"png", "jpg", "jpeg"}, false);
@@ -135,7 +130,7 @@ public class ViewUtils {
                                 image.getName(),
                                 () -> new ByteArrayInputStream(img)
                         ),
-                        String.format("Not load image: %s", dir)
+                        String.format("Not load image: %s", coverPath)
                 );
 
                 BufferedImage myPicture = ImageIO.read(image);
@@ -146,30 +141,7 @@ public class ViewUtils {
                 return result;
             }
         }
-        return getImage(defaultImage);
-    }
-
-    public static Map<String, byte[]> imageCache = Collections.synchronizedMap(new HashMap<>());
-
-    public static Image getImageByResource(String pathInResource) throws IOException {
-        final byte[] finalCacheImageByte = imageCache.get(pathInResource);
-        String fileName = FilenameUtils.getName(pathInResource);
-        if (!isEmpty(finalCacheImageByte)) {
-            return new Image(
-                    new StreamResource(fileName, () -> new ByteArrayInputStream(finalCacheImageByte)),
-                    String.format("Not load image: %s", pathInResource)
-            );
-        }
-
-        URL imgUrl = Resources.getResource(pathInResource);
-        byte[] imageByte = Resources.asByteSource(imgUrl).read();
-
-        Image res = new Image(
-                new StreamResource(fileName, () -> new ByteArrayInputStream(imageByte)),
-                String.format("Not load image: %s", pathInResource)
-        );
-        imageCache.putIfAbsent(pathInResource, imageByte);
-        return res;
+        throw new FileNotFoundException("Not find image in dir: " + coverPath);
     }
 
     public static TextField getTextField(String text, boolean enable) {
@@ -202,6 +174,13 @@ public class ViewUtils {
             select.setItems(initDataProviderList);
             select.setValue(selectValue);
         }
+    }
+
+    public static DatePicker getDatePicker(String title, LocalDate initDate) {
+        DatePicker datePicker = new DatePicker(title, initDate);
+        datePicker.setLocale(new Locale("ru", "RU"));
+        datePicker.setWidthFull();
+        return datePicker;
     }
 
     public static DatePicker setValue(DatePicker datePicker, Date date) {
@@ -250,10 +229,13 @@ public class ViewUtils {
         return field.getValue().doubleValue();
     }
 
+    public static long getLongValueGet(BigDecimalField field, Long defValue) {
+        return getLongValue(field).orElse(defValue);
+    }
 
-    public static long getLongValue(BigDecimalField field) {
-        if (field == null || field.getValue() == null) return 0;
-        return field.getValue().longValue();
+    public static Optional<Long> getLongValue(BigDecimalField field) {
+        if (field == null || field.getValue() == null) return Optional.empty();
+        return Optional.of(field.getValue().longValue());
     }
 
     public static void setBigDecimalFieldValue(BigDecimalField field, Float value) {
@@ -354,23 +336,18 @@ public class ViewUtils {
         return buttonWrapper;
     }
 
-    public static Icon getStatusIcon(Card card, boolean hasUpd) {
+    public static Icon getStatusIcon(Card card) {
         Icon icon;
 
         if (card != null && card.getCardStatus() != null && isNotBlank(card.getCardStatus().getColor())) {
-            if (hasUpd) {
-                icon = VaadinIcon.BELL.create();
-                icon.setColor("#0B6623");
-            } else {
-                icon = getIconByText(card.getCardStatus().getIcon(), VaadinIcon.BULLSEYE.create());
-                icon.setColor(card.getCardStatus().getColor());
-            }
+            icon = getIconByText(card.getCardStatus().getIcon(), VaadinIcon.BULLSEYE.create());
+            icon.setColor(card.getCardStatus().getColor());
             icon.getElement().setAttribute("title", card.getInfo());
         } else {
             icon = VaadinIcon.BULLSEYE.create();
             icon.setColor("grey");
         }
-
+        icon.getStyle().set("margin", "0px");
         return icon;
     }
 

@@ -11,14 +11,13 @@
 
     <groupId>com.mar</groupId>
     <artifactId>lib-home</artifactId>
-    <version>2.3.5</version>
+    <version>PRE-3.0.0-007</version>
     <name>lib-home</name>
     <description>LibHome - your book, game, music and other library.</description>
 
     <properties>
         <java.version>17</java.version>
         <vaadin.version>14.7.3</vaadin.version>
-        <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
     </properties>
 
     <repositories>
@@ -41,11 +40,6 @@
             <version>4.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.vaadin.klaudeta</groupId>
-            <artifactId>grid-pagination</artifactId>
-            <version>2.0.10</version>
-        </dependency>
-        <dependency>
             <groupId>com.brownie.videojs</groupId>
             <artifactId>video-js-player</artifactId>
             <version>1.0.7</version>
@@ -58,6 +52,10 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <!--    JPA    -->
         <dependency>
@@ -86,12 +84,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>31.0.1-jre</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${org.mapstruct.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.imgscalr</groupId>
@@ -132,11 +124,6 @@
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
-                        </path>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${org.mapstruct.version}</version>
                         </path>
                         <!-- other annotation processors -->
                     </annotationProcessorPaths>
