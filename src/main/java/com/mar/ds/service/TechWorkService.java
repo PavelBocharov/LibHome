@@ -16,13 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import javax.annotation.PostConstruct;
 
+import static com.mar.ds.db.service.CardStatusService.TECH_HASE_UPD_ID;
+
 @Slf4j
 @Service
 public class TechWorkService {
 
     public static final String CARD_STATUS_ORDER_SEQ_NAME = "card-status-order";
-
-    public static final String TECH_HASE_UPD_ID = "CARD_HAS_UPD";
 
     @Autowired
     private TechWorkRepository techWorkRepository;

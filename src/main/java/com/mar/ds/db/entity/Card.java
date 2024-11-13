@@ -53,11 +53,9 @@ public class Card implements Serializable, HasId {
     private String link;
 
     @Column(name = "last_game")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date lastGame;
 
     @Column(name = "last_update")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdate;
 
     @Column(name = "engine")

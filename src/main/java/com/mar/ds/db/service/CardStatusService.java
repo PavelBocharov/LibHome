@@ -16,6 +16,8 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @Service
 public class CardStatusService {
 
+    public static final String TECH_HASE_UPD_ID = "CARD_HAS_UPD";
+
     @Lazy
     @Autowired
     private CardService cardService;

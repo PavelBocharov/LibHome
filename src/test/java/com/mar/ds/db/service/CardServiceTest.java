@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 
 import java.util.Date;
 
-import static com.mar.ds.service.TechWorkService.TECH_HASE_UPD_ID;
+import static com.mar.ds.db.service.CardStatusService.TECH_HASE_UPD_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;

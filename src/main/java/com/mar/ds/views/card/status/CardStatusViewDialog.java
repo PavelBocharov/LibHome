@@ -43,7 +43,6 @@ public class CardStatusViewDialog {
         dialog.open();
     }
 
-
     private void initProducts() {
         cardStatusList = new Grid<>();
         cardStatusList.setSizeFull();
@@ -61,13 +60,15 @@ public class CardStatusViewDialog {
                         TRUE.equals(cardStatus.getIsRate()) ? trueIcon() : falseIcon()
                 )
                 .setHeader("Is rate")
-                .setSortable(true);
+                .setSortable(true)
+                .setComparator(CardStatus::getIsRate);
         cardStatusList
                 .addComponentColumn(cardStatus ->
                         TRUE.equals(cardStatus.getHasUpdStatus()) ? trueIcon() : falseIcon()
                 )
                 .setHeader("Has UPD")
-                .setSortable(true);
+                .setSortable(true)
+                .setComparator(CardStatus::getHasUpdStatus);
         cardStatusList.addComponentColumn(cardStatus -> {
                     Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> {
                         try {

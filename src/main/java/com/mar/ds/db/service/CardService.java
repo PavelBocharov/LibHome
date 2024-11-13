@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
-import static com.mar.ds.service.TechWorkService.TECH_HASE_UPD_ID;
+import static com.mar.ds.db.service.CardStatusService.TECH_HASE_UPD_ID;
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 
