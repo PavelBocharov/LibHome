@@ -13,7 +13,8 @@
 
 ### <img src="readme_files/icon/arrow-right.png" width="16"/> Start application local
 
-1) Install min JDK17 - https://adoptopenjdk.net/
+1) Install JDK17 - https://adoptopenjdk.net/
+   > Upper version crash with Lombok (tested with JDK 21).
 2) Install NodeJS - https://nodejs.org/en/download/
     * Install nvm - [Windows](https://github.com/coreybutler/nvm-windows), [Linux](https://github.com/nvm-sh/nvm)
 3) Start `Spring Run` profile.
@@ -35,11 +36,11 @@
    ```
 2) Build image
    ```bash 
-   docker build --no-cache -t marolok/lib_home:2.3.5 .
+   docker build --no-cache -t marolok/lib_home:3.0.0 .
    ```
 3) Push image
    ```bash 
-   docker push marolok/lib_home:2.3.5
+   docker push marolok/lib_home:3.0.0
    ```
 4) Set image version in [docker-compose.yml](./docker-compose.yml)
 5) Start `docker-compose`
