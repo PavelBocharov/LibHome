@@ -11,7 +11,7 @@
 
     <groupId>com.mar</groupId>
     <artifactId>lib-home</artifactId>
-    <version>PRE-3.0.0-007</version>
+    <version>3.0.0</version>
     <name>lib-home</name>
     <description>LibHome - your book, game, music and other library.</description>
 
