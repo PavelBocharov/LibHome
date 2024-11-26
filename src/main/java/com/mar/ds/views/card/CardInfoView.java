@@ -31,6 +31,7 @@ import com.vaadin.flow.server.StreamResource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import java.io.File;
@@ -88,7 +89,8 @@ public class CardInfoView extends Dialog {
     private VerticalLayout loadData() throws IOException {
         Calendar calendar = Calendar.getInstance();
         String dataDir = appLayout.getEnv().getProperty("app.data.path");
-        File fileDir = new File(dataDir + "cards/", +card.getId() + "/");
+        File fileDir = new File(dataDir + "cards/", card.getId() + "/");
+        File previewDir = new File(dataDir + "cards/", card.getId() + "/preview");
         Map<String, String> titles = com.mar.ds.utils.FileUtils.getTitles(
                 card.getViewType(), appLayout.getContentJSON()
         );
@@ -286,7 +288,19 @@ public class CardInfoView extends Dialog {
                         if (event.getOpenedPanel().get().getContent().findFirst().get().equals(accVideos)) {
                             videos.removeAll();
                             for (File file : videoFiles) {
-                                VideoJS video = new VideoJS(UI.getCurrent().getSession(), file, null);
+                                File previewFile = null;
+
+                                if (previewDir.exists() && previewDir.isDirectory()) {
+                                    String fileName = FilenameUtils.getBaseName(file.getName());
+                                    previewFile = FileUtils.listFiles(previewDir, new String[]{"jpg", "png"}, false).stream()
+                                            .filter(f ->
+                                                    f.getName().contains(fileName + ".jpg")
+                                                            || f.getName().contains(fileName + ".png")
+                                            )
+                                            .findFirst().orElse(null);
+                                }
+
+                                VideoJS video = new VideoJS(UI.getCurrent().getSession(), file, previewFile);
                                 video.setMaxWidth(80, Unit.PERCENTAGE);
                                 video.setMaxHeight(600, Unit.PIXELS);
                                 video.setSizeFull();
@@ -419,8 +433,7 @@ public class CardInfoView extends Dialog {
     }
 
     private void closeBtn() {
-//        appLayout.setContent(appLayout.getCardView().getContent());
-        appLayout.reloadContent();
+        appLayout.getActiveView().reloadData();
         this.close();
     }
 

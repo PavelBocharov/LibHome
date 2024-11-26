@@ -1,7 +1,9 @@
 package com.mar.ds.views.card;
 
+import com.mar.ds.db.dto.CardDto;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.Language;
+import com.mar.ds.db.mapper.CardMapper;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Key;
@@ -12,6 +14,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import org.mapstruct.factory.Mappers;
 
 import java.util.Date;
 import java.util.Optional;
@@ -58,6 +61,8 @@ public class FastUpdateCardView extends CardDialogView {
         updBtn.setDisableOnClick(true);
         updBtn.addClickShortcut(Key.ENTER);
         updBtn.addClickListener(buttonClickEvent -> {
+            CardMapper cardMapper = Mappers.getMapper(CardMapper.class);
+            CardDto old = cardMapper.toDto(updCard);
             if (getTitles().containsKey(GRID_LANGUAGE)) {
                 updCard.setLanguage(Optional.ofNullable(languageSelect.getValue()).orElse(Language.DEFAULT));
             }
@@ -70,7 +75,10 @@ public class FastUpdateCardView extends CardDialogView {
             if (getTitles().containsKey(GRID_DATE_GAME)) {
                 updCard.setLastGame(getValue(gameDate, new Date()));
             }
-            mainView.getCardService().save(updCard);
+            mainView.getCardHistoryService().saveHistory(
+                    old,
+                    cardMapper.toDto(mainView.getCardService().save(updCard))
+            );
             mainView.getActiveView().reloadData();
             dialog.close();
         });

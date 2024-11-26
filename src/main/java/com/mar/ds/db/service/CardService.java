@@ -4,7 +4,9 @@ import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.ViewType;
+import com.mar.ds.db.jpa.CardHistoryRepository;
 import com.mar.ds.db.jpa.CardRepository;
+import com.mar.ds.db.mapper.CardMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -31,7 +33,7 @@ public class CardService {
     private final CardStatusService cardStatusService;
 
     @Autowired
-    public CardService(CardRepository cardRepository, @Lazy CardStatusService cardStatusService) {
+    public CardService(CardRepository cardRepository, @Lazy CardStatusService cardStatusService, CardHistoryRepository cardHistoryRepository, CardMapper cardMapper) {
         this.cardRepository = cardRepository;
         this.cardStatusService = cardStatusService;
     }
@@ -43,8 +45,7 @@ public class CardService {
         for (Card card : cards) {
             forUpd.add(checkCard(card));
         }
-
-        cardRepository.saveAll(forUpd);
+        saveAll(forUpd);
     }
 
     public Page<Card> findAllByView(@NotNull ViewType view, Pageable pageable) {
@@ -94,8 +95,12 @@ public class CardService {
         return cardRepository.save(checkCard(card));
     }
 
-    public List<Card> saveAll(Collection<Card> card) {
-        return cardRepository.saveAll(card.stream().map(this::checkCard).toList());
+    public List<Card> saveAll(Collection<Card> cards) {
+        List<Card> savedCards = new ArrayList<>(cards.size());
+        for (Card card : cards) {
+            savedCards.add(save(card));
+        }
+        return savedCards;
     }
 
     public List<Card> findAll() {

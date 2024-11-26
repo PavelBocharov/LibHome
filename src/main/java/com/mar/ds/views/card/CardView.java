@@ -1,10 +1,12 @@
 package com.mar.ds.views.card;
 
+import com.mar.ds.db.dto.CardDto;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
 import com.mar.ds.db.entity.ViewType;
+import com.mar.ds.db.mapper.CardMapper;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
@@ -35,6 +37,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
@@ -269,10 +272,16 @@ public class CardView implements ContentView {
         GridContextMenu<Card> menu = grid.addContextMenu();
         menu.addItem("View", event -> event.getItem().ifPresent(this::openInfo));
         menu.addItem("Fast edit", event -> event.getItem().ifPresent(card -> new FastUpdateCardView(mainView, card).showDialog()));
-        menu.addItem("Delete", event -> event.getItem().ifPresent(card -> new DeleteDialogWidget(() -> {
-                    mainView.getCardService().delete(event.getItem().orElseThrow());
+        menu.addItem("History", event -> {
+            event.getItem().ifPresent(card -> new CardHistoryView(mainView, card).open());
+        });
+        menu.addItem("Delete", event ->
+                event.getItem().ifPresent(card -> new DeleteDialogWidget(() -> {
+                    CardDto cardDto = Mappers.getMapper(CardMapper.class).toDto(card);
+                    mainView.getCardService().delete(card);
+                    mainView.getCardHistoryService().saveDeleteCard(cardDto);
                     reloadData();
-                    FileUtils.deleteDir(mainView.getEnv().getProperty("app.data.path") + "cards/" + event.getItem().get().getId());
+                    FileUtils.deleteDir(mainView.getEnv().getProperty("app.data.path") + "cards/" + card.getId());
                 }))
         );
     }

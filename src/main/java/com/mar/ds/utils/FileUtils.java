@@ -21,6 +21,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @UtilityClass
 public class FileUtils {
 
+    private static volatile EnumMap<ViewType, Map<String, String>> viewInfos;
+
     @SneakyThrows
     public static void deleteDir(String pathDir) {
         File dir = new File(pathDir);
@@ -34,9 +36,15 @@ public class FileUtils {
             throw new RuntimeException("Cannot load titles: viewType is null or filePath is blank.");
         }
 
-        EnumMap<ViewType, Map<String, String>> viewInfos = FileUtils.loadContentInfo(filePath);
-        Map<String, String> gridConfig = viewInfos.get(viewType);
-        return gridConfig;
+        if (viewInfos == null) {
+            synchronized (FileUtils.class) {
+                if (viewInfos == null) {
+                    viewInfos = FileUtils.loadContentInfo(filePath);
+                }
+            }
+        }
+
+        return viewInfos.get(viewType);
     }
 
     public static EnumMap<ViewType, Map<String, String>> loadContentInfo(@NotBlank @NotNull String filePath) {

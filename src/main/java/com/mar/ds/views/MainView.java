@@ -1,6 +1,7 @@
 package com.mar.ds.views;
 
 import com.mar.ds.db.entity.ViewType;
+import com.mar.ds.db.service.CardHistoryService;
 import com.mar.ds.db.service.CardService;
 import com.mar.ds.db.service.CardStatusService;
 import com.mar.ds.service.RepositoryService;
@@ -53,6 +54,10 @@ public class MainView extends AppLayout {
     @Getter
     @Autowired
     private CardStatusService cardStatusService;
+
+    @Getter
+    @Autowired
+    private CardHistoryService cardHistoryService;
 
     @Getter
     @Autowired
