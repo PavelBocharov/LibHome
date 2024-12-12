@@ -142,7 +142,6 @@ public class CreateCardView extends CardDialogView {
         });
         crtBtn.setWidthFull();
         crtBtn.setDisableOnClick(true);
-        crtBtn.addClickShortcut(Key.ENTER);
 
         createDialog.add(new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(createDialog)));
     }

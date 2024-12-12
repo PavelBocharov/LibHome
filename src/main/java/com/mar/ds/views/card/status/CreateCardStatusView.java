@@ -64,7 +64,6 @@ public class CreateCardStatusView {
         });
         createBtn.setWidthFull();
         createBtn.setDisableOnClick(true);
-        createBtn.addClickShortcut(Key.ENTER);
 
         createDialog.add(
                 new Label("Create card status"),

@@ -1,20 +1,42 @@
 package com.mar.ds.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mar.ds.db.entity.Card;
+import com.mar.ds.db.entity.CardTypeTag;
+import com.mar.ds.db.entity.Language;
 import com.mar.ds.db.entity.ViewType;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.server.StreamResource;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.vaadin.olli.FileDownloadWrapper;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
@@ -65,6 +87,71 @@ public class FileUtils {
         }
 
         return res;
+    }
+
+    public static FileDownloadWrapper getDownloadFileButton(String fileName, Supplier<List<Card>> cardSupplier) {
+        Button downloadJson = new Button("Export to Excel", new Icon(DOWNLOAD));
+        downloadJson.setWidthFull();
+        downloadJson.getStyle().set("color", "black");
+        FileDownloadWrapper buttonWrapper = new FileDownloadWrapper(new StreamResource(fileName, () -> {
+            log.debug("Export data to file '{}' START...", fileName);
+            ByteArrayInputStream stream = createExcel(cardSupplier.get());
+            log.debug("Export data to file '{}' END.", fileName);
+            return stream;
+        }));
+        buttonWrapper.wrapComponent(downloadJson);
+        return buttonWrapper;
+    }
+
+    @SneakyThrows
+    public static ByteArrayInputStream createExcel(List<Card> cardList) {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("Employee Data");
+
+        Object[] header = new Object[]{"Status", "Engine", "Language", "Title", "Point", "Rate", "Last update", "Type", "Tags"};
+        Map<String, Object[]> data = new TreeMap<>();
+        int i = 1;
+        data.put(String.valueOf(i++), header);
+        for (Card card : cardList) {
+            data.put(String.valueOf(i++), convertToArray(card));
+        }
+
+        Set<String> keyset = data.keySet();
+        int rownum = 0;
+        for (String key : keyset) {
+            Row row = sheet.createRow(rownum++);
+            Object[] objArr = data.get(key);
+            int cellnum = 0;
+            for (Object obj : objArr) {
+                Cell cell = row.createCell(cellnum++);
+                if (obj instanceof Double) {
+                    cell.setCellValue((Double) obj);
+                } else {
+                    cell.setCellValue(String.valueOf(obj));
+                }
+            }
+        }
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        workbook.write(bos);
+
+        return new ByteArrayInputStream(bos.toByteArray());
+    }
+
+    private static Object[] convertToArray(Card card) {
+        Object[] rez = new Object[9];
+
+        rez[0] = card.getCardStatus().getTitle();
+        rez[1] = card.getEngine().getName();
+        rez[2] = Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getTitle();
+        rez[3] = card.getTitle();
+        rez[4] = card.getPoint();
+        rez[5] = card.getRate();
+        rez[6] = Utils.formatUsingSimpleDateFormat(card.getLastUpdate());
+        rez[7] = card.getCardType().getTitle();
+        rez[8] = card.getTagList().stream().map(CardTypeTag::getTitle).collect(Collectors.joining(", "));
+
+        return rez;
     }
 
 }

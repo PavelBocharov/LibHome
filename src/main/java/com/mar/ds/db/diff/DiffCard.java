@@ -16,6 +16,21 @@ import java.util.stream.Collectors;
 
 public class DiffCard {
 
+    public static final String CARD_TITLE = "title";
+    public static final String CARD_POINT = "point";
+    public static final String CARD_INFO = "info";
+    public static final String CARD_LINK = "link";
+    public static final String CARD_LAST_GAME_DATE = "lastGame";
+    public static final String CARD_LAST_UPD_DATE = "lastUpdate";
+    public static final String CARD_LANGUAGE = "language";
+    public static final String CARD_VIEW_TYPE = "viewType";
+    public static final String CARD_RATE = "rate";
+    public static final String CARD_TYPE = "cardType";
+    public static final String CARD_STATUS = "cardStatus";
+    public static final String CARD_OLD_STATUS = "oldCardStatus";
+    public static final String CARD_TAG = "tag";
+    public static final String CARD_ENGINE = "engine";
+
     public static List<CardHistory> compare(CardDto oldCard, CardDto updatedCard) {
         if (oldCard == null) {
             if (updatedCard.getId() != null) {
@@ -33,32 +48,32 @@ public class DiffCard {
             }
         }
 
-
         DiffBuilder<CardDto> diffBuilder = new DiffBuilder<CardDto>(oldCard, updatedCard, ToStringStyle.DEFAULT_STYLE)
-                .append("title", oldCard.getTitle(), updatedCard.getTitle())
-                .append("point", oldCard.getPoint(), updatedCard.getPoint())
-                .append("info", oldCard.getInfo(), updatedCard.getInfo())
-                .append("link", oldCard.getLink(), updatedCard.getLink())
-                .append("lastGame", oldCard.getLastGame().getTime(), updatedCard.getLastGame().getTime())
-                .append("lastUpdate", oldCard.getLastUpdate().getTime(), updatedCard.getLastUpdate().getTime())
-                .append("language", oldCard.getLanguage(), updatedCard.getLanguage())
-                .append("viewType", oldCard.getViewType(), updatedCard.getViewType())
-                .append("rate", oldCard.getRate(), updatedCard.getRate())
-                .append("cardType", oldCard.getCardType(), updatedCard.getCardType())
-                .append("cardStatus", oldCard.getCardStatus(), updatedCard.getCardStatus())
-                .append("oldCardStatus", oldCard.getOldCardStatus(), updatedCard.getOldCardStatus());
+                .append(CARD_ENGINE, oldCard.getEngine(), updatedCard.getEngine())
+                .append(CARD_TITLE, oldCard.getTitle(), updatedCard.getTitle())
+                .append(CARD_POINT, oldCard.getPoint(), updatedCard.getPoint())
+                .append(CARD_INFO, oldCard.getInfo(), updatedCard.getInfo())
+                .append(CARD_LINK, oldCard.getLink(), updatedCard.getLink())
+                .append(CARD_LAST_GAME_DATE, oldCard.getLastGame().getTime(), updatedCard.getLastGame().getTime())
+                .append(CARD_LAST_UPD_DATE, oldCard.getLastUpdate().getTime(), updatedCard.getLastUpdate().getTime())
+                .append(CARD_LANGUAGE, oldCard.getLanguage(), updatedCard.getLanguage())
+                .append(CARD_VIEW_TYPE, oldCard.getViewType(), updatedCard.getViewType())
+                .append(CARD_RATE, oldCard.getRate(), updatedCard.getRate())
+                .append(CARD_TYPE, oldCard.getCardType(), updatedCard.getCardType())
+                .append(CARD_STATUS, oldCard.getCardStatus(), updatedCard.getCardStatus())
+                .append(CARD_OLD_STATUS, oldCard.getOldCardStatus(), updatedCard.getOldCardStatus());
 
         Set<Long> oldTags = oldCard.getTagList().stream().map(CardTypeTagDto::getId).collect(Collectors.toSet());
         Set<Long> newTags = updatedCard.getTagList().stream().map(CardTypeTagDto::getId).collect(Collectors.toSet());
         for (Long tagId : oldTags) {
             if (!newTags.contains(tagId)) {
-                diffBuilder.append("REMOVE tag", tagId, "");
+                diffBuilder.append("REMOVE " + CARD_TAG, tagId, "");
             }
         }
 
         for (Long tagId : newTags) {
             if (!oldTags.contains(tagId)) {
-                diffBuilder.append("ADD tag", "", tagId);
+                diffBuilder.append("ADD " + CARD_TAG, "", tagId);
             }
         }
 

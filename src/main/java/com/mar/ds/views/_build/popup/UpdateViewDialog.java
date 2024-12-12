@@ -59,7 +59,6 @@ public abstract class UpdateViewDialog<E extends PopupEntity, VD extends ViewDia
         });
         updBtn.setWidthFull();
         updBtn.setDisableOnClick(true);
-        updBtn.addClickShortcut(Key.ENTER);
 
         if (withEnum) {
             updateDialog.add(

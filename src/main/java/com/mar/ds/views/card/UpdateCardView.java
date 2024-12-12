@@ -173,7 +173,6 @@ public class UpdateCardView extends CardDialogView {
         });
         updBtn.setWidthFull();
         updBtn.setDisableOnClick(true);
-        updBtn.addClickShortcut(Key.ENTER);
 
         updateDialog.add(new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog)));
     }

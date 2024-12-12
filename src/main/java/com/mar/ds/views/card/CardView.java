@@ -40,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.vaadin.olli.FileDownloadWrapper;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -60,6 +61,14 @@ import static com.mar.ds.data.GridInfo.GRID_STATUS;
 import static com.mar.ds.data.GridInfo.GRID_TAGS;
 import static com.mar.ds.data.GridInfo.GRID_TITLE;
 import static com.mar.ds.data.GridInfo.GRID_TYPE;
+import static com.mar.ds.db.diff.DiffCard.CARD_ENGINE;
+import static com.mar.ds.db.diff.DiffCard.CARD_LANGUAGE;
+import static com.mar.ds.db.diff.DiffCard.CARD_LAST_GAME_DATE;
+import static com.mar.ds.db.diff.DiffCard.CARD_LAST_UPD_DATE;
+import static com.mar.ds.db.diff.DiffCard.CARD_POINT;
+import static com.mar.ds.db.diff.DiffCard.CARD_RATE;
+import static com.mar.ds.db.diff.DiffCard.CARD_TITLE;
+import static com.mar.ds.db.diff.DiffCard.CARD_TYPE;
 import static com.mar.ds.utils.FileUtils.getTitles;
 import static com.vaadin.flow.component.icon.VaadinIcon.BAR_CHART;
 import static com.vaadin.flow.component.icon.VaadinIcon.COG;
@@ -163,7 +172,7 @@ public class CardView implements ContentView {
         return verticalLayout;
     }
 
-    private Button[] getBtns() {
+    private Component[] getBtns() {
         Button crtBtn = new Button(
                 "Add",
                 new Icon(PLUS),
@@ -187,7 +196,12 @@ public class CardView implements ContentView {
         );
         cardTypeTagView.setWidthFull();
 
-        return new Button[]{crtBtn, cardStatusView, cardTypeView, cardTypeTagView};
+        FileDownloadWrapper buttonWrapper =  FileUtils.getDownloadFileButton(
+                this.viewType.name() + ".xlsx",
+                () -> mainView.getCardService().findWithOrderByPoint(viewType)
+        );
+
+        return new Component[]{crtBtn, cardStatusView, cardTypeView, cardTypeTagView, buttonWrapper};
     }
 
     private Component getEngineIcon(Card card) {
@@ -310,7 +324,7 @@ public class CardView implements ContentView {
         }
         if (gridConfig.containsKey(GRID_ENGINE)) {
             grid.addComponentColumn(this::getEngineIcon)
-                    .setHeader(paginationGridService.getHeader(COGS, gridConfig.get(GRID_ENGINE), "engine"))
+                    .setHeader(paginationGridService.getHeader(COGS, gridConfig.get(GRID_ENGINE), CARD_ENGINE))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_ENGINE);
@@ -322,7 +336,7 @@ public class CardView implements ContentView {
                             .getImage(DEFAULT_GRID_ICON_SIZE_INT)
                     )
                     .setHeader(paginationGridService.getHeader(
-                            COMMENT_O, gridConfig.get(GRID_LANGUAGE), "language"
+                            COMMENT_O, gridConfig.get(GRID_LANGUAGE), CARD_LANGUAGE
                     ))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
@@ -331,7 +345,7 @@ public class CardView implements ContentView {
         if (gridConfig.containsKey(GRID_TITLE)) {
             grid.addColumn(Card::getTitle)
                     .setHeader(paginationGridService.getHeader(
-                            TEXT_LABEL, gridConfig.get(GRID_TITLE), "title"
+                            TEXT_LABEL, gridConfig.get(GRID_TITLE), CARD_TITLE
                     ))
                     .setAutoWidth(true)
                     .setTextAlign(ColumnTextAlign.CENTER)
@@ -339,7 +353,7 @@ public class CardView implements ContentView {
         }
         if (gridConfig.containsKey(GRID_POINT)) {
             grid.addComponentColumn(card -> getLabelWithColor(card::getPoint))
-                    .setHeader(paginationGridService.getHeader(MEDAL, gridConfig.get(GRID_POINT), "point"))
+                    .setHeader(paginationGridService.getHeader(MEDAL, gridConfig.get(GRID_POINT), CARD_POINT))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_POINT);
@@ -347,7 +361,7 @@ public class CardView implements ContentView {
         if (gridConfig.containsKey(GRID_RATE)) {
             grid.addComponentColumn(card -> getLabelWithColor(card::getRate, minRate, maxRate))
                     .setHeader(paginationGridService.getHeader(
-                            BAR_CHART, gridConfig.get(GRID_RATE), "rate"
+                            BAR_CHART, gridConfig.get(GRID_RATE), CARD_RATE
                     ))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
@@ -357,7 +371,7 @@ public class CardView implements ContentView {
         if (gridConfig.containsKey(GRID_DATE_UPD)) {
             grid.addColumn(card -> dateFormat.format(card.getLastUpdate()))
                     .setHeader(paginationGridService.getHeader(
-                            DATE_INPUT, gridConfig.get(GRID_DATE_UPD), "lastUpdate")
+                            DATE_INPUT, gridConfig.get(GRID_DATE_UPD), CARD_LAST_UPD_DATE)
                     )
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
@@ -366,7 +380,7 @@ public class CardView implements ContentView {
         if (gridConfig.containsKey(GRID_DATE_GAME)) {
             grid.addColumn(card -> dateFormat.format(card.getLastGame()))
                     .setHeader(paginationGridService.getHeader(
-                            DATE_INPUT, gridConfig.get(GRID_DATE_GAME), "lastGame"
+                            DATE_INPUT, gridConfig.get(GRID_DATE_GAME), CARD_LAST_GAME_DATE
                     ))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
@@ -376,7 +390,7 @@ public class CardView implements ContentView {
             grid.addColumn(card -> card.getCardType().getTitle())
                     .setAutoWidth(true).setFlexGrow(0)
                     .setHeader(paginationGridService.getHeader(
-                            COMPILE, gridConfig.get(GRID_TYPE), "cardType.title"
+                            COMPILE, gridConfig.get(GRID_TYPE), CARD_TYPE + ".title"
                     ))
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_TYPE);

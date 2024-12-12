@@ -13,11 +13,11 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.extern.slf4j.Slf4j;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.ZoneOffset;
 import java.util.Date;
 
+import static com.mar.ds.db.diff.DiffCard.CARD_LAST_GAME_DATE;
+import static com.mar.ds.db.diff.DiffCard.CARD_LAST_UPD_DATE;
+import static com.mar.ds.utils.Utils.formatUsingSimpleDateTimeFormat;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 
@@ -40,7 +40,7 @@ public class CardHistoryView extends Dialog {
 
     private String saveGetDate(String maybeDate) {
         try {
-            return formatUsingSimpleDateFormat(new Date(Long.parseLong(maybeDate)));
+            return formatUsingSimpleDateTimeFormat(new Date(Long.parseLong(maybeDate)));
         } catch (Exception e) {
             return maybeDate;
         }
@@ -58,7 +58,7 @@ public class CardHistoryView extends Dialog {
                 .setSortable(true);
         historyGrid.addColumn(cardHistory ->
                         switch (cardHistory.getColumnName()) {
-                            case "lastGame", "lastUpdate": {
+                            case CARD_LAST_GAME_DATE, CARD_LAST_UPD_DATE: {
                                 yield saveGetDate(cardHistory.getOldValue());
                             }
                             default:
@@ -68,7 +68,7 @@ public class CardHistoryView extends Dialog {
                 .setHeader("Old value");
         historyGrid.addColumn(cardHistory ->
                         switch (cardHistory.getColumnName()) {
-                            case "lastGame", "lastUpdate": {
+                            case CARD_LAST_GAME_DATE, CARD_LAST_UPD_DATE: {
                                 yield saveGetDate(cardHistory.getNewValue());
                             }
                             default:
@@ -96,11 +96,6 @@ public class CardHistoryView extends Dialog {
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.START, historyGrid);
         verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, backBtn);
         this.add(verticalLayout);
-    }
-
-    String formatUsingSimpleDateFormat(Date utilDate) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return dateFormat.format(utilDate);
     }
 
     @Override

@@ -102,10 +102,6 @@ public class MainView extends AppLayout {
 
     public void setContentByType(ViewType type) {
         activeView = type;
-        reloadContent();
-    }
-
-    public void reloadContent() {
         setContent(getActiveView().getContent());
     }
 

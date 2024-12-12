@@ -67,7 +67,6 @@ public class UpdateCardStatusView {
         });
         updBtn.setWidthFull();
         updBtn.setDisableOnClick(true);
-        updBtn.addClickShortcut(Key.ENTER);
 
         updateDialog.add(
                 new Label("Update card status"),

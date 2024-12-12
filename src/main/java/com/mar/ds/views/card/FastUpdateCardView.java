@@ -59,7 +59,6 @@ public class FastUpdateCardView extends CardDialogView {
         Button updBtn = new Button("Update", new Icon(VaadinIcon.ROTATE_RIGHT));
         updBtn.setWidthFull();
         updBtn.setDisableOnClick(true);
-        updBtn.addClickShortcut(Key.ENTER);
         updBtn.addClickListener(buttonClickEvent -> {
             CardMapper cardMapper = Mappers.getMapper(CardMapper.class);
             CardDto old = cardMapper.toDto(updCard);

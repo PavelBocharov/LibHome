@@ -55,7 +55,6 @@ public abstract class CreateViewDialog<E extends PopupEntity, VD extends ViewDia
         });
         createBtn.setWidthFull();
         createBtn.setDisableOnClick(true);
-        createBtn.addClickShortcut(Key.ENTER);
 
         if (withEnum) {
             createDialog.add(
