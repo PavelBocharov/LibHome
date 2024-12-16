@@ -26,7 +26,7 @@ class CardServiceTest {
 
     CardRepository cardRepository = Mockito.mock(CardRepository.class);
     CardStatusService cardStatusService = Mockito.mock(CardStatusService.class);
-    CardHistoryRepository cardHistoryRepository = Mockito.mock(CardHistoryRepository.class);
+    CardHistoryService cardHistoryRepository = Mockito.mock(CardHistoryService.class);
     CardService cardService = new CardService(cardRepository, cardStatusService, cardHistoryRepository, Mappers.getMapper(CardMapper.class));
 
     @BeforeEach

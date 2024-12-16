@@ -56,7 +56,8 @@ public class UpdateCardStatusView {
                 updatedStatus.setIsRate(isRate.getValue());
                 updatedStatus.setHasUpdStatus(hasUpd.getValue());
                 updatedStatus.setOrder(ViewUtils.getLongValue(orderField).orElseThrow(() -> new RuntimeException("Not set card state order.")));
-                cardStatusView.getService().update(updatedStatus, CardStatus.builder().hasUpdStatus(oldHasUpd).isRate(oldRate).build());
+                cardStatusView.getService()
+                        .update(updatedStatus, CardStatus.builder().hasUpdStatus(oldHasUpd).isRate(oldRate).build());
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);
                 updBtn.setEnabled(true);

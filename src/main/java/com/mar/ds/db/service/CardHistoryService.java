@@ -7,13 +7,17 @@ import com.mar.ds.db.entity.CardHistory;
 import com.mar.ds.db.jpa.CardHistoryRepository;
 import com.mar.ds.db.mapper.CardMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 
 import static java.util.Objects.nonNull;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CardHistoryService {
@@ -28,6 +32,20 @@ public class CardHistoryService {
     public void saveHistory(@Nullable CardDto old, CardDto actual) {
         assert nonNull(actual);
         List<CardHistory> diff = DiffCard.compare(old, actual);
+        log.debug("save/upd card history: {}", diff);
+        cardHistoryRepository.saveAll(diff);
+    }
+
+    public void saveHistory(List<Pair<CardDto, CardDto>> cards) {
+        assert nonNull(cards);
+        List<CardHistory> diff = new LinkedList<>();
+
+        for (Pair<CardDto, CardDto> oldNewCards : cards) {
+            CardDto oldCard = oldNewCards.getLeft();
+            CardDto newCard = oldNewCards.getRight();
+            diff.addAll(DiffCard.compare(oldCard, newCard));
+        }
+        log.debug("save/upd card history: {}", diff);
         cardHistoryRepository.saveAll(diff);
     }
 

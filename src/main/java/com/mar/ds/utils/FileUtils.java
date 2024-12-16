@@ -14,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFCreationHelper;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.vaadin.olli.FileDownloadWrapper;
@@ -24,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -116,20 +118,52 @@ public class FileUtils {
             data.put(String.valueOf(i++), convertToArray(card));
         }
 
+        XSSFFont headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeight(14);
+        headerFont.setFontName("Arial Black");
+        XSSFCellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFont(headerFont);
+
+        XSSFFont font = workbook.createFont();
+        font.setFontHeight(12);
+        font.setFontName("Courier New");
+        XSSFCellStyle baseStyle = workbook.createCellStyle();
+        baseStyle.setFont(font);
+
+        XSSFCreationHelper createHelper = workbook.getCreationHelper();
+        short format = createHelper.createDataFormat().getFormat("yyyy-MM-dd");
+        XSSFCellStyle dateStyle = workbook.createCellStyle();
+        dateStyle.setDataFormat(format);
+        dateStyle.setFont(font);
+
         Set<String> keyset = data.keySet();
         int rownum = 0;
         for (String key : keyset) {
             Row row = sheet.createRow(rownum++);
+
             Object[] objArr = data.get(key);
             int cellnum = 0;
             for (Object obj : objArr) {
                 Cell cell = row.createCell(cellnum++);
+                if (rownum == 1) {
+                    cell.setCellStyle(headerStyle);
+                } else {
+                    cell.setCellStyle(baseStyle);
+                }
                 if (obj instanceof Double) {
                     cell.setCellValue((Double) obj);
+                } else if (obj instanceof Date) {
+                    cell.setCellValue((Date) obj);
+                    cell.setCellStyle(dateStyle);
                 } else {
                     cell.setCellValue(String.valueOf(obj));
                 }
             }
+        }
+
+        for (int j = 0; j < header.length; j++) {
+            sheet.autoSizeColumn(j, true);
         }
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -147,7 +181,8 @@ public class FileUtils {
         rez[3] = card.getTitle();
         rez[4] = card.getPoint();
         rez[5] = card.getRate();
-        rez[6] = Utils.formatUsingSimpleDateFormat(card.getLastUpdate());
+//        rez[6] = Utils.formatUsingSimpleDateFormat(card.getLastUpdate());
+        rez[6] = card.getLastUpdate();
         rez[7] = card.getCardType().getTitle();
         rez[8] = card.getTagList().stream().map(CardTypeTag::getTitle).collect(Collectors.joining(", "));
 
