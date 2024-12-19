@@ -1,10 +1,7 @@
 package com.mar.ds.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.entity.CardTypeTag;
-import com.mar.ds.db.entity.Language;
-import com.mar.ds.db.entity.ViewType;
+import com.mar.ds.db.entity.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.server.StreamResource;
@@ -12,19 +9,18 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFCreationHelper;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
@@ -40,6 +36,8 @@ import javax.validation.constraints.NotNull;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.poi.hssf.util.HSSFColor.HSSFColorPredefined.BLUE_GREY;
 
 @Slf4j
 @UtilityClass
@@ -110,7 +108,7 @@ public class FileUtils {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("Employee Data");
 
-        Object[] header = new Object[]{"Status", "Engine", "Language", "Title", "Point", "Rate", "Last update", "Type", "Tags"};
+        Object[] header = new Object[]{"Status", "Engine", "Language", "Title", "Point", "URL link", "Last update", "Type", "Tags"};
         Map<String, Object[]> data = new TreeMap<>();
         int i = 1;
         data.put(String.valueOf(i++), header);
@@ -118,24 +116,10 @@ public class FileUtils {
             data.put(String.valueOf(i++), convertToArray(card));
         }
 
-        XSSFFont headerFont = workbook.createFont();
-        headerFont.setBold(true);
-        headerFont.setFontHeight(14);
-        headerFont.setFontName("Arial Black");
-        XSSFCellStyle headerStyle = workbook.createCellStyle();
-        headerStyle.setFont(headerFont);
-
-        XSSFFont font = workbook.createFont();
-        font.setFontHeight(12);
-        font.setFontName("Courier New");
-        XSSFCellStyle baseStyle = workbook.createCellStyle();
-        baseStyle.setFont(font);
-
-        XSSFCreationHelper createHelper = workbook.getCreationHelper();
-        short format = createHelper.createDataFormat().getFormat("yyyy-MM-dd");
-        XSSFCellStyle dateStyle = workbook.createCellStyle();
-        dateStyle.setDataFormat(format);
-        dateStyle.setFont(font);
+        XSSFCellStyle headerStyle = ExcelUtils.headerStyle(workbook);
+        XSSFCellStyle baseStyle = ExcelUtils.baseStyle(workbook);
+        XSSFCellStyle dateStyle = ExcelUtils.dateStyle(workbook);
+        XSSFCellStyle titleStyle = ExcelUtils.titleStyle(workbook);
 
         Set<String> keyset = data.keySet();
         int rownum = 0;
@@ -149,15 +133,40 @@ public class FileUtils {
                 if (rownum == 1) {
                     cell.setCellStyle(headerStyle);
                 } else {
-                    cell.setCellStyle(baseStyle);
+                    if (cellnum == 4) {
+                        cell.setCellStyle(titleStyle);
+                    } else {
+                        cell.setCellStyle(baseStyle);
+                    }
                 }
-                if (obj instanceof Double) {
+                if (obj instanceof CardStatus) {
+                    CardStatus status = (CardStatus) obj;
+                    cell.setCellValue(status.getTitle());
+                    XSSFCellStyle statusStyle = ExcelUtils.statusStyle(workbook, status.getColor());
+                    cell.setCellStyle(statusStyle);
+                } else if (obj instanceof Double) {
                     cell.setCellValue((Double) obj);
                 } else if (obj instanceof Date) {
                     cell.setCellValue((Date) obj);
                     cell.setCellStyle(dateStyle);
                 } else {
-                    cell.setCellValue(String.valueOf(obj));
+                    String val = obj == null ? "" : String.valueOf(obj);
+                    if (cellnum == 6) {
+                        try {
+                            if (isNotBlank(val)) {
+                                cell.setCellValue("Link");
+                                XSSFHyperlink link = workbook.getCreationHelper().createHyperlink(HyperlinkType.URL);
+                                link.setAddress(val);
+                                cell.setHyperlink(link);
+                            } else {
+                                cell.setCellValue(val);
+                            }
+                        } catch (Exception ex) {
+                            cell.setCellValue(val);
+                        }
+                    } else {
+                        cell.setCellValue(val);
+                    }
                 }
             }
         }
@@ -175,13 +184,12 @@ public class FileUtils {
     private static Object[] convertToArray(Card card) {
         Object[] rez = new Object[9];
 
-        rez[0] = card.getCardStatus().getTitle();
+        rez[0] = card.getCardStatus();
         rez[1] = card.getEngine().getName();
         rez[2] = Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getTitle();
         rez[3] = card.getTitle();
         rez[4] = card.getPoint();
-        rez[5] = card.getRate();
-//        rez[6] = Utils.formatUsingSimpleDateFormat(card.getLastUpdate());
+        rez[5] = card.getLink();
         rez[6] = card.getLastUpdate();
         rez[7] = card.getCardType().getTitle();
         rez[8] = card.getTagList().stream().map(CardTypeTag::getTitle).collect(Collectors.joining(", "));
