@@ -1,15 +1,16 @@
 package com.mar.ds.views.card;
 
+import com.mar.ds.db.dto.CardDto;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
+import com.mar.ds.db.mapper.CardMapper;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -18,6 +19,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -142,6 +144,8 @@ public class UpdateCardView extends CardDialogView {
         updBtn.addClickListener(click -> {
             try {
                 checkValues();
+                CardMapper cardMapper = Mappers.getMapper(CardMapper.class);
+                CardDto old = cardMapper.toDto(updateCard);
                 updateCard.setTitle(getTextFieldValue(cardTitle));
                 updateCard.setInfo(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""));
                 updateCard.setLink(getTextFieldValue(link));
@@ -153,7 +157,11 @@ public class UpdateCardView extends CardDialogView {
                 updateCard.setLastGame(getValue(gameDate, new Date()));
                 updateCard.setTagList(tags.getValue().stream().toList());
                 updateCard.setLanguage(getValue(languageSelect, Language.DEFAULT));
-                mainView.getCardService().save(updateCard);
+
+                mainView.getCardHistoryService().saveHistory(
+                        old,
+                        cardMapper.toDto(mainView.getCardService().save(updateCard))
+                );
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);
                 updBtn.setEnabled(true);
@@ -164,7 +172,6 @@ public class UpdateCardView extends CardDialogView {
         });
         updBtn.setWidthFull();
         updBtn.setDisableOnClick(true);
-        updBtn.addClickShortcut(Key.ENTER);
 
         updateDialog.add(new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog)));
     }

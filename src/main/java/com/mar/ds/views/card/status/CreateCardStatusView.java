@@ -2,7 +2,6 @@ package com.mar.ds.views.card.status;
 
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.utils.ViewUtils;
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -11,6 +10,8 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
+
+import java.awt.*;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
 
@@ -26,7 +27,8 @@ public class CreateCardStatusView {
         textField.setLabel("Title");
 
         TextField colorField = new TextField();
-        colorField.setHelperText("Use HEX or string text (red, green and etc.)");
+        colorField.setPattern("^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$");
+        colorField.setHelperText("Use HEX color value");
         colorField.setWidthFull();
         colorField.setLabel("Color");
 
@@ -44,6 +46,8 @@ public class CreateCardStatusView {
         Button createBtn = new Button("Create", new Icon(PLUS));
         createBtn.addClickListener(btnEvent -> {
             try {
+                Color.decode(ViewUtils.getTextFieldValue(colorField));
+
                 cardStatusView.getService().save(
                         CardStatus.builder()
                                 .title(ViewUtils.getTextFieldValue(textField))
@@ -64,7 +68,6 @@ public class CreateCardStatusView {
         });
         createBtn.setWidthFull();
         createBtn.setDisableOnClick(true);
-        createBtn.addClickShortcut(Key.ENTER);
 
         createDialog.add(
                 new Label("Create card status"),

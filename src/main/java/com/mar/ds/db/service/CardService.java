@@ -1,11 +1,14 @@
 package com.mar.ds.db.service;
 
+import com.mar.ds.db.dto.CardDto;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.db.jpa.CardRepository;
+import com.mar.ds.db.mapper.CardMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
@@ -29,22 +33,31 @@ public class CardService {
 
     private final CardRepository cardRepository;
     private final CardStatusService cardStatusService;
+    private final CardHistoryService cardHistoryService;
+    private final CardMapper cardMapper;
 
     @Autowired
-    public CardService(CardRepository cardRepository, @Lazy CardStatusService cardStatusService) {
+    public CardService(CardRepository cardRepository, @Lazy CardStatusService cardStatusService, CardHistoryService cardHistoryService, CardMapper cardMapper) {
         this.cardRepository = cardRepository;
         this.cardStatusService = cardStatusService;
+        this.cardHistoryService = cardHistoryService;
+        this.cardMapper = cardMapper;
     }
 
     public void checkAndUpdateAllCards() {
         List<Card> cards = cardRepository.findAll();
 
         ArrayList<Card> forUpd = new ArrayList<>(cards.size());
+        List<Pair<CardDto, CardDto>> oldNewCards = new LinkedList<>();
         for (Card card : cards) {
-            forUpd.add(checkCard(card));
+            CardDto oldDto = cardMapper.toDto(card);
+            Card toSaveCard = checkCard(card);
+            CardDto newDto = cardMapper.toDto(toSaveCard);
+            forUpd.add(toSaveCard);
+            oldNewCards.add(Pair.of(oldDto, newDto));
         }
-
-        cardRepository.saveAll(forUpd);
+        saveAll(forUpd);
+        cardHistoryService.saveHistory(oldNewCards);
     }
 
     public Page<Card> findAllByView(@NotNull ViewType view, Pageable pageable) {
@@ -94,8 +107,13 @@ public class CardService {
         return cardRepository.save(checkCard(card));
     }
 
-    public List<Card> saveAll(Collection<Card> card) {
-        return cardRepository.saveAll(card.stream().map(this::checkCard).toList());
+    public List<Card> saveAll(Collection<Card> cards) {
+        return cardRepository.saveAll(cards.stream().map(this::checkCard).toList());
+//        List<Card> savedCards = new ArrayList<>(cards.size());
+//        for (Card card : cards) {
+//            savedCards.add(save(card));
+//        }
+//        return savedCards;
     }
 
     public List<Card> findAll() {

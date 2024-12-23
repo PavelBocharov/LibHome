@@ -7,7 +7,6 @@ import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -115,7 +114,7 @@ public class CreateCardView extends CardDialogView {
         crtBtn.addClickListener(click -> {
             try {
                 checkValues();
-                mainView.getCardService().save(
+                Card card = mainView.getCardService().save(
                         Card.builder()
                                 .viewType(viewType)
                                 .title(getTextFieldValue(cardTitle))
@@ -131,6 +130,7 @@ public class CreateCardView extends CardDialogView {
                                 .language(getValue(languageSelect, Language.DEFAULT))
                                 .build()
                 );
+                mainView.getCardHistoryService().saveCreateCard(card);
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("An error occurred while creating", ex);
                 crtBtn.setEnabled(true);
@@ -141,7 +141,6 @@ public class CreateCardView extends CardDialogView {
         });
         crtBtn.setWidthFull();
         crtBtn.setDisableOnClick(true);
-        crtBtn.addClickShortcut(Key.ENTER);
 
         createDialog.add(new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(createDialog)));
     }

@@ -3,8 +3,10 @@ package com.mar.ds.db.service;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.jpa.CardRepository;
+import com.mar.ds.db.mapper.CardMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mockito;
 
 import java.util.Date;
@@ -23,7 +25,8 @@ class CardServiceTest {
 
     CardRepository cardRepository = Mockito.mock(CardRepository.class);
     CardStatusService cardStatusService = Mockito.mock(CardStatusService.class);
-    CardService cardService = new CardService(cardRepository, cardStatusService);
+    CardHistoryService cardHistoryRepository = Mockito.mock(CardHistoryService.class);
+    CardService cardService = new CardService(cardRepository, cardStatusService, cardHistoryRepository, Mappers.getMapper(CardMapper.class));
 
     @BeforeEach
     void init() {

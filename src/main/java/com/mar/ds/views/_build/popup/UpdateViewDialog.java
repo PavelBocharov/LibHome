@@ -1,7 +1,6 @@
 package com.mar.ds.views._build.popup;
 
 import com.mar.ds.utils.ViewUtils;
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
@@ -59,7 +58,6 @@ public abstract class UpdateViewDialog<E extends PopupEntity, VD extends ViewDia
         });
         updBtn.setWidthFull();
         updBtn.setDisableOnClick(true);
-        updBtn.addClickShortcut(Key.ENTER);
 
         if (withEnum) {
             updateDialog.add(

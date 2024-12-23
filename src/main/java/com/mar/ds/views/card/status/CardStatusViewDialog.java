@@ -11,11 +11,12 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.extern.slf4j.Slf4j;
 
 import static java.lang.Boolean.TRUE;
@@ -46,8 +47,6 @@ public class CardStatusViewDialog {
     private void initProducts() {
         cardStatusList = new Grid<>();
         cardStatusList.setSizeFull();
-        cardStatusList.setMaxHeight(80, Unit.PERCENTAGE);
-        cardStatusList.setVerticalScrollingEnabled(true);
 
         cardStatusList.addColumn(CardStatus::getTitle)
                 .setHeader("Title")
@@ -111,14 +110,18 @@ public class CardStatusViewDialog {
         dialog.setMaxHeight(50, Unit.PERCENTAGE);
         dialog.setMaxWidth(50, Unit.PERCENTAGE);
         dialog.setSizeFull();
-
-        Div dialogComponents = new Div(
-                new Label("Card status list"),
+        HorizontalLayout btns = new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(dialog));
+        VerticalLayout verticalLayout = new VerticalLayout(
+                new H3("Card status list"),
                 cardStatusList,
-                new HorizontalLayout(crtBtn, ViewUtils.getCloseButton(dialog))
+                btns
         );
-        dialogComponents.setSizeFull();
-        dialog.add(dialogComponents);
+        verticalLayout.setSizeFull();
+        verticalLayout.getStyle().set("padding", "0px");
+        verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.START, cardStatusList);
+        verticalLayout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, btns);
+        dialog.add(verticalLayout);
     }
 
     private Icon trueIcon() {

@@ -1,5 +1,8 @@
 FROM node:16.13.1-alpine
 
+RUN apk add --no-cache msttcorefonts-installer fontconfig
+RUN update-ms-fonts
+
 WORKDIR /opt/app
 
 ADD docker_files/OpenJDK*.tar.gz /opt/app/java

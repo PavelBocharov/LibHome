@@ -39,12 +39,14 @@ public interface CardRepository extends JpaRepository<Card, Long> {
                         DISTINCT(card.id)
                     FROM Card card
                     LEFT JOIN card.tagList tags
+                    LEFT JOIN card.cardType types
                     WHERE
                         card.viewType = :view
                         AND (
                             lower(card.title) like lower(concat('%', :searchText,'%'))
                             OR lower(card.info) like lower(concat('%', :searchText,'%'))
                             OR lower(tags.title) like lower(concat('%', :searchText,'%'))
+                            OR lower(types.title) like lower(concat('%', :searchText,'%'))
                         )
                 )
             """)
