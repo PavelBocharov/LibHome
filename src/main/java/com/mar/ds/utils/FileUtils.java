@@ -1,7 +1,11 @@
 package com.mar.ds.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mar.ds.db.entity.*;
+import com.mar.ds.db.entity.Card;
+import com.mar.ds.db.entity.CardStatus;
+import com.mar.ds.db.entity.CardTypeTag;
+import com.mar.ds.db.entity.Language;
+import com.mar.ds.db.entity.ViewType;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.server.StreamResource;
@@ -11,16 +15,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFHyperlink;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
@@ -37,7 +42,6 @@ import javax.validation.constraints.NotNull;
 import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.poi.hssf.util.HSSFColor.HSSFColorPredefined.BLUE_GREY;
 
 @Slf4j
 @UtilityClass
@@ -120,6 +124,7 @@ public class FileUtils {
         XSSFCellStyle baseStyle = ExcelUtils.baseStyle(workbook);
         XSSFCellStyle dateStyle = ExcelUtils.dateStyle(workbook);
         XSSFCellStyle titleStyle = ExcelUtils.titleStyle(workbook);
+        XSSFCellStyle linkStyle = ExcelUtils.linkStyle(workbook);
 
         Set<String> keyset = data.keySet();
         int rownum = 0;
@@ -158,6 +163,7 @@ public class FileUtils {
                                 XSSFHyperlink link = workbook.getCreationHelper().createHyperlink(HyperlinkType.URL);
                                 link.setAddress(val);
                                 cell.setHyperlink(link);
+                                cell.setCellStyle(linkStyle);
                             } else {
                                 cell.setCellValue(val);
                             }

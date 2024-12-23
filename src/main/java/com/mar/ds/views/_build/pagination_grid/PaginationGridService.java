@@ -20,7 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import javax.validation.constraints.Min;
 
@@ -53,16 +57,6 @@ public class PaginationGridService<T> {
 
     private final IntegerField pageField;
     private final Label countPageLabel;
-
-    @Data
-    @AllArgsConstructor
-    static class OrderSort {
-        Long order;
-        String columnId;
-        Sort.Direction sort;
-        String headText;
-        Button headButton;
-    }
 
     /**
      * Constructor.
@@ -283,6 +277,16 @@ public class PaginationGridService<T> {
             return defNumb;
         }
         return number;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class OrderSort {
+        Long order;
+        String columnId;
+        Sort.Direction sort;
+        String headText;
+        Button headButton;
     }
 
     public record GetData(int page, int pageSize, List<Sort.Order> sortOrders) {

@@ -11,7 +11,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 
-import java.awt.Color;
+import java.awt.*;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
 

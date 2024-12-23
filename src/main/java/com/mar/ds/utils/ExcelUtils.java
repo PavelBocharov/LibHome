@@ -1,9 +1,15 @@
 package com.mar.ds.utils;
 
 import lombok.experimental.UtilityClass;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.ss.usermodel.FontUnderline;
+import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFCreationHelper;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.awt.Color;
+import java.awt.*;
 
 @UtilityClass
 public class ExcelUtils {
@@ -32,6 +38,15 @@ public class ExcelUtils {
     public static XSSFCellStyle baseStyle(XSSFWorkbook workbook) {
         XSSFCellStyle style = workbook.createCellStyle();
         style.setFont(baseFont(workbook));
+        return style;
+    }
+
+    public static XSSFCellStyle linkStyle(XSSFWorkbook workbook) {
+        XSSFCellStyle style = workbook.createCellStyle();
+        XSSFFont font = baseFont(workbook);
+        font.setColor(new XSSFColor(Color.BLUE, new DefaultIndexedColorMap()));
+        font.setUnderline(FontUnderline.SINGLE);
+        style.setFont(font);
         return style;
     }
 

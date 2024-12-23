@@ -196,7 +196,7 @@ public class CardView implements ContentView {
         );
         cardTypeTagView.setWidthFull();
 
-        FileDownloadWrapper buttonWrapper =  FileUtils.getDownloadFileButton(
+        FileDownloadWrapper buttonWrapper = FileUtils.getDownloadFileButton(
                 this.viewType.name() + ".xlsx",
                 () -> mainView.getCardService().findWithOrderByPoint(viewType)
         );

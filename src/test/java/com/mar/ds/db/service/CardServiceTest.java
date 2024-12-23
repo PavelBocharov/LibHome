@@ -2,7 +2,6 @@ package com.mar.ds.db.service;
 
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
-import com.mar.ds.db.jpa.CardHistoryRepository;
 import com.mar.ds.db.jpa.CardRepository;
 import com.mar.ds.db.mapper.CardMapper;
 import org.junit.jupiter.api.BeforeEach;
