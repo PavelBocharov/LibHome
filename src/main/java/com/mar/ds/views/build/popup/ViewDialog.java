@@ -1,4 +1,4 @@
-package com.mar.ds.views._build.popup;
+package com.mar.ds.views.build.popup;
 
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
@@ -15,7 +15,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaRepository<E, Long>, CVD extends CreateViewDialog, UVD extends UpdateViewDialog> {
+public abstract class ViewDialog<E extends PopupEntity, R
+        extends JpaRepository<E, Long>, C extends CreateViewDialog, U extends UpdateViewDialog> {
 
     protected final MainView appLayout;
     private String nameEntity;
@@ -105,9 +106,9 @@ public abstract class ViewDialog<E extends PopupEntity, Repo extends JpaReposito
 
     protected abstract String getText(E entity);
 
-    protected abstract CVD getCreateViewDialog();
+    protected abstract C getCreateViewDialog();
 
-    protected abstract UVD getUpdateViewDialog();
+    protected abstract U getUpdateViewDialog();
 
-    protected abstract Repo getRepository();
+    protected abstract R getRepository();
 }

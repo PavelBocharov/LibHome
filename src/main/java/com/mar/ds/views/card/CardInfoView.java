@@ -65,14 +65,23 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
+/**
+ * Диалоговое окно с информацией о карточке.
+ */
 @Slf4j
 public class CardInfoView extends Dialog {
 
-    private final MainView appLayout;
+    private final MainView mainView;
     private final Card card;
 
-    public CardInfoView(MainView appLayout, Card card) {
-        this.appLayout = appLayout;
+    /**
+     * Конструктор.
+     *
+     * @param mainView родительское окно.
+     * @param card     по какой карточке будет история.
+     */
+    public CardInfoView(MainView mainView, Card card) {
+        this.mainView = mainView;
         this.card = card;
 
         try {
@@ -88,11 +97,11 @@ public class CardInfoView extends Dialog {
 
     private VerticalLayout loadData() throws IOException {
         Calendar calendar = Calendar.getInstance();
-        String dataDir = appLayout.getEnv().getProperty("app.data.path");
+        String dataDir = mainView.getEnv().getProperty("app.data.path");
         File fileDir = new File(dataDir + "cards/", card.getId() + "/");
         File previewDir = new File(dataDir + "cards/", card.getId() + "/preview");
         Map<String, String> titles = com.mar.ds.utils.FileUtils.getTitles(
-                card.getViewType(), appLayout.getContentJSON()
+                card.getViewType(), mainView.getContentJson()
         );
 
         HorizontalLayout imageAndTitle = new HorizontalLayout();
@@ -120,14 +129,10 @@ public class CardInfoView extends Dialog {
             cardInfo.add(getTextField(titles.get(GRID_TYPE), card.getCardType().getTitle()));
         }
         if (titles.containsKey(GRID_STATUS)) {
-            cardInfo.add(
-                    getTextField(
-                            titles.get(GRID_STATUS),
-                            card.getOldCardStatus() == null
-                                    ? card.getCardStatus().getTitle()
-                                    : format("%s (%s)", card.getCardStatus().getTitle(), card.getOldCardStatus().getTitle())
-                    )
-            );
+            String title = card.getOldCardStatus() == null
+                    ? card.getCardStatus().getTitle()
+                    : format("%s (%s)", card.getCardStatus().getTitle(), card.getOldCardStatus().getTitle());
+            cardInfo.add(getTextField(titles.get(GRID_STATUS), title));
         }
         if (titles.containsKey(GRID_ENGINE)) {
             cardInfo.add(getTextField(
@@ -200,7 +205,7 @@ public class CardInfoView extends Dialog {
         cover.setSizeFull();
         cover.addClickListener(
                 event -> new UploadFileDialog(
-                        appLayout,
+                        mainView,
                         dataDir + "cards/" + card.getId() + "/cover/",
                         card,
                         true,
@@ -211,7 +216,7 @@ public class CardInfoView extends Dialog {
         );
         Button updMainImage = new Button("New main image", VaadinIcon.UPLOAD_ALT.create());
         updMainImage.addClickListener(event -> new UploadFileDialog(
-                        appLayout,
+                        mainView,
                         dataDir + "cards/" + card.getId() + "/cover/",
                         card,
                         true,
@@ -261,8 +266,7 @@ public class CardInfoView extends Dialog {
                                 accImage.setMaxWidth(
                                         parseFloat(accImage.getWidth().replace("px", ""))
                                                 / parseFloat(accImage.getHeight().replace("px", ""))
-                                                * 600
-                                        ,
+                                                * 600,
                                         Unit.PIXELS
                                 );
                                 accImage.setMaxHeight(600, Unit.PIXELS);
@@ -292,7 +296,9 @@ public class CardInfoView extends Dialog {
 
                                 if (previewDir.exists() && previewDir.isDirectory()) {
                                     String fileName = FilenameUtils.getBaseName(file.getName());
-                                    previewFile = FileUtils.listFiles(previewDir, new String[]{"jpg", "png"}, false).stream()
+                                    previewFile = FileUtils
+                                            .listFiles(previewDir, new String[]{"jpg", "png"}, false)
+                                            .stream()
                                             .filter(f ->
                                                     f.getName().contains(fileName + ".jpg")
                                                             || f.getName().contains(fileName + ".png")
@@ -343,7 +349,7 @@ public class CardInfoView extends Dialog {
 
         Button addFiles = new Button("Add files", VaadinIcon.UPLOAD.create());
         addFiles.addClickListener(event -> new UploadFileDialog(
-                        appLayout,
+                        mainView,
                         dataDir + "cards/" + card.getId() + "/",
                         card,
                         false,
@@ -355,9 +361,10 @@ public class CardInfoView extends Dialog {
         addFiles.setWidthFull();
 
         Button updBtn = new Button("Update", VaadinIcon.PENCIL.create());
-        updBtn.addClickListener(buttonClickEvent -> new UpdateCardView(appLayout, card, () -> {
+        updBtn.addClickListener(buttonClickEvent ->
+                new UpdateCardView(mainView, card, () -> {
                     this.reloadData();
-                    appLayout.getActiveView().reloadData();
+                    mainView.getActiveView().reloadData();
                 }).showDialog()
         );
         updBtn.setWidthFull();
@@ -433,7 +440,7 @@ public class CardInfoView extends Dialog {
     }
 
     private void closeBtn() {
-        appLayout.getActiveView().reloadData();
+        mainView.getActiveView().reloadData();
         this.close();
     }
 

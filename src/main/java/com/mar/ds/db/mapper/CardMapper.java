@@ -5,6 +5,9 @@ import com.mar.ds.db.entity.Card;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
+/**
+ * Маппер карточки.
+ */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CardMapper {
 

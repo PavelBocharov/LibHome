@@ -44,7 +44,9 @@ public class CardStatusService {
             cardStatusRepository.delete(cardStatus);
         } else {
             log.warn("Find cards by status: {}, list: {}", cardStatus, cards);
-            throw new Exception(String.format("Find cards with status: '%s', count: %d.", cardStatus.getTitle(), cards.size()));
+            throw new Exception(
+                    String.format("Find cards with status: '%s', count: %d.", cardStatus.getTitle(), cards.size())
+            );
         }
     }
 

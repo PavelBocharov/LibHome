@@ -27,6 +27,9 @@ import static com.mar.ds.db.service.CardStatusService.TECH_HASE_UPD_ID;
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 
+/**
+ * Сервис по работе с карточки.
+ */
 @Slf4j
 @Service
 public class CardService {
@@ -36,14 +39,30 @@ public class CardService {
     private final CardHistoryService cardHistoryService;
     private final CardMapper cardMapper;
 
+    /**
+     * Конструктор.
+     *
+     * @param cardRepository репозиторий по работе с карточками.
+     * @param cardStatusService сервис по работе со статусами карточки.
+     * @param cardHistoryService сервис по работе с истории изменения карточки.
+     * @param cardMapper маппер карточки.
+     */
     @Autowired
-    public CardService(CardRepository cardRepository, @Lazy CardStatusService cardStatusService, CardHistoryService cardHistoryService, CardMapper cardMapper) {
+    public CardService(
+            CardRepository cardRepository,
+            @Lazy CardStatusService cardStatusService,
+            CardHistoryService cardHistoryService,
+            CardMapper cardMapper
+    ) {
         this.cardRepository = cardRepository;
         this.cardStatusService = cardStatusService;
         this.cardHistoryService = cardHistoryService;
         this.cardMapper = cardMapper;
     }
 
+    /**
+     * Проверяет все карточки в БД и обновляет (рейтинг, статус и т.д.).
+     */
     public void checkAndUpdateAllCards() {
         List<Card> cards = cardRepository.findAll();
 
@@ -68,6 +87,13 @@ public class CardService {
         return cardRepository.findAllByViewAndLikeTitleMap(view, searchText, pageable);
     }
 
+    /**
+     * Проверка карточки на валидность заполнения данных.
+     * Изменение статуса в зависимости от времени и флага технического статуса.
+     *
+     * @param card карточка.
+     * @return проверенная карточка.
+     */
     public Card checkCard(Card card) {
         assert nonNull(card);
         assert nonNull(card.getCardStatus());
@@ -107,13 +133,14 @@ public class CardService {
         return cardRepository.save(checkCard(card));
     }
 
+    /**
+     * Сохранить все карточки.
+     *
+     * @param cards список карточек.
+     * @return сохраненные карточки (с ID).
+     */
     public List<Card> saveAll(Collection<Card> cards) {
         return cardRepository.saveAll(cards.stream().map(this::checkCard).toList());
-//        List<Card> savedCards = new ArrayList<>(cards.size());
-//        for (Card card : cards) {
-//            savedCards.add(save(card));
-//        }
-//        return savedCards;
     }
 
     public List<Card> findAll() {

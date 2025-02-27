@@ -9,7 +9,7 @@ import org.apache.poi.xssf.usermodel.XSSFCreationHelper;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.awt.*;
+import java.awt.Color;
 
 @UtilityClass
 public class ExcelUtils {

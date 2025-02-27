@@ -1,6 +1,6 @@
 package com.mar.ds.db.entity;
 
-import com.mar.ds.views._build.popup.PopupEntity;
+import com.mar.ds.views.build.popup.PopupEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

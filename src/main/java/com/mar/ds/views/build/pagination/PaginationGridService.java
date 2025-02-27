@@ -1,4 +1,4 @@
-package com.mar.ds.views._build.pagination_grid;
+package com.mar.ds.views.build.pagination;
 
 import com.mar.ds.utils.ButtonBuilder;
 import com.mar.ds.utils.ViewUtils;
@@ -179,13 +179,13 @@ public class PaginationGridService<T> {
 
         Icon dots = new Icon(ELLIPSIS_DOTS_H);
 
-        Button llBtn = ButtonBuilder.createButton()
+        Button doubleLeftBtn = ButtonBuilder.createButton()
                 .icon(ANGLE_DOUBLE_LEFT)
                 .color(ButtonBuilder.Color.BLACK)
                 .clickListener(btnClick -> initGridData(0))
                 .build();
 
-        Button lBtn = ButtonBuilder.createButton()
+        Button leftBtn = ButtonBuilder.createButton()
                 .icon(ANGLE_LEFT)
                 .color(ButtonBuilder.Color.BLACK)
                 .clickListener(btnClick -> {
@@ -197,7 +197,7 @@ public class PaginationGridService<T> {
                 })
                 .build();
 
-        Button rBtn = ButtonBuilder.createButton()
+        Button rightBtn = ButtonBuilder.createButton()
                 .icon(ANGLE_RIGHT)
                 .color(ButtonBuilder.Color.BLACK)
                 .clickListener(btnClick -> {
@@ -211,7 +211,7 @@ public class PaginationGridService<T> {
                     initGridData(newPage - 1);
                 })
                 .build();
-        Button rrBtn = ButtonBuilder.createButton()
+        Button doubleRightBtn = ButtonBuilder.createButton()
                 .icon(ANGLE_DOUBLE_RIGHT)
                 .color(ButtonBuilder.Color.BLACK)
                 .clickListener(btnClick -> {
@@ -226,9 +226,9 @@ public class PaginationGridService<T> {
         rightSpace.setWidthFull();
 
         btns.add(
-                leftSpace, llBtn, lBtn,
+                leftSpace, doubleLeftBtn, leftBtn,
                 pageField, dots, countPageLabel,
-                rBtn, rrBtn, rightSpace
+                rightBtn, doubleRightBtn, rightSpace
         );
         btns.setWidthFull();
         return btns;

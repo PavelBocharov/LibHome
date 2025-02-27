@@ -6,6 +6,7 @@ import com.mar.ds.db.entity.LibHomeSequence;
 import com.mar.ds.db.entity.TechWork;
 import com.mar.ds.db.jpa.LibHomeSeqRepository;
 import com.mar.ds.db.jpa.TechWorkRepository;
+import com.mar.ds.db.service.CardHistoryService;
 import com.mar.ds.db.service.CardService;
 import com.mar.ds.db.service.CardStatusService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,9 @@ public class TechWorkService {
     private CardService cardService;
 
     @Autowired
+    private CardHistoryService historyService;
+
+    @Autowired
     private LibHomeSeqRepository libHomeSeqRepository;
 
     @PostConstruct
@@ -59,6 +63,11 @@ public class TechWorkService {
             log.debug("Fix not upd card status and calc rate ...");
             lastTechId = fixCannotUpdCardStatus();
             log.debug("Fix not upd card status. END.");
+        }
+        if (lastTechId < 5) {
+            log.debug("Remove rate history...");
+            lastTechId = removeRateHistory();
+            log.debug("Remove rate history. END.");
         }
 
     }
@@ -151,6 +160,18 @@ public class TechWorkService {
                         .build()
         );
         return 4L;
+    }
+
+    private long removeRateHistory() {
+        historyService.deleteAllByRate();
+
+        techWorkRepository.save(
+                TechWork.builder()
+                        .title("Remove rate history.")
+                        .techId(5L)
+                        .build()
+        );
+        return 5L;
     }
 
 }

@@ -11,7 +11,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 
-import java.awt.*;
+import java.awt.Color;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.ROTATE_RIGHT;
 
@@ -59,8 +59,14 @@ public class UpdateCardStatusView {
                 updatedStatus.setIcon(ViewUtils.getTextFieldValue(iconField));
                 updatedStatus.setIsRate(isRate.getValue());
                 updatedStatus.setHasUpdStatus(hasUpd.getValue());
-                updatedStatus.setOrder(ViewUtils.getLongValue(orderField).orElseThrow(() -> new RuntimeException("Not set card state order.")));
-                cardStatusView.getService().update(updatedStatus, CardStatus.builder().hasUpdStatus(oldHasUpd).isRate(oldRate).build());
+                updatedStatus.setOrder(
+                        ViewUtils
+                                .getLongValue(orderField)
+                                .orElseThrow(() -> new RuntimeException("Not set card state order."))
+                );
+                cardStatusView.getService().update(
+                        updatedStatus, CardStatus.builder().hasUpdStatus(oldHasUpd).isRate(oldRate).build()
+                );
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);
                 updBtn.setEnabled(true);
@@ -72,7 +78,15 @@ public class UpdateCardStatusView {
         updBtn.setWidthFull();
         updBtn.setDisableOnClick(true);
 
-        updateDialog.add(new Label("Update card status"), textField, colorField, iconField, orderField, new HorizontalLayout(isRate, hasUpd), new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog)));
+        updateDialog.add(
+                new Label("Update card status"),
+                textField,
+                colorField,
+                iconField,
+                orderField,
+                new HorizontalLayout(isRate, hasUpd),
+                new HorizontalLayout(updBtn, ViewUtils.getCloseButton(updateDialog))
+        );
 
         updateDialog.open();
     }

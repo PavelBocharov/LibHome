@@ -12,6 +12,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 
+/**
+ * Репозиторий для работы с карточкой.
+ */
 public interface CardRepository extends JpaRepository<Card, Long> {
 
     @Query(value = "SELECT card FROM Card card WHERE card.cardStatus = :cardStatus or card.oldCardStatus = :cardStatus")

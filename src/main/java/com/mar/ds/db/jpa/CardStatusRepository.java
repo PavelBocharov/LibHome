@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
+/**
+ * Репозиторий по работе со статусом карточки.
+ */
 public interface CardStatusRepository extends JpaRepository<CardStatus, Long> {
 
     @Query(value = "SELECT cs FROM CardStatus cs WHERE cs.tech = :techId")

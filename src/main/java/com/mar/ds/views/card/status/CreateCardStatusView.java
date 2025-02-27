@@ -11,7 +11,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 
-import java.awt.*;
+import java.awt.Color;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
 
@@ -55,7 +55,11 @@ public class CreateCardStatusView {
                                 .icon(ViewUtils.getTextFieldValue(iconField))
                                 .isRate(isRate.getValue())
                                 .hasUpdStatus(hasUpd.getValue())
-                                .order(ViewUtils.getLongValue(orderField).orElseThrow(() -> new RuntimeException("Not set card status order.")))
+                                .order(
+                                        ViewUtils
+                                                .getLongValue(orderField)
+                                                .orElseThrow(() -> new RuntimeException("Not set card status order."))
+                                )
                                 .build()
                 );
             } catch (Exception ex) {

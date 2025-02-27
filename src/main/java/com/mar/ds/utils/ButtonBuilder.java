@@ -13,11 +13,19 @@ import lombok.NoArgsConstructor;
 
 import static java.util.Objects.nonNull;
 
+/**
+ * Билдер для кнопок.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ButtonBuilder {
 
     private Button button;
 
+    /**
+     * Создает пустую кнопку.
+     *
+     * @return билдер.
+     */
     public static ButtonBuilder createButton() {
         ButtonBuilder bb = new ButtonBuilder();
         bb.button = new Button();
@@ -33,6 +41,12 @@ public class ButtonBuilder {
         return this;
     }
 
+    /**
+     * Добавить иконку.
+     *
+     * @param icon иконка.
+     * @return билдер.
+     */
     public ButtonBuilder icon(VaadinIcon icon) {
         if (icon != null) {
             this.button.setIcon(new Icon(icon));
@@ -40,6 +54,12 @@ public class ButtonBuilder {
         return this;
     }
 
+    /**
+     * Добавить цвет текста и иконки.
+     *
+     * @param color цвет.
+     * @return билдер.
+     */
     public ButtonBuilder color(Color color) {
         if (nonNull(color)) {
             return color(color.getName());
@@ -47,6 +67,12 @@ public class ButtonBuilder {
         return this;
     }
 
+    /**
+     * Добавить цвет текста и иконки.
+     *
+     * @param color цвет (HEX или то что браузер поймет).
+     * @return билдер.
+     */
     public ButtonBuilder color(String color) {
         if (nonNull(color)) {
             this.button.getStyle().set("color", color);
@@ -59,6 +85,9 @@ public class ButtonBuilder {
         return this;
     }
 
+    /**
+     * Заготовленные цвета.
+     */
     @Getter
     @AllArgsConstructor
     public enum Color {

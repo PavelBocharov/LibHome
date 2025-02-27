@@ -12,7 +12,7 @@ import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
-import com.mar.ds.views._build.pagination_grid.PaginationGridService;
+import com.mar.ds.views.build.pagination.PaginationGridService;
 import com.mar.ds.views.card.status.CardStatusViewDialog;
 import com.mar.ds.views.card.tags.CardTagsView;
 import com.mar.ds.views.card.type.CardTypeViewDialog;
@@ -42,7 +42,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.vaadin.olli.FileDownloadWrapper;
 
-import java.awt.*;
+import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +89,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class CardView implements ContentView {
 
     public static final int DEFAULT_GRID_ICON_SIZE_INT = 36;
-    public static final String DEFAULT_GRID_ICON_SIZE_VAR = "var(--iron-icon-width, " + DEFAULT_GRID_ICON_SIZE_INT + "px)";
+    public static final String DEFAULT_GRID_ICON_SIZE_VAR = "var(--iron-icon-width, "
+            + DEFAULT_GRID_ICON_SIZE_INT
+            + "px)";
 
     private final MainView mainView;
     @Getter
@@ -118,10 +120,16 @@ public class CardView implements ContentView {
                     List<Card> cardList = mainView.getCardService().findWithOrderByPoint(viewType);
                     for (Card card : cardList) {
                         double rate = card.getRate();
-                        if (rate < minRate) minRate = (long) rate;
-                        if (rate > maxRate) maxRate = (long) Math.ceil(rate);
+                        if (rate < minRate) {
+                            minRate = (long) rate;
+                        }
+                        if (rate > maxRate) {
+                            maxRate = (long) Math.ceil(rate);
+                        }
                     }
-                    if (maxRate <= minRate) maxRate = minRate + 1;
+                    if (maxRate <= minRate) {
+                        maxRate = minRate + 1;
+                    }
 
                     String searchText = ViewUtils.getTextFieldValue(searchField);
                     Sort sort = Sort.by(data.sortOrders());
@@ -285,7 +293,10 @@ public class CardView implements ContentView {
 
         GridContextMenu<Card> menu = grid.addContextMenu();
         menu.addItem("View", event -> event.getItem().ifPresent(this::openInfo));
-        menu.addItem("Fast edit", event -> event.getItem().ifPresent(card -> new FastUpdateCardView(mainView, card).showDialog()));
+        menu.addItem(
+                "Fast edit",
+                event -> event.getItem().ifPresent(card -> new FastUpdateCardView(mainView, card).showDialog())
+        );
         menu.addItem("History", event -> {
             event.getItem().ifPresent(card -> new CardHistoryView(mainView, card).open());
         });
@@ -301,7 +312,7 @@ public class CardView implements ContentView {
     }
 
     private void initGridColumn() {
-        Map<String, String> gridConfig = getTitles(viewType, mainView.getContentJSON());
+        Map<String, String> gridConfig = getTitles(viewType, mainView.getContentJson());
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
         assert nonNull(gridConfig);

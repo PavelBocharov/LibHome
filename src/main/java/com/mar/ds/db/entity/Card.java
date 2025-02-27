@@ -24,6 +24,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+/**
+ * Карточка.
+ */
 @Getter
 @Setter
 @Entity
@@ -88,21 +91,21 @@ public class Card implements Serializable, HasId {
 
     @Override
     public String toString() {
-        return "Card{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", point=" + point +
-                ", link='" + link + '\'' +
-                ", lastGame=" + lastGame +
-                ", lastUpdate=" + lastUpdate +
-                ", engine=" + engine +
-                ", language=" + language +
-                ", viewType=" + viewType +
-                ", cardType=" + cardType +
-                ", cardStatus=" + cardStatus +
-                ", oldCardStatus=" + oldCardStatus +
-                ", rate=" + rate +
-                ", tagList=" + tagList +
-                '}';
+        return "Card{"
+                + "id=" + id
+                + ", title='" + title + '\''
+                + ", point=" + point
+                + ", link='" + link + '\''
+                + ", lastGame=" + lastGame
+                + ", lastUpdate=" + lastUpdate
+                + ", engine=" + engine
+                + ", language=" + language
+                + ", viewType=" + viewType
+                + ", cardType=" + cardType
+                + ", cardStatus=" + cardStatus
+                + ", oldCardStatus=" + oldCardStatus
+                + ", rate=" + rate
+                + ", tagList=" + tagList
+                + '}';
     }
 }

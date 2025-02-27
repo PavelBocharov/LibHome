@@ -1,4 +1,4 @@
-package com.mar.ds.views._build.popup;
+package com.mar.ds.views.build.popup;
 
 import com.mar.ds.utils.ViewUtils;
 import com.vaadin.flow.component.button.Button;
@@ -12,7 +12,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import static com.vaadin.flow.component.icon.VaadinIcon.ROTATE_RIGHT;
 
 
-public abstract class UpdateViewDialog<E extends PopupEntity, VD extends ViewDialog> {
+public abstract class UpdateViewDialog<E extends PopupEntity, V extends ViewDialog> {
 
     private boolean withEnum = true;
     private String nameEntity = null;
@@ -27,7 +27,7 @@ public abstract class UpdateViewDialog<E extends PopupEntity, VD extends ViewDia
         return this;
     }
 
-    public void show(VD viewDialog, E entity) {
+    public void show(V viewDialog, E entity) {
         Dialog updateDialog = new Dialog();
         updateDialog.setCloseOnEsc(true);
         updateDialog.setCloseOnOutsideClick(false);
