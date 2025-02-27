@@ -293,7 +293,7 @@ public class ViewUtils {
     /**
      * Проверка введенного текста.
      *
-     * @param textArea поле для ввода.
+     * @param textArea         поле для ввода.
      * @param countWorldInLine длинна строки.
      * @return флаг о наличии ошибки.
      */
@@ -338,7 +338,24 @@ public class ViewUtils {
         return icon;
     }
 
-    private static Icon getIconByText(@NotBlank String iconName, @NotNull Icon defaultIcon) {
+    /**
+     * Получение иконки по имени.
+     *
+     * @param iconName    именование иконки.
+     * @return иконка (<code>VaadinIcon.BULLSEYE</code>, если не нашел).
+     */
+    public static Icon getIconByText(@NotBlank String iconName) {
+        return getIconByText(iconName, VaadinIcon.BULLSEYE.create());
+    }
+
+    /**
+     * Получение иконки по имени.
+     *
+     * @param iconName    именование иконки.
+     * @param defaultIcon возвращает если не нашли.
+     * @return иконка.
+     */
+    public static Icon getIconByText(@NotBlank String iconName, @NotNull Icon defaultIcon) {
         try {
             return VaadinIcon.valueOf(iconName.toUpperCase()).create();
         } catch (Exception ex) {

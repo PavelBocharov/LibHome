@@ -48,6 +48,15 @@ public class CardStatusViewDialog {
         cardStatusList = new Grid<>();
         cardStatusList.setSizeFull();
 
+        cardStatusList
+                .addComponentColumn(
+                        cardStatus -> {
+                            Icon icon = ViewUtils.getIconByText(cardStatus.getIcon());
+                            icon.setColor(cardStatus.getColor());
+                            return icon;
+                        }
+                )
+                .setHeader("Icon");
         cardStatusList.addColumn(CardStatus::getTitle)
                 .setHeader("Title")
                 .setSortable(true);
