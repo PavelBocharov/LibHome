@@ -49,8 +49,8 @@
 3) Set image version in [docker-compose.yml](../docker-compose.yml) (remove `build` block).
 4) Edit [.env](../.env):
    * `PC_DB_PATH` - directory for DB, images, logs and etc for mount - `PC_DB_PATH >> DATA_PATH`.
-   
-<img alt="How_to_mount.png" height="512" src="images/How_to_mount.png"/>
+ 
+![How_to_mount.png](images/How_to_mount.png)
    
    * `DATA_PATH` - mount directory in **IMAGE** (default - `/opt/app/data/`).
    * `VIEW_CONTENT_JSON` - [content.json](../content.json) for UI text  (default - `/opt/app/data/content.json`)

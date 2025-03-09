@@ -1,6 +1,6 @@
 # 📖 Lib Home
 
-<img height="512" src="readme_files/images/LibHome.png"/>
+![LibHome.png](./readme_files/images/LibHome.png)
 
 ## 🔗 Links
 
@@ -11,10 +11,8 @@
 
 ## 🖼 Screenshots
 
-<div style="text-align: center;">
-    <img height="512" src="./readme_files/images/1.png"/>
-    <img height="512" src="./readme_files/images/2.png"/>
-    <img height="512" src="./readme_files/images/3.png"/>
-    <img height="512" src="./readme_files/images/4.png"/>
-    <img height="512" src="./readme_files/images/5.png"/>
-</div>
+![1.png](./readme_files/images/1.png)
+![2.png](./readme_files/images/2.png)
+![3.png](./readme_files/images/3.png)
+![4.png](./readme_files/images/4.png)
+![5.png](./readme_files/images/5.png)
