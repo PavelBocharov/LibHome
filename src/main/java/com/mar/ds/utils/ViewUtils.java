@@ -151,24 +151,6 @@ public class ViewUtils {
         return clsBtn;
     }
 
-    public static <T extends HasId> void setSelectValue(Select<T> select, T value, List<T> initDataProviderList) {
-        if (isNull(select)
-                || isNull(value)
-                || isNull(initDataProviderList)
-                || initDataProviderList.isEmpty()
-        )
-            return;
-
-        T selectValue = initDataProviderList.stream()
-                .filter(hasId -> hasId.getId().equals(value.getId()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Cannot select " + value));
-        if (nonNull(selectValue)) {
-            select.setItems(initDataProviderList);
-            select.setValue(selectValue);
-        }
-    }
-
     public static DatePicker getDatePicker(String title, LocalDate initDate) {
         DatePicker datePicker = new DatePicker(title, initDate);
         datePicker.setLocale(new Locale("ru", "RU"));
@@ -189,6 +171,25 @@ public class ViewUtils {
                 calendar.get(Calendar.DAY_OF_MONTH)
         ));
         return datePicker;
+    }
+
+    public static <T extends HasId> void setSelectValue(Select<T> select, T value, List<T> initDataProviderList) {
+        if (isNull(select)
+                || isNull(value)
+                || isNull(initDataProviderList)
+                || initDataProviderList.isEmpty()
+        ) {
+            return;
+        }
+
+        T selectValue = initDataProviderList.stream()
+                .filter(hasId -> hasId.getId().equals(value.getId()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Cannot select " + value));
+        if (nonNull(selectValue)) {
+            select.setItems(initDataProviderList);
+            select.setValue(selectValue);
+        }
     }
 
     public static <E extends Enum> void setSelectValue(Select<E> select, E value, E[] selectData, E defaultValue) {
@@ -213,12 +214,16 @@ public class ViewUtils {
     }
 
     public static float getFloatValue(BigDecimalField field) {
-        if (field == null || field.getValue() == null) return 0;
+        if (field == null || field.getValue() == null) {
+            return 0;
+        }
         return field.getValue().floatValue();
     }
 
     public static double getDoubleValue(BigDecimalField field) {
-        if (field == null || field.getValue() == null) return 0;
+        if (field == null || field.getValue() == null) {
+            return 0;
+        }
         return field.getValue().doubleValue();
     }
 
@@ -227,7 +232,9 @@ public class ViewUtils {
     }
 
     public static Optional<Long> getLongValue(BigDecimalField field) {
-        if (field == null || field.getValue() == null) return Optional.empty();
+        if (field == null || field.getValue() == null) {
+            return Optional.empty();
+        }
         return Optional.of(field.getValue().longValue());
     }
 
@@ -247,11 +254,6 @@ public class ViewUtils {
         checkbox.setValue(flag == Boolean.TRUE);
     }
 
-    public static String getTextFieldValue(TextField field) {
-        if (field == null || isBlank(field.getValue())) return null;
-        return field.getValue().trim();
-    }
-
     public static void setTextFieldValue(TextField field, String text) {
         field.setValue(text == null ? "" : text);
     }
@@ -260,8 +262,17 @@ public class ViewUtils {
         field.setValue(text == null ? "" : text);
     }
 
+    public static String getTextFieldValue(TextField field) {
+        if (field == null || isBlank(field.getValue())) {
+            return null;
+        }
+        return field.getValue().trim();
+    }
+
     public static String getTextFieldValue(TextArea field) {
-        if (field == null || isBlank(field.getValue())) return null;
+        if (field == null || isBlank(field.getValue())) {
+            return null;
+        }
         return field.getValue().trim();
     }
 
@@ -280,9 +291,11 @@ public class ViewUtils {
     }
 
     /**
-     * @param textArea
-     * @param countWorldInLine
-     * @return has error
+     * Проверка введенного текста.
+     *
+     * @param textArea         поле для ввода.
+     * @param countWorldInLine длинна строки.
+     * @return флаг о наличии ошибки.
      */
     public static boolean checkString(TextArea textArea, int countWorldInLine) {
         String str = textArea.getValue();
@@ -290,7 +303,9 @@ public class ViewUtils {
         String[] arrStr = str.split("\n");
         for (int i = 0; i < arrStr.length; i++) {
             if (arrStr[i].length() > countWorldInLine) {
-                textArea.setErrorMessage(format("В %d строке было превышен лимит символов (макс. %d)", i + 1, countWorldInLine));
+                textArea.setErrorMessage(
+                        format("В %d строке было превышен лимит символов (макс. %d)", i + 1, countWorldInLine)
+                );
                 textArea.setInvalid(true);
                 return true;
             }
@@ -323,7 +338,24 @@ public class ViewUtils {
         return icon;
     }
 
-    private static Icon getIconByText(@NotBlank String iconName, @NotNull Icon defaultIcon) {
+    /**
+     * Получение иконки по имени.
+     *
+     * @param iconName    именование иконки.
+     * @return иконка (<code>VaadinIcon.BULLSEYE</code>, если не нашел).
+     */
+    public static Icon getIconByText(@NotBlank String iconName) {
+        return getIconByText(iconName, VaadinIcon.BULLSEYE.create());
+    }
+
+    /**
+     * Получение иконки по имени.
+     *
+     * @param iconName    именование иконки.
+     * @param defaultIcon возвращает если не нашли.
+     * @return иконка.
+     */
+    public static Icon getIconByText(@NotBlank String iconName, @NotNull Icon defaultIcon) {
         try {
             return VaadinIcon.valueOf(iconName.toUpperCase()).create();
         } catch (Exception ex) {

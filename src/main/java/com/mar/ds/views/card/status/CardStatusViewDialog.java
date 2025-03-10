@@ -48,6 +48,15 @@ public class CardStatusViewDialog {
         cardStatusList = new Grid<>();
         cardStatusList.setSizeFull();
 
+        cardStatusList
+                .addComponentColumn(
+                        cardStatus -> {
+                            Icon icon = ViewUtils.getIconByText(cardStatus.getIcon());
+                            icon.setColor(cardStatus.getColor());
+                            return icon;
+                        }
+                )
+                .setHeader("Icon");
         cardStatusList.addColumn(CardStatus::getTitle)
                 .setHeader("Title")
                 .setSortable(true);
@@ -68,22 +77,25 @@ public class CardStatusViewDialog {
                 .setHeader("Has UPD")
                 .setSortable(true)
                 .setComparator(CardStatus::getHasUpdStatus);
-        cardStatusList.addComponentColumn(cardStatus -> {
-                    Button dltBtn = new Button(new Icon(VaadinIcon.BAN), buttonClickEvent -> {
-                        try {
-                            new DeleteDialogWidget(() -> {
+        cardStatusList.addComponentColumn(
+                cardStatus -> {
+                    Button dltBtn = new Button(
+                            new Icon(VaadinIcon.BAN),
+                            buttonClickEvent -> {
                                 try {
-                                    getService().delete(cardStatus);
-                                    reloadData();
-                                } catch (Exception e) {
-                                    ViewUtils.showErrorMsg("Delete card status ERROR", e);
+                                    new DeleteDialogWidget(() -> {
+                                        try {
+                                            getService().delete(cardStatus);
+                                            reloadData();
+                                        } catch (Exception e) {
+                                            ViewUtils.showErrorMsg("Delete card status ERROR", e);
+                                        }
+                                    });
+                                } catch (Exception ex) {
+                                    ViewUtils.showErrorMsg("ERROR", ex);
+                                    return;
                                 }
                             });
-                        } catch (Exception ex) {
-                            ViewUtils.showErrorMsg("ERROR", ex);
-                            return;
-                        }
-                    });
                     dltBtn.getStyle().set("color", "red");
 
                     Button uptBtn = new Button(
@@ -91,8 +103,8 @@ public class CardStatusViewDialog {
                             buttonClickEvent -> new UpdateCardStatusView(this, cardStatus)
                     );
                     return new HorizontalLayout(uptBtn, dltBtn);
-                })
-                .setTextAlign(ColumnTextAlign.END);
+                }
+        ).setTextAlign(ColumnTextAlign.END);
 
         cardStatusList.setItems(getService().findByWithTechIdIsNull());
     }

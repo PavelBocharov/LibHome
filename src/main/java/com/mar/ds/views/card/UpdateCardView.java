@@ -124,7 +124,10 @@ public class UpdateCardView extends CardDialogView {
             setSelectValue(cardTypeListSelect, updateCard.getCardType(), cardTypeList);
             // type tags
             components.add(getTagMultiselector());
-            List<CardTypeTag> tagList = mainView.getRepositoryService().getCardTypeTagRepository().findByCardType(updateCard.getCardType());
+            List<CardTypeTag> tagList = mainView
+                    .getRepositoryService()
+                    .getCardTypeTagRepository()
+                    .findByCardType(updateCard.getCardType());
             setMultiSelectComboBoxValue(tags, tagList, updateCard.getTagList());
         }
         if (components.size() > 1) {

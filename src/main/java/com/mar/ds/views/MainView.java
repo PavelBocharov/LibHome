@@ -131,7 +131,7 @@ public class MainView extends AppLayout {
         return button;
     }
 
-    public String getContentJSON() {
+    public String getContentJson() {
         return this.getEnv().getProperty("app.data.content.file");
     }
 }

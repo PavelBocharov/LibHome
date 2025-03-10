@@ -46,9 +46,9 @@ public class CardTypeTag implements HasId, Serializable {
 
     @Override
     public String toString() {
-        return "CardTypeTag{" +
-                "title='" + title + '\'' +
-                ", id=" + id +
-                '}';
+        return "CardTypeTag{"
+                + "title='" + title + '\''
+                + ", id=" + id
+                + '}';
     }
 }

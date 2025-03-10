@@ -57,7 +57,10 @@ public class FileUtils {
         }
     }
 
-    public static @Nullable Map<String, String> getTitles(@NotNull ViewType viewType, @NotBlank @NotNull String filePath) {
+    public static @Nullable Map<String, String> getTitles(
+            @NotNull ViewType viewType,
+            @NotBlank @NotNull String filePath
+    ) {
         if (viewType == null || isBlank(filePath)) {
             throw new RuntimeException("Cannot load titles: viewType is null or filePath is blank.");
         }
@@ -112,7 +115,9 @@ public class FileUtils {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("Employee Data");
 
-        Object[] header = new Object[]{"Status", "Engine", "Language", "Title", "Point", "URL link", "Last update", "Type", "Tags"};
+        Object[] header = new Object[]{
+                "Status", "Engine", "Language", "Title", "Point", "URL link", "Last update", "Type", "Tags"
+        };
         Map<String, Object[]> data = new TreeMap<>();
         int i = 1;
         data.put(String.valueOf(i++), header);

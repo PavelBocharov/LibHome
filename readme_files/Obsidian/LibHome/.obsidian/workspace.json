@@ -1,0 +1,179 @@
+{
+  "main": {
+    "id": "81d5d4ccb6e7e35d",
+    "type": "split",
+    "children": [
+      {
+        "id": "f57227660f672308",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6cac2e814f2765e0",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "How to mount.canvas",
+                "viewState": {
+                  "x": 380,
+                  "y": -256.5,
+                  "zoom": -0.21530567535356795
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "How to mount"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "f5c5a7a2b9af4f09",
+    "type": "split",
+    "children": [
+      {
+        "id": "f863a14139bda3d6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "821482ee8b5bb416",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Файловый менеджер"
+            }
+          },
+          {
+            "id": "4bc49190ce5da588",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Поиск"
+            }
+          },
+          {
+            "id": "8652aa9634f4ba36",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Закладки"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "bf88f423dc544863",
+    "type": "split",
+    "children": [
+      {
+        "id": "b03da02c16cc343d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e2af16530eda03ad",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "How to mount.canvas",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Обратные ссылки для How to mount"
+            }
+          },
+          {
+            "id": "9b4bc1cf6354b0d8",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "How to mount.canvas",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Исходящие ссылки из How to mount"
+            }
+          },
+          {
+            "id": "385d639eb638d885",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Теги"
+            }
+          },
+          {
+            "id": "5910299fe88b394c",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "How to mount.canvas",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Структура How to mount"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Меню быстрого перехода": false,
+      "graph:Граф": false,
+      "canvas:Создать новый холст": false,
+      "daily-notes:Сегодняшняя заметка": false,
+      "templates:Вставить шаблон": false,
+      "command-palette:Открыть палитру команд": false
+    }
+  },
+  "active": "6cac2e814f2765e0",
+  "lastOpenFiles": [
+    "How to mount.canvas",
+    "Добро пожаловать.md"
+  ]
+}

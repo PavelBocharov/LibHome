@@ -1,4 +1,4 @@
-package com.mar.ds.views._build.popup;
+package com.mar.ds.views.build.popup;
 
 public interface PopupEntity {
 

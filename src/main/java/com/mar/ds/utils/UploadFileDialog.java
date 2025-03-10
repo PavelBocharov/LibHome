@@ -39,7 +39,15 @@ public class UploadFileDialog extends Dialog {
     private MainView mainView;
     private Upload uploadFile;
 
-    public UploadFileDialog(MainView mainView, String rootDir, Card card, boolean isCover, int countFiles, Set<String> uploadFileTypes, Runnable afterUploadEvent) {
+    public UploadFileDialog(
+            MainView mainView,
+            String rootDir,
+            Card card,
+            boolean isCover,
+            int countFiles,
+            Set<String> uploadFileTypes,
+            Runnable afterUploadEvent
+    ) {
         this.mainView = mainView;
         this.card = card;
         this.rootDir = rootDir;
@@ -99,7 +107,9 @@ public class UploadFileDialog extends Dialog {
                     ViewUtils.showErrorMsg("Send post exception: ", new Exception(fileRejectedEvent.getErrorMessage()));
                 }
         );
-        uploadFile.addFailedListener(failedEvent -> log.warn("FailedListener --> {}", failedEvent.getReason().getMessage()));
+        uploadFile.addFailedListener(
+                failedEvent -> log.warn("FailedListener --> {}", failedEvent.getReason().getMessage())
+        );
 
         String maxFileSize = mainView.getEnv().getProperty("spring.servlet.multipart.max-file-size", "10MB");
         Integer fileSize = Integer.parseInt(maxFileSize.substring(0, maxFileSize.length() - 2)) * 1024 * 1024;

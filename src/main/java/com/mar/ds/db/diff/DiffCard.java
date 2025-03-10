@@ -58,7 +58,6 @@ public class DiffCard {
                 .append(CARD_LAST_UPD_DATE, oldCard.getLastUpdate().getTime(), updatedCard.getLastUpdate().getTime())
                 .append(CARD_LANGUAGE, oldCard.getLanguage(), updatedCard.getLanguage())
                 .append(CARD_VIEW_TYPE, oldCard.getViewType(), updatedCard.getViewType())
-                .append(CARD_RATE, oldCard.getRate(), updatedCard.getRate())
                 .append(CARD_TYPE, oldCard.getCardType(), updatedCard.getCardType())
                 .append(CARD_STATUS, oldCard.getCardStatus(), updatedCard.getCardStatus())
                 .append(CARD_OLD_STATUS, oldCard.getOldCardStatus(), updatedCard.getOldCardStatus());

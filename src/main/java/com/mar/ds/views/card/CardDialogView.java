@@ -42,10 +42,14 @@ import static com.mar.ds.data.GridInfo.GRID_TITLE;
 import static com.mar.ds.data.GridInfo.GRID_TYPE;
 import static com.mar.ds.utils.ViewUtils.getDoubleValue;
 import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
+import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+/**
+ * Диалоговое окно с информацией по карточке.
+ */
 public abstract class CardDialogView {
 
     protected MainView mainView;
@@ -73,7 +77,7 @@ public abstract class CardDialogView {
         if (isNull(titles)) {
             synchronized (this) {
                 if (isNull(titles)) {
-                    titles = FileUtils.getTitles(viewType, mainView.getContentJSON());
+                    titles = FileUtils.getTitles(viewType, mainView.getContentJson());
                 }
             }
         }
@@ -82,13 +86,13 @@ public abstract class CardDialogView {
 
     protected void checkValues() throws Exception {
         if (isBlank(getTextFieldValue(cardTitle))) {
-            throw new RuntimeException(String.format("'%s' not be blank.", getTitles().get(GRID_TITLE)));
+            throw new RuntimeException(format("'%s' not be blank.", getTitles().get(GRID_TITLE)));
         }
         if (nonNull(point)) {
             double cardPoint = getDoubleValue(point);
             if (minPoint > cardPoint || maxPoint < cardPoint) {
                 point.setInvalid(true);
-                throw new Exception(String.format("Point value ERROR.\nMin value = %d, max value = %d", minPoint, maxPoint));
+                throw new Exception(format("Point value ERROR.\nMin value = %d, max value = %d", minPoint, maxPoint));
             } else {
                 point.setInvalid(false);
             }
@@ -98,7 +102,7 @@ public abstract class CardDialogView {
     protected Component getTitle() {
         cardTitle = new TextField(
                 Optional.of(getTitles().get(GRID_TITLE)).orElseThrow(() -> new RuntimeException(
-                                String.format("Not init '%s' label text.", GRID_TITLE)
+                                format("Not init '%s' label text.", GRID_TITLE)
                         )
                 )
         );
@@ -110,7 +114,7 @@ public abstract class CardDialogView {
     protected Component getPointField() {
         point = new BigDecimalField(getTitles().get(GRID_POINT));
         point.setValue(BigDecimal.valueOf(minPoint));
-        point.setHelperText(String.format("Min value = %d, max value = %d", minPoint, maxPoint));
+        point.setHelperText(format("Min value = %d, max value = %d", minPoint, maxPoint));
         point.setWidthFull();
         return point;
     }

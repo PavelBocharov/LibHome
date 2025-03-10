@@ -1,0 +1,36 @@
+{
+	"nodes":[
+		{"id":"84ba8b6e605e42a8","type":"group","x":-620,"y":-620,"width":940,"height":727,"color":"6","label":"Your server"},
+		{"id":"b9c983f907ffd09f","x":425,"y":-600,"width":955,"height":707,"color":"3","type":"group","label":"Docker image"},
+		{"id":"2a3d2c2b7d2e8cc0","x":-180,"y":-270,"width":494,"height":226,"color":"#00fffb","type":"group","label":"Project data"},
+		{"id":"18bd388bf396a12d","x":840,"y":-174,"width":510,"height":214,"color":"#00fffb","type":"group","label":"Project data"},
+		{"id":"78fd7010ba7e99e7","type":"text","text":"D:","x":-585,"y":-490,"width":250,"height":60,"color":"1"},
+		{"id":"9cd34338d7b4fe18","type":"text","text":"D:\\LibHome ","x":-380,"y":-370,"width":270,"height":60,"color":"1"},
+		{"id":"be0df1e48a4e4602","type":"text","text":".\\data (`PC_DB_PATH`)","x":-160,"y":-250,"width":250,"height":60,"color":"1"},
+		{"id":"ad4dfeaf4b46cdfa","type":"text","text":"content.json","x":44,"y":-124,"width":250,"height":60,"color":"4"},
+		{"id":"98da384189d58518","type":"text","text":"docker-compose.yml","x":-160,"y":20,"width":250,"height":60,"color":"4"},
+		{"id":"23203287a3f19044","type":"text","text":"C:","x":-585,"y":-580,"width":250,"height":60,"color":"1"},
+		{"id":"ab5b5c0e55397f9d","x":445,"y":-580,"width":250,"height":60,"color":"1","type":"text","text":"/"},
+		{"id":"acefb698320e1bad","x":655,"y":-460,"width":250,"height":60,"color":"1","type":"text","text":"bin"},
+		{"id":"c987211fa0c81214","x":655,"y":-400,"width":250,"height":60,"color":"1","type":"text","text":"boot"},
+		{"id":"5c3c9cc4fe42e041","x":655,"y":-340,"width":250,"height":60,"type":"text","text":"..."},
+		{"id":"8cd6fb29b072d97a","x":655,"y":-280,"width":250,"height":60,"color":"1","type":"text","text":"opt"},
+		{"id":"3ffdca71d2d8f6e3","type":"text","text":" /app/data/ (`DATA_PATH`)","x":860,"y":-154,"width":280,"height":60,"color":"1"},
+		{"id":"4cb68af5587e6044","x":1080,"y":-40,"width":250,"height":60,"color":"4","type":"text","text":"content.json"},
+		{"id":"dd98c1ec0bcd42f2","type":"text","text":".env","x":-160,"y":-40,"width":250,"height":60,"color":"4"}
+	],
+	"edges":[
+		{"id":"fdcf2ee5dd979855","fromNode":"78fd7010ba7e99e7","fromSide":"bottom","toNode":"9cd34338d7b4fe18","toSide":"left"},
+		{"id":"9ca2a6348c2e7364","fromNode":"9cd34338d7b4fe18","fromSide":"bottom","toNode":"be0df1e48a4e4602","toSide":"left"},
+		{"id":"f9016d8175e44246","fromNode":"be0df1e48a4e4602","fromSide":"bottom","toNode":"ad4dfeaf4b46cdfa","toSide":"left"},
+		{"id":"33d0b6cd637717a0","fromNode":"9cd34338d7b4fe18","fromSide":"bottom","toNode":"dd98c1ec0bcd42f2","toSide":"left"},
+		{"id":"c48c55a666446e57","fromNode":"9cd34338d7b4fe18","fromSide":"bottom","toNode":"98da384189d58518","toSide":"left"},
+		{"id":"a5a30ee2f787f7f8","fromNode":"ab5b5c0e55397f9d","fromSide":"bottom","toNode":"acefb698320e1bad","toSide":"left"},
+		{"id":"51800ecbe8eb4a76","fromNode":"ab5b5c0e55397f9d","fromSide":"bottom","toNode":"c987211fa0c81214","toSide":"left"},
+		{"id":"563fd55083bda66a","fromNode":"ab5b5c0e55397f9d","fromSide":"bottom","toNode":"5c3c9cc4fe42e041","toSide":"left"},
+		{"id":"48ea8993c2995ffd","fromNode":"ab5b5c0e55397f9d","fromSide":"bottom","toNode":"8cd6fb29b072d97a","toSide":"left"},
+		{"id":"4aeb26a0d5535edd","fromNode":"8cd6fb29b072d97a","fromSide":"bottom","toNode":"3ffdca71d2d8f6e3","toSide":"left"},
+		{"id":"8e15ae5594ec8d9b","fromNode":"2a3d2c2b7d2e8cc0","fromSide":"right","toNode":"18bd388bf396a12d","toSide":"left","label":"mount"},
+		{"id":"e0a2804222ddfb05","fromNode":"3ffdca71d2d8f6e3","fromSide":"bottom","toNode":"4cb68af5587e6044","toSide":"left"}
+	]
+}

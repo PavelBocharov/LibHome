@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Slf4j
@@ -52,7 +53,8 @@ public class CardTagsView {
         tagsGrid.addColumn(CardTypeTag::getTitle).setHeader("Title")
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.CENTER);
-        tagsGrid.addComponentColumn(tag -> {
+        tagsGrid.addComponentColumn(
+                        tag -> {
                             Button dltBtn = new Button(
                                     VaadinIcon.CLOSE_CIRCLE.create(),
                                     event -> {
@@ -65,7 +67,12 @@ public class CardTagsView {
                                             log.warn("Find cards with status tag: {}, list: {}", tag, cards);
                                             ViewUtils.showErrorMsg(
                                                     "Delete card type tag ERROR",
-                                                    new Exception(String.format("Find cards with type tag: '%s', count: %d.", tag.getTitle(), cards.size()))
+                                                    new Exception(
+                                                            format(
+                                                                    "Find cards with type tag: '%s', count: %d.",
+                                                                    tag.getTitle(), cards.size()
+                                                            )
+                                                    )
                                             );
                                         }
                                     });
@@ -130,7 +137,10 @@ public class CardTagsView {
     public void reloadData() {
         CardType cardType = cardTypeListSelect.getValue();
         if (cardType != null) {
-            List<CardTypeTag> tagList = mainView.getRepositoryService().getCardTypeTagRepository().findByCardType(cardType);
+            List<CardTypeTag> tagList = mainView
+                    .getRepositoryService()
+                    .getCardTypeTagRepository()
+                    .findByCardType(cardType);
             tagsGrid.setItems(tagList);
             mainView.getActiveView().reloadData();
         }

@@ -7,15 +7,17 @@ import com.mar.ds.db.jpa.CardTypeRepository;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
-import com.mar.ds.views._build.popup.ViewDialog;
+import com.mar.ds.views.build.popup.ViewDialog;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Slf4j
-public class CardTypeViewDialog extends ViewDialog<CardType, CardTypeRepository, CardTypeCreateDialog, CardTypeUpdateDialog> {
+public class CardTypeViewDialog
+        extends ViewDialog<CardType, CardTypeRepository, CardTypeCreateDialog, CardTypeUpdateDialog> {
 
     public CardTypeViewDialog(MainView appLayout) {
         super(appLayout, "Card type");
@@ -47,7 +49,10 @@ public class CardTypeViewDialog extends ViewDialog<CardType, CardTypeRepository,
                 List<Card> cards = appLayout.getCardService().findByCardType(entity);
                 if (isEmpty(cards)) {
                     log.info("Delete card type: {}", entity);
-                    List<CardTypeTag> tags = appLayout.getRepositoryService().getCardTypeTagRepository().findByCardType(entity);
+                    List<CardTypeTag> tags = appLayout
+                            .getRepositoryService()
+                            .getCardTypeTagRepository()
+                            .findByCardType(entity);
                     for (CardTypeTag tag : tags) {
                         log.info("Delete card type tag: {}", tag);
                         appLayout.getRepositoryService().getCardTypeTagRepository().deleteById(tag.getId());
@@ -58,7 +63,9 @@ public class CardTypeViewDialog extends ViewDialog<CardType, CardTypeRepository,
                     log.warn("Delete card type error. Find cards with type: {}, list: {}", entity, cards);
                     ViewUtils.showErrorMsg(
                             "Delete card type ERROR",
-                            new Exception(String.format("Find cards with type: '%s', count: %d.", entity.getTitle(), cards.size()))
+                            new Exception(
+                                    format("Find cards with type: '%s', count: %d.", entity.getTitle(), cards.size())
+                            )
                     );
                 }
             });

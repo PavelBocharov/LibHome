@@ -1,82 +1,18 @@
-# <img src="readme_files/icon/icon.png" width="30"/> Lib Home
+# 📖 Lib Home
 
-![](readme_files/LibHome.png)
+![LibHome.png](./readme_files/images/LibHome.png)
 
 ## 🔗 Links
 
-* [Docker HUB](https://hub.docker.com/r/marolok/lib_home)
-* [GitHub](https://github.com/PavelBocharov/LibHome)
-* [Build and run](#build-and-run)
-* [Problem and fix](#problem-and-fix)
-
-## 🛠 Build and run
-
-### <img src="readme_files/icon/arrow-right.png" width="16"/> Start application local
-
-1) Install JDK17 - https://adoptopenjdk.net/
-   > Upper version crash with Lombok (tested with JDK 21).
-2) Install NodeJS - https://nodejs.org/en/download/
-    * Install nvm - [Windows](https://github.com/coreybutler/nvm-windows), [Linux](https://github.com/nvm-sh/nvm)
-3) Start `Spring Run` profile.
-    * In root generate files for **npm**.
-
-### <img src="readme_files/icon/docker-icon.png" width="16"/> Build Docker image
-0) PreSetting for Linux
-   - Add user to docker group
-      ``` bash 
-      sudo usermod -a -G docker marolok
-      ```
-   - Login in Docker
-      ``` bash 
-      docker login --username=marolok
-      ```
-1) Build production **.jar**
-   ```bash 
-   mvn clean install -Pproduction
-   ```
-2) Build image
-   ```bash 
-   docker build --no-cache -t marolok/lib_home:3.4.0 .
-   ```
-3) Push image
-   ```bash 
-   docker push marolok/lib_home:3.4.0
-   ```
-4) Set image version in [docker-compose.yml](./docker-compose.yml)
-5) Start `docker-compose`
-   ```bash 
-   docker compose up
-   ``` 
-   or
-   ```bash 
-   docker-compose up
-   ```
-
-   > ℹ️ Info  
-   > Use `-d` for daemon mode.
+* [🛠 Build and 🚀 run](./readme_files/Start_application.md)
+* [🚢 Docker HUB](https://hub.docker.com/r/marolok/lib_home)
+* [♻️ GitHub](https://github.com/PavelBocharov/LibHome)
+* [🚧 Problem and fix](./readme_files/Problems.md)
 
 ## 🖼 Screenshots
 
-![](readme_files/1.png)
-![](readme_files/2.png)
-![](readme_files/3.png)
-![](readme_files/4.png)
-![](readme_files/5.png)
-
-## 🐛 Problem and fix
-
-### NodeJS code `ERR_OSSL_EVP_UNSUPPORTED`
-
-#### Problem:
-
-![](readme_files/criptoProblems.png)
-
-#### Solution: Set NodeJS v16
-
-```bash 
-nvm install 16.13.1 64
-```
-
-```bash 
-nvm use 16.13.1
-```
+![1.png](./readme_files/images/1.png)
+![2.png](./readme_files/images/2.png)
+![3.png](./readme_files/images/3.png)
+![4.png](./readme_files/images/4.png)
+![5.png](./readme_files/images/5.png)

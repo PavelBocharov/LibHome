@@ -1,4 +1,4 @@
-package com.mar.ds.views._build.pagination_grid;
+package com.mar.ds.views.build.pagination;
 
 import org.junit.jupiter.api.Test;
 
