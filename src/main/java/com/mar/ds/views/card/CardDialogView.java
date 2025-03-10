@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.mar.ds.data.GridInfo.GRID_DATE_GAME;
 import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
@@ -46,11 +48,15 @@ import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Диалоговое окно с информацией по карточке.
  */
 public abstract class CardDialogView {
+
+    public static final String URL_PATTERN = "^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$";
+    public static final String URL_HELPER = "Pattern: http(s)://(www.)your.site.com/bla-bla.bla";
 
     protected MainView mainView;
     protected ViewType viewType;
@@ -87,6 +93,13 @@ public abstract class CardDialogView {
     protected void checkValues() throws Exception {
         if (isBlank(getTextFieldValue(cardTitle))) {
             throw new RuntimeException(format("'%s' not be blank.", getTitles().get(GRID_TITLE)));
+        }
+        if (isNotBlank(getTextFieldValue(link))) {
+            String url = getTextFieldValue(link);
+            Matcher matcher = Pattern.compile(URL_PATTERN).matcher(url);
+            if (!matcher.find()) {
+                throw new RuntimeException(format("'%s' is not URL format.", getTitles().get(GRID_LINK)));
+            }
         }
         if (nonNull(point)) {
             double cardPoint = getDoubleValue(point);
@@ -141,6 +154,8 @@ public abstract class CardDialogView {
     protected Component getLinkFiled() {
         link = new TextField(getTitles().get(GRID_LINK));
         link.setWidthFull();
+        link.setPattern(URL_PATTERN);
+        link.setHelperText(URL_HELPER);
         return link;
     }
 

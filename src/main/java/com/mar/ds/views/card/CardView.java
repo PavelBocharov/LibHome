@@ -55,6 +55,7 @@ import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
 import static com.mar.ds.data.GridInfo.GRID_ENGINE;
 import static com.mar.ds.data.GridInfo.GRID_ID;
 import static com.mar.ds.data.GridInfo.GRID_LANGUAGE;
+import static com.mar.ds.data.GridInfo.GRID_LINK;
 import static com.mar.ds.data.GridInfo.GRID_POINT;
 import static com.mar.ds.data.GridInfo.GRID_RATE;
 import static com.mar.ds.data.GridInfo.GRID_STATUS;
@@ -287,12 +288,26 @@ public class CardView implements ContentView {
     }
 
     private void initGridListeners() {
+        Map<String, String> gridConfig = getTitles(viewType, mainView.getContentJson());
+
         grid.addItemDoubleClickListener(
                 dialogItemDoubleClickEvent -> openInfo(dialogItemDoubleClickEvent.getItem())
         );
 
         GridContextMenu<Card> menu = grid.addContextMenu();
         menu.addItem("View", event -> event.getItem().ifPresent(this::openInfo));
+        if (gridConfig.containsKey(GRID_LINK)) {
+            menu.addItem("Link", event -> event.getItem().ifPresent(card -> {
+                if (isBlank(card.getLink())) {
+                    ViewUtils.showErrorMsg(
+                            "Not find URL",
+                            new Exception("URL field is blank. Set value in card info dialog update view.")
+                    );
+                } else {
+                    mainView.getUI().ifPresent(ui -> ui.getPage().open(card.getLink(), "_blank"));
+                }
+            }));
+        }
         menu.addItem(
                 "Fast edit",
                 event -> event.getItem().ifPresent(card -> new FastUpdateCardView(mainView, card).showDialog())
