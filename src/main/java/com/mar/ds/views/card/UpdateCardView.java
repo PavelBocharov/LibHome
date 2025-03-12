@@ -8,6 +8,7 @@ import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
 import com.mar.ds.db.mapper.CardMapper;
+import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Component;
@@ -51,9 +52,9 @@ public class UpdateCardView extends CardDialogView {
 
     private final Dialog updateDialog;
 
-    public UpdateCardView(MainView mainView, Card updateCard, Runnable afterUpdateEvent) {
+    public UpdateCardView(MainView mainView, Card updateCard, FileUtils.ViewTypeDto viewType, Runnable afterUpdateEvent) {
         this.mainView = mainView;
-        this.viewType = updateCard.getViewType();
+        this.viewType = viewType;
         this.minPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.min", "0"));
         this.maxPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.max", "10"));
 

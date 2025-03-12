@@ -66,8 +66,7 @@ public class Card implements Serializable, HasId {
     private Language language = Language.DEFAULT;
 
     @Column(name = "view_type", nullable = false)
-    @ColumnDefault("1")
-    private ViewType viewType;
+    private Integer viewType;
 
     @Column(name = "card_rate")
     private Double rate;

@@ -36,7 +36,7 @@ public class DiffCard {
             if (updatedCard.getId() != null) {
                 return List.of(
                         CardHistory.builder()
-                                .titlePage(updatedCard.getViewType().getTitle())
+                                .titlePage(String.valueOf(updatedCard.getViewType()))
                                 .columnName("CREATE CARD")
                                 .oldValue("")
                                 .newValue(updatedCard.toString())
@@ -84,7 +84,7 @@ public class DiffCard {
                     CardHistory.builder()
                             .editableId(oldCard.getId())
                             .columnName(diff.getFieldName())
-                            .titlePage(oldCard.getViewType().getTitle())
+                            .titlePage(String.valueOf(oldCard.getViewType()))
                             .oldValue(String.valueOf(diff.getLeft()))
                             .newValue(String.valueOf(diff.getRight()))
                             .updateCardTime(updDate)

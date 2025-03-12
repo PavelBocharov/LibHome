@@ -81,7 +81,7 @@ public class CardHistoryService {
                 CardHistory.builder()
                         .editableId(card.getId())
                         .columnName("DELETED")
-                        .titlePage(card.getViewType().getTitle())
+                        .titlePage(String.valueOf(card.getViewType()))
                         .oldValue(card.toString())
                         .newValue("")
                         .build()

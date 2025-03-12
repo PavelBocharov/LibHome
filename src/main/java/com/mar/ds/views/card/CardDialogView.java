@@ -5,7 +5,6 @@ import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
-import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
@@ -59,7 +58,7 @@ public abstract class CardDialogView {
     public static final String URL_HELPER = "Pattern: http(s)://(www.)your.site.com/bla-bla.bla";
 
     protected MainView mainView;
-    protected ViewType viewType;
+    protected FileUtils.ViewTypeDto viewType;
     protected int minPoint;
     protected int maxPoint;
     protected TextField cardTitle;
