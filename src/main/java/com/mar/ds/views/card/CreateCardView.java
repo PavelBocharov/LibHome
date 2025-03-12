@@ -3,7 +3,7 @@ package com.mar.ds.views.card;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
-import com.mar.ds.db.entity.ViewType;
+import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Component;
@@ -41,7 +41,7 @@ public class CreateCardView extends CardDialogView {
 
     private final Dialog createDialog;
 
-    public CreateCardView(MainView mainView, ViewType viewType) {
+    public CreateCardView(MainView mainView, FileUtils.ViewTypeDto viewType) {
         this.mainView = mainView;
         this.viewType = viewType;
         this.minPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.min", "0"));
@@ -116,7 +116,7 @@ public class CreateCardView extends CardDialogView {
                 checkValues();
                 Card card = mainView.getCardService().save(
                         Card.builder()
-                                .viewType(viewType)
+                                .viewType(viewType.id())
                                 .title(getTextFieldValue(cardTitle))
                                 .info(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""))
                                 .link(getTextFieldValue(link))

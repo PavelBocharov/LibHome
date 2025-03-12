@@ -73,16 +73,19 @@ public class CardInfoView extends Dialog {
 
     private final MainView mainView;
     private final Card card;
+    private final com.mar.ds.utils.FileUtils.ViewTypeDto viewType;
 
     /**
      * Конструктор.
      *
      * @param mainView родительское окно.
      * @param card     по какой карточке будет история.
+     * @param viewType тип карточки
      */
-    public CardInfoView(MainView mainView, Card card) {
+    public CardInfoView(MainView mainView, Card card, com.mar.ds.utils.FileUtils.ViewTypeDto viewType) {
         this.mainView = mainView;
         this.card = card;
+        this.viewType = viewType;
 
         try {
             this.add(loadData());
@@ -101,7 +104,7 @@ public class CardInfoView extends Dialog {
         File fileDir = new File(dataDir + "cards/", card.getId() + "/");
         File previewDir = new File(dataDir + "cards/", card.getId() + "/preview");
         Map<String, String> titles = com.mar.ds.utils.FileUtils.getTitles(
-                card.getViewType(), mainView.getContentJson()
+                viewType, mainView.getContentJson()
         );
 
         HorizontalLayout imageAndTitle = new HorizontalLayout();
@@ -362,7 +365,7 @@ public class CardInfoView extends Dialog {
 
         Button updBtn = new Button("Update", VaadinIcon.PENCIL.create());
         updBtn.addClickListener(buttonClickEvent ->
-                new UpdateCardView(mainView, card, () -> {
+                new UpdateCardView(mainView, card, viewType, () -> {
                     this.reloadData();
                     mainView.getActiveView().reloadData();
                 }).showDialog()

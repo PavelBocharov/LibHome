@@ -1,10 +1,10 @@
 package com.mar.ds.views;
 
-import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.db.service.CardHistoryService;
 import com.mar.ds.db.service.CardService;
 import com.mar.ds.db.service.CardStatusService;
 import com.mar.ds.service.RepositoryService;
+import com.mar.ds.utils.FileUtils;
 import com.mar.ds.views.card.CardView;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -28,6 +28,7 @@ import org.springframework.core.env.Environment;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -41,7 +42,7 @@ import java.util.Properties;
 public class MainView extends AppLayout {
 
     @Getter
-    private final Map<ViewType, ContentView> cardsView;
+    private final Map<FileUtils.ViewTypeDto, ContentView> cardsView;
 
     @Getter
     @Autowired
@@ -63,7 +64,7 @@ public class MainView extends AppLayout {
     @Autowired
     private Environment env;
 
-    private ViewType activeView;
+    private FileUtils.ViewTypeDto activeView;
 
     public MainView() throws IOException {
         cardsView = new HashMap<>();
@@ -75,14 +76,18 @@ public class MainView extends AppLayout {
 
         Tabs tabs = new Tabs();
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
-        for (ViewType type : ViewType.values()) {
-            ContentView view;
-            if (ViewType.NULL.equals(type)) {
-                view = new StartPageView(this, ViewType.NULL);
-            } else {
-                view = new CardView(this, type);
-            }
-            tabs.add(getTab(type.getTitle(), type.getIcon(), view));
+
+        List<FileUtils.ViewTypeDto> types = FileUtils.getCardViewTypeList(
+                loadProperties("application.properties").getProperty("app.data.content.file")
+        );
+        FileUtils.ViewTypeDto startView = new FileUtils.ViewTypeDto(0, "Start page", null, VaadinIcon.HOME);
+        StartPageView startPageView = new StartPageView(this, startView);
+        cardsView.put(startView, startPageView);
+        tabs.add(getTab(startView.title(), startView.icon(), startPageView));
+
+        for (FileUtils.ViewTypeDto type : types) {
+            ContentView view = new CardView(this, type);
+            tabs.add(getTab(type.title(), type.icon(), view));
             cardsView.put(type, view);
         }
 
@@ -97,10 +102,10 @@ public class MainView extends AppLayout {
         DrawerToggle toggle = new DrawerToggle();
         addToDrawer(tabs);
         addToNavbar(toggle, headTitle);
-        setContentByType(ViewType.NULL);
+        setContentByType(startView);
     }
 
-    public void setContentByType(ViewType type) {
+    public void setContentByType(FileUtils.ViewTypeDto type) {
         activeView = type;
         setContent(getActiveView().getContent());
     }

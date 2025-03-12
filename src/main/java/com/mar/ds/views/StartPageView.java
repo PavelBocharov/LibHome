@@ -1,6 +1,6 @@
 package com.mar.ds.views;
 
-import com.mar.ds.db.entity.ViewType;
+import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.H3;
@@ -15,7 +15,7 @@ public class StartPageView implements ContentView {
 
     private final MainView appLayout;
     @Getter
-    private final ViewType viewType;
+    private final FileUtils.ViewTypeDto viewType;
 
     public Component getContent() {
         try {

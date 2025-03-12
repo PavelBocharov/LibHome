@@ -2,7 +2,6 @@ package com.mar.ds.db.dto;
 
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
-import com.mar.ds.db.entity.ViewType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +27,7 @@ public class CardDto implements Serializable {
     private Date lastUpdate;
     private GameEngine engine;
     private Language language;
-    private ViewType viewType;
+    private Integer viewType;
     private Double rate;
     private CardTypeDto cardType;
     private CardStatusDto cardStatus;

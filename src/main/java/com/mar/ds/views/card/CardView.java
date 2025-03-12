@@ -5,7 +5,6 @@ import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
-import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.db.mapper.CardMapper;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.FileUtils;
@@ -96,7 +95,7 @@ public class CardView implements ContentView {
 
     private final MainView mainView;
     @Getter
-    private final ViewType viewType;
+    private final FileUtils.ViewTypeDto viewType;
 
     private int minPoint;
     private int maxPoint;
@@ -118,7 +117,7 @@ public class CardView implements ContentView {
         paginationGridService = new PaginationGridService<Card>(grid, pageSize,
                 data -> {
                     // calc min/max rate
-                    List<Card> cardList = mainView.getCardService().findWithOrderByPoint(viewType);
+                    List<Card> cardList = mainView.getCardService().findWithOrderByPoint(viewType.id());
                     for (Card card : cardList) {
                         double rate = card.getRate();
                         if (rate < minRate) {
@@ -137,10 +136,10 @@ public class CardView implements ContentView {
                     PageRequest pageRequest = PageRequest.of(data.page(), data.pageSize(), sort);
                     if (isBlank(searchText)) {
                         return mainView.getCardService()
-                                .findAllByView(viewType, pageRequest);
+                                .findAllByView(viewType.id(), pageRequest);
                     } else {
                         return mainView.getCardService()
-                                .findAllByViewAndLikeTitleMap(viewType, searchText, pageRequest);
+                                .findAllByViewAndLikeTitleMap(viewType.id(), searchText, pageRequest);
                     }
                 }
         );
@@ -157,7 +156,7 @@ public class CardView implements ContentView {
         searchField.addValueChangeListener(e -> paginationGridService.reloadData(1));
 
         // create view
-        H3 label = new H3(viewType.getTitle());
+        H3 label = new H3(viewType.title());
         label.setWidthFull();
 
         Select<Button> settingButtons = new Select<>();
@@ -206,8 +205,8 @@ public class CardView implements ContentView {
         cardTypeTagView.setWidthFull();
 
         FileDownloadWrapper buttonWrapper = FileUtils.getDownloadFileButton(
-                this.viewType.name() + ".xlsx",
-                () -> mainView.getCardService().findWithOrderByPoint(viewType)
+                this.viewType.title() + ".xlsx",
+                () -> mainView.getCardService().findWithOrderByPoint(viewType.id())
         );
 
         return new Component[]{crtBtn, cardStatusView, cardTypeView, cardTypeTagView, buttonWrapper};
@@ -234,7 +233,7 @@ public class CardView implements ContentView {
 
     private void openInfo(Card card) {
         if (card != null) {
-            CardInfoView info = new CardInfoView(mainView, card);
+            CardInfoView info = new CardInfoView(mainView, card, viewType);
             info.open();
         }
     }
@@ -310,7 +309,9 @@ public class CardView implements ContentView {
         }
         menu.addItem(
                 "Fast edit",
-                event -> event.getItem().ifPresent(card -> new FastUpdateCardView(mainView, card).showDialog())
+                event -> event.getItem().ifPresent(
+                        card -> new FastUpdateCardView(mainView, card, viewType).showDialog()
+                )
         );
         menu.addItem("History", event -> {
             event.getItem().ifPresent(card -> new CardHistoryView(mainView, card).open());

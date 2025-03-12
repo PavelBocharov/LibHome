@@ -3,7 +3,6 @@ package com.mar.ds.db.jpa;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
-import com.mar.ds.db.entity.ViewType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,10 +25,10 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findByTagIn(@NotNull Long id);
 
     @Query(value = "SELECT card FROM Card card WHERE card.viewType = :view ORDER BY card.point DESC")
-    List<Card> findWithOrderByPoint(@NotNull ViewType view);
+    List<Card> findWithOrderByPoint(@NotNull Integer view);
 
     @Query(value = "SELECT c FROM Card c JOIN c.cardStatus cs WHERE c.viewType = :view")
-    Page<Card> findAllByView(@NotNull ViewType view, Pageable pageable);
+    Page<Card> findAllByView(@NotNull Integer view, Pageable pageable);
 
     @Query(value = """
             SELECT
@@ -53,6 +52,6 @@ public interface CardRepository extends JpaRepository<Card, Long> {
                         )
                 )
             """)
-    Page<Card> findAllByViewAndLikeTitleMap(@NotNull ViewType view, String searchText, Pageable pageable);
+    Page<Card> findAllByViewAndLikeTitleMap(@NotNull Integer view, String searchText, Pageable pageable);
 
 }

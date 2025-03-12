@@ -1,5 +1,9 @@
 {
   "GAME": {
+    "id": "1",
+    "title": "Games",
+    "icon": "Gamepad",
+
     "grid_status": "Статус",
     "grid_engine": "Движок",
     "grid_title": "Наименование",
@@ -18,6 +22,10 @@
     "grid_language": "Язык"
   },
   "VIDEO": {
+    "id": "2",
+    "title": "Films & Movies",
+    "icon": "film",
+
     "grid_status": "Тип",
     "grid_title": "Наименование",
     "grid_type": "Тип контента",
@@ -33,6 +41,10 @@
     "grid_files": "Файлы"
   },
   "BOOK": {
+    "id": "3",
+    "title": "Book, Comix & Artbook",
+    "icon": "book",
+
     "grid_status": "Тип",
     "grid_title": "Наименование",
     "grid_type": "Тип издания",
@@ -47,6 +59,10 @@
     "grid_files": "Файлы"
   },
   "MUSIC": {
+    "id": "4",
+    "title": "Music",
+    "icon": "music",
+
     "grid_status": "Тип",
     "grid_title": "Наименование",
     "grid_type": "Тип издания",
@@ -58,6 +74,26 @@
     "grid_btns": "",
     "grid_info": "Информация",
     "grid_image":"Скриншоты",
+    "grid_video": "Видео и клипы",
+    "grid_files": "Файлы",
+    "grid_language": "Язык"
+  },
+  "PEOPLE": {
+    "id": "5",
+    "title": "People",
+    "icon": "group",
+
+    "grid_status": "Тип",
+    "grid_title": "Имя",
+    "grid_type": "Деятельность",
+    "grid_tags": "Теги",
+
+    "grid_point": "Оценка",
+    "grid_date_upd": "Дата рождения",
+    "grid_date_game": "Дата ???",
+    "grid_btns": "",
+    "grid_info": "Информация",
+    "grid_image":"Фото",
     "grid_video": "Видео и клипы",
     "grid_files": "Файлы",
     "grid_language": "Язык"
