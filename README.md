@@ -1,6 +1,6 @@
 # 📖 Lib Home
 
-![LibHome.png](./readme_files/images/LibHome.png)
+![LibHome.jpg](./readme_files/images/LibHome.jpg)
 
 ## 🔗 Links
 
