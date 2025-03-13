@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,7 +39,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
-import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -79,7 +77,8 @@ public class FileUtils {
                     Integer.parseInt(mapType.get("id")),
                     mapType.get("title"),
                     key,
-                    ViewUtils.getVaadinIconByText(mapType.get("icon"))
+                    ViewUtils.getVaadinIconByText(mapType.get("icon")),
+                    Integer.parseInt(mapType.get("order"))
             );
             views.add(viewTypeDto);
         }
@@ -87,7 +86,7 @@ public class FileUtils {
         return views;
     }
 
-    public record ViewTypeDto(Integer id, String title, String key, VaadinIcon icon) { }
+    public record ViewTypeDto(Integer id, String title, String key, VaadinIcon icon, Integer order) { }
 
     public static Map<String, Map<String, String>> loadContentInfo(@NotBlank @NotNull String filePath) {
 

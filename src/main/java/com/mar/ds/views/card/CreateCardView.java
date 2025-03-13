@@ -68,6 +68,8 @@ public class CreateCardView extends CardDialogView {
                 createDialog.add(getEngineSelector());
             }
         }
+        // type view
+        createDialog.add(getViewTypeSelector(viewType));
         // link
         if (nonNull(getTitles().get(GRID_LINK))) {
             createDialog.add(getLinkFiled());
@@ -116,8 +118,8 @@ public class CreateCardView extends CardDialogView {
                 checkValues();
                 Card card = mainView.getCardService().save(
                         Card.builder()
-                                .viewType(viewType.id())
                                 .title(getTextFieldValue(cardTitle))
+                                .viewType(getValue(viewTypeDtoSelect, viewType).id())
                                 .info(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""))
                                 .link(getTextFieldValue(link))
                                 .engine(getValue(engineSelect, GameEngine.DEFAULT))

@@ -84,6 +84,8 @@ public class UpdateCardView extends CardDialogView {
                 setSelectValue(engineSelect, updateCard.getEngine(), GameEngine.values());
             }
         }
+        // type view
+        updateDialog.add(getViewTypeSelector(viewType));
         // link
         if (nonNull(getTitles().get(GRID_LINK))) {
             updateDialog.add(getLinkFiled());
@@ -151,6 +153,7 @@ public class UpdateCardView extends CardDialogView {
                 CardMapper cardMapper = Mappers.getMapper(CardMapper.class);
                 CardDto old = cardMapper.toDto(updateCard);
                 updateCard.setTitle(getTextFieldValue(cardTitle));
+                updateCard.setViewType(getValue(viewTypeDtoSelect, viewType).id());
                 updateCard.setInfo(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""));
                 updateCard.setLink(getTextFieldValue(link));
                 updateCard.setEngine(getValue(engineSelect, GameEngine.DEFAULT));

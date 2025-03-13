@@ -13,6 +13,7 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.BigDecimalField;
@@ -64,6 +65,7 @@ public abstract class CardDialogView {
     protected TextField cardTitle;
     protected BigDecimalField point;
     protected Select<GameEngine> engineSelect;
+    protected Select<FileUtils.ViewTypeDto> viewTypeDtoSelect;
     protected TextField link;
     protected DatePicker updDate;
     protected DatePicker gameDate;
@@ -144,10 +146,30 @@ public abstract class CardDialogView {
                     return new HorizontalLayout(icon, new Label(gameEngine.getName()));
                 }
         ));
-//        engineSelect.setTextRenderer(GameEngine::getName);
         engineSelect.setWidthFull();
         engineSelect.setValue(GameEngine.RENPY);
         return engineSelect;
+    }
+
+    protected Component getViewTypeSelector(FileUtils.ViewTypeDto initValue) {
+        List<FileUtils.ViewTypeDto> viewTypeDtos = mainView.getViewTypeList();
+        viewTypeDtoSelect = new Select<>(viewTypeDtos.toArray(FileUtils.ViewTypeDto[]::new));
+        viewTypeDtoSelect.setEmptySelectionAllowed(false);
+        viewTypeDtoSelect.setWidthFull();
+        viewTypeDtoSelect.setRenderer(new ComponentRenderer<>(
+                viewTypeDto -> {
+                    Icon icon = viewTypeDto.icon().create();
+                    icon.setColor("var(--_lumo-button-color, var(--lumo-primary-text-color))");
+                    return new HorizontalLayout(icon, new Label(viewTypeDto.title()));
+                }
+        ));
+        viewTypeDtoSelect.setValue(
+                viewTypeDtos.stream()
+                        .filter(viewTypeDto -> viewTypeDto.id().equals(initValue.id()))
+                        .findFirst()
+                        .orElse(initValue)
+        );
+        return viewTypeDtoSelect;
     }
 
     protected Component getLinkFiled() {

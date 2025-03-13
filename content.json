@@ -3,6 +3,7 @@
     "id": "1",
     "title": "Games",
     "icon": "Gamepad",
+    "order": "5",
 
     "grid_status": "Статус",
     "grid_engine": "Движок",
@@ -25,6 +26,7 @@
     "id": "2",
     "title": "Films & Movies",
     "icon": "film",
+    "order": "20",
 
     "grid_status": "Тип",
     "grid_title": "Наименование",
@@ -44,6 +46,7 @@
     "id": "3",
     "title": "Book, Comix & Artbook",
     "icon": "book",
+    "order": "25",
 
     "grid_status": "Тип",
     "grid_title": "Наименование",
@@ -62,6 +65,7 @@
     "id": "4",
     "title": "Music",
     "icon": "music",
+    "order": "15",
 
     "grid_status": "Тип",
     "grid_title": "Наименование",
@@ -82,6 +86,7 @@
     "id": "5",
     "title": "People",
     "icon": "group",
+    "order": "10",
 
     "grid_status": "Тип",
     "grid_title": "Имя",

@@ -27,6 +27,7 @@ import org.springframework.core.env.Environment;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,7 @@ public class MainView extends AppLayout {
     private Environment env;
 
     private FileUtils.ViewTypeDto activeView;
+    private volatile List<FileUtils.ViewTypeDto> viewTypeDtoList;
 
     public MainView() throws IOException {
         cardsView = new HashMap<>();
@@ -77,15 +79,12 @@ public class MainView extends AppLayout {
         Tabs tabs = new Tabs();
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
 
-        List<FileUtils.ViewTypeDto> types = FileUtils.getCardViewTypeList(
-                loadProperties("application.properties").getProperty("app.data.content.file")
-        );
-        FileUtils.ViewTypeDto startView = new FileUtils.ViewTypeDto(0, "Start page", null, VaadinIcon.HOME);
+        FileUtils.ViewTypeDto startView = new FileUtils.ViewTypeDto(0, "Start page", null, VaadinIcon.HOME, -1);
         StartPageView startPageView = new StartPageView(this, startView);
         cardsView.put(startView, startPageView);
         tabs.add(getTab(startView.title(), startView.icon(), startPageView));
 
-        for (FileUtils.ViewTypeDto type : types) {
+        for (FileUtils.ViewTypeDto type : getViewTypeList()) {
             ContentView view = new CardView(this, type);
             tabs.add(getTab(type.title(), type.icon(), view));
             cardsView.put(type, view);
@@ -138,5 +137,23 @@ public class MainView extends AppLayout {
 
     public String getContentJson() {
         return this.getEnv().getProperty("app.data.content.file");
+    }
+
+    public List<FileUtils.ViewTypeDto> getViewTypeList() {
+        if (viewTypeDtoList == null) {
+            synchronized (this) {
+                if (viewTypeDtoList == null) {
+                    viewTypeDtoList = FileUtils.getCardViewTypeList(
+                            loadProperties("application.properties").getProperty("app.data.content.file")
+                    );
+                    if (viewTypeDtoList != null) {
+                        viewTypeDtoList = viewTypeDtoList.stream()
+                                .sorted(Comparator.comparing(FileUtils.ViewTypeDto::order))
+                                .toList();
+                    }
+                }
+            }
+        }
+        return viewTypeDtoList;
     }
 }
