@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.DiffResult;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -54,8 +55,14 @@ public class DiffCard {
                 .append(CARD_POINT, oldCard.getPoint(), updatedCard.getPoint())
                 .append(CARD_INFO, oldCard.getInfo(), updatedCard.getInfo())
                 .append(CARD_LINK, oldCard.getLink(), updatedCard.getLink())
-                .append(CARD_LAST_GAME_DATE, oldCard.getLastGame().getTime(), updatedCard.getLastGame().getTime())
-                .append(CARD_LAST_UPD_DATE, oldCard.getLastUpdate().getTime(), updatedCard.getLastUpdate().getTime())
+                .append(CARD_LAST_GAME_DATE,
+                        getDateWithoutTime(oldCard.getLastGame()),
+                        getDateWithoutTime(updatedCard.getLastGame())
+                )
+                .append(CARD_LAST_UPD_DATE,
+                        getDateWithoutTime(oldCard.getLastUpdate()),
+                        getDateWithoutTime(updatedCard.getLastUpdate())
+                )
                 .append(CARD_LANGUAGE, oldCard.getLanguage(), updatedCard.getLanguage())
                 .append(CARD_VIEW_TYPE, oldCard.getViewType(), updatedCard.getViewType())
                 .append(CARD_TYPE, oldCard.getCardType(), updatedCard.getCardType())
@@ -92,6 +99,16 @@ public class DiffCard {
             );
         }
         return historyList;
+    }
+
+    private static long getDateWithoutTime(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.set(Calendar.HOUR, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTime().getTime();
     }
 
 }

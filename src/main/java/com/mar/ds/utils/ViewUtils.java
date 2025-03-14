@@ -282,7 +282,20 @@ public class ViewUtils {
         if (date == null || date.getValue() == null) {
             return defaultDate;
         }
-        return Date.from(date.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        LocalDate ld = date.getValue();
+        Date d = new Date(
+                ld.getYear() - 1900,
+                ld.getMonthValue() - 1,
+                ld.getDayOfMonth(),
+                0, 0, 0
+        );
+        Calendar c = Calendar.getInstance();
+        c.setTime(d);
+        c.set(Calendar.HOUR, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTime();
     }
 
     public static <T> T getValue(Select<T> selector, T defaultValue) {
