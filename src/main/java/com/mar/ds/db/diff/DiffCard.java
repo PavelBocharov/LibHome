@@ -9,11 +9,12 @@ import org.apache.commons.lang3.builder.DiffResult;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.mar.ds.utils.Utils.getDateWithoutTime;
 
 public class DiffCard {
 
@@ -99,16 +100,6 @@ public class DiffCard {
             );
         }
         return historyList;
-    }
-
-    private static long getDateWithoutTime(Date date) {
-        Calendar c = Calendar.getInstance();
-        c.setTime(date);
-        c.set(Calendar.HOUR, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        return c.getTime().getTime();
     }
 
 }

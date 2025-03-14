@@ -23,6 +23,7 @@ import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 import static com.mar.ds.db.service.CardStatusService.TECH_HASE_UPD_ID;
+import static com.mar.ds.utils.Utils.getDateWithoutTime;
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 
@@ -172,13 +173,12 @@ public class CardService {
             return;
         }
 
-        long deltaGame = -1;
+        long deltaGame = 0;
         if (card.getLastGame() != null) {
-            long now = new Date().getTime() / 86400000;
-            long lastGameTime = card.getLastGame().getTime() / 86400000;
-            deltaGame = now - lastGameTime;
+            long now = getDateWithoutTime(new Date());
+            long lastGameTime = getDateWithoutTime(card.getLastGame());
+            deltaGame = (now - lastGameTime) / 43200000;
         }
-
         card.setRate(card.getPoint() * deltaGame * 0.01);
     }
 }
