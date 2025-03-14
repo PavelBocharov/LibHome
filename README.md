@@ -1,4 +1,4 @@
-# 📖 Lib Home
+# 📖 LibHome
 
 ![LibHome.jpg](./readme_files/images/LibHome.jpg)
 

@@ -18,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Getter
@@ -30,7 +31,8 @@ import javax.persistence.Table;
 public class CardTypeTag implements HasId, Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_type_tag_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_type_tag_name")
+    @SequenceGenerator(name = "card_type_tag_name", sequenceName = "card_type_tag_seq", allocationSize = 1)
     private Long id;
 
     @Column(name = "title", nullable = false)
