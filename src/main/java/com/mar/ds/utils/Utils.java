@@ -24,7 +24,7 @@ public class Utils {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         return new Date(
-                c.get(Calendar.YEAR),
+                c.get(Calendar.YEAR) - 1900,
                 c.get(Calendar.MONTH),
                 c.get(Calendar.DAY_OF_MONTH)
         ).getTime();
