@@ -41,6 +41,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -253,6 +255,7 @@ public class CardInfoView extends Dialog {
 
             Collection<File> imgFiles = FileUtils.listFiles(fileDir, new String[]{"png", "jpg", "jpeg"}, false);
             if (imgFiles != null && !imgFiles.isEmpty()) {
+                List<File> sortedImages = imgFiles.stream().sorted(Comparator.comparing(File::getName)).toList();
                 VerticalLayout images = new VerticalLayout();
                 images.setId("acc_image_list");
                 images.setSizeFull();
@@ -264,7 +267,7 @@ public class CardInfoView extends Dialog {
                     if (event.getOpenedIndex().isPresent()) {
                         if (event.getOpenedPanel().get().getContent().findFirst().get().equals(accImages)) {
                             images.removeAll();
-                            for (File file : imgFiles) {
+                            for (File file : sortedImages) {
                                 Image accImage = getImage(file.getAbsolutePath());
                                 accImage.setMaxWidth(
                                         parseFloat(accImage.getWidth().replace("px", ""))
@@ -283,6 +286,7 @@ public class CardInfoView extends Dialog {
 
             Collection<File> videoFiles = FileUtils.listFiles(fileDir, new String[]{"mov", "mp4"}, false);
             if (videoFiles != null && !videoFiles.isEmpty()) {
+                List<File> sortedVideo = videoFiles.stream().sorted(Comparator.comparing(File::getName)).toList();
                 VerticalLayout videos = new VerticalLayout();
                 videos.setId("acc_videos_list");
                 videos.setSizeFull();
@@ -294,7 +298,7 @@ public class CardInfoView extends Dialog {
                     if (event.getOpenedIndex().isPresent()) {
                         if (event.getOpenedPanel().get().getContent().findFirst().get().equals(accVideos)) {
                             videos.removeAll();
-                            for (File file : videoFiles) {
+                            for (File file : sortedVideo) {
                                 File previewFile = null;
 
                                 if (previewDir.exists() && previewDir.isDirectory()) {
@@ -322,12 +326,12 @@ public class CardInfoView extends Dialog {
 
             Grid<File> cardFiles = new Grid<>();
             cardFiles.addComponentColumn(this::openFile).setHeader("File path")
-                    .setAutoWidth(true).setSortable(true).setComparator(file -> file.getName());
+                    .setAutoWidth(true).setSortable(true).setComparator(File::getAbsolutePath);
             cardFiles.addColumn(file -> FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(file)))
                     .setHeader("Size").setAutoWidth(true).setFlexGrow(0)
-                    .setSortable(true).setComparator(file -> FileUtils.sizeOf(file));
+                    .setSortable(true).setComparator(FileUtils::sizeOf);
             cardFiles.addComponentColumn(this::getDeleteFileButton).setHeader("Delete").setFlexGrow(0);
-            cardFiles.setItems(FileUtils.listFiles(fileDir, null, true));
+            cardFiles.setItems(FileUtils.listFiles(fileDir, null, true).stream().sorted(Comparator.comparing(File::getAbsolutePath)));
             cardFiles.setWidthFull();
             cardFiles.addThemeVariants(GridVariant.LUMO_COMPACT);
             accordion.add(titles.get(GRID_FILES), getAccordionContent(cardFiles));

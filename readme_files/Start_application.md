@@ -25,11 +25,11 @@
 3) Save JRE archive to `./docker_files/OpenJDK*.tar.gz` - you can set in [Dockerfile](../Dockerfile)
 4) Build image (set your version):
    ```bash 
-   docker build --no-cache -t marolok/lib_home:4.0.1 .
+   docker build --no-cache -t marolok/lib_home:4.1.0 .
    ```
 5) Push image:
    ```bash 
-   docker push marolok/lib_home:4.0.1
+   docker push marolok/lib_home:4.1.0
    ```
 
 ## 🚀 Start Docker image
