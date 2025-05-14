@@ -5,14 +5,13 @@ import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.Language;
-import com.mar.ds.db.entity.ViewType;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.server.StreamResource;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,8 +25,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,7 +46,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @UtilityClass
 public class FileUtils {
 
-    private static volatile EnumMap<ViewType, Map<String, String>> viewInfos;
+    private static volatile Map<String, Map<String, String>> viewInfos;
 
     @SneakyThrows
     public static void deleteDir(String pathDir) {
@@ -58,42 +57,53 @@ public class FileUtils {
     }
 
     public static @Nullable Map<String, String> getTitles(
-            @NotNull ViewType viewType,
+            @NotNull FileUtils.ViewTypeDto viewType,
             @NotBlank @NotNull String filePath
     ) {
         if (viewType == null || isBlank(filePath)) {
             throw new RuntimeException("Cannot load titles: viewType is null or filePath is blank.");
         }
 
+        return loadContentInfo(filePath).get(viewType.key);
+    }
+
+    public static List<ViewTypeDto> getCardViewTypeList(@NotBlank @NotNull String filePath) {
+        Map<String, Map<String, String>> viewTypes = loadContentInfo(filePath);
+        List<ViewTypeDto> views = new ArrayList<>(viewTypes.size());
+
+        for (String key : viewTypes.keySet()) {
+            Map<String, String> mapType = viewTypes.get(key);
+            ViewTypeDto viewTypeDto = new ViewTypeDto(
+                    Integer.parseInt(mapType.get("id")),
+                    mapType.get("title"),
+                    key,
+                    ViewUtils.getVaadinIconByText(mapType.get("icon")),
+                    Integer.parseInt(mapType.get("order"))
+            );
+            views.add(viewTypeDto);
+        }
+
+        return views;
+    }
+
+    public record ViewTypeDto(Integer id, String title, String key, VaadinIcon icon, Integer order) { }
+
+    public static Map<String, Map<String, String>> loadContentInfo(@NotBlank @NotNull String filePath) {
+
         if (viewInfos == null) {
             synchronized (FileUtils.class) {
                 if (viewInfos == null) {
-                    viewInfos = FileUtils.loadContentInfo(filePath);
+                    ObjectMapper mapper = new ObjectMapper();
+                    try {
+                        viewInfos = mapper.readValue(new File(filePath), Map.class);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
 
-        return viewInfos.get(viewType);
-    }
-
-    public static EnumMap<ViewType, Map<String, String>> loadContentInfo(@NotBlank @NotNull String filePath) {
-        ObjectMapper mapper = new ObjectMapper();
-        EnumMap<ViewType, Map<String, String>> res = new EnumMap<>(ViewType.class);
-        try {
-            Map<String, Map<String, String>> json = mapper.readValue(new File(filePath), Map.class);
-            for (String key : json.keySet()) {
-                try {
-                    ViewType type = ViewType.valueOf(key);
-                    res.put(type, json.get(key));
-                } catch (Exception ignored) {
-                    log.warn("Ignore JSON key: {}. Exception: {}", key, ExceptionUtils.getMessage(ignored));
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return res;
+        return viewInfos;
     }
 
     public static FileDownloadWrapper getDownloadFileButton(String fileName, Supplier<List<Card>> cardSupplier) {

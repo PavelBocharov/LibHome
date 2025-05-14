@@ -24,6 +24,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.StreamResource;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.vaadin.gatanaso.MultiselectComboBox;
@@ -58,6 +59,7 @@ import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+@Slf4j
 @UtilityClass
 public class ViewUtils {
 
@@ -280,7 +282,20 @@ public class ViewUtils {
         if (date == null || date.getValue() == null) {
             return defaultDate;
         }
-        return Date.from(date.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        LocalDate ld = date.getValue();
+        Date d = new Date(
+                ld.getYear() - 1900,
+                ld.getMonthValue() - 1,
+                ld.getDayOfMonth(),
+                0, 0, 0
+        );
+        Calendar c = Calendar.getInstance();
+        c.setTime(d);
+        c.set(Calendar.HOUR, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTime();
     }
 
     public static <T> T getValue(Select<T> selector, T defaultValue) {
@@ -352,6 +367,21 @@ public class ViewUtils {
      * Получение иконки по имени.
      *
      * @param iconName    именование иконки.
+     * @return иконка (<code>VaadinIcon.BULLSEYE</code>, если не нашел).
+     */
+    public static VaadinIcon getVaadinIconByText(@NotBlank String iconName) {
+        try {
+            return VaadinIcon.valueOf(iconName.toUpperCase());
+        } catch (Exception ex) {
+            log.error("Not find icon by text: {}", iconName);
+            return VaadinIcon.BULLSEYE;
+        }
+    }
+
+    /**
+     * Получение иконки по имени.
+     *
+     * @param iconName    именование иконки.
      * @param defaultIcon возвращает если не нашли.
      * @return иконка.
      */
@@ -359,6 +389,7 @@ public class ViewUtils {
         try {
             return VaadinIcon.valueOf(iconName.toUpperCase()).create();
         } catch (Exception ex) {
+            log.error("Not find icon by text: {}", iconName);
             return defaultIcon;
         }
     }

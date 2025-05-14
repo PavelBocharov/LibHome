@@ -8,6 +8,7 @@ import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
 import com.mar.ds.db.mapper.CardMapper;
+import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Component;
@@ -51,9 +52,9 @@ public class UpdateCardView extends CardDialogView {
 
     private final Dialog updateDialog;
 
-    public UpdateCardView(MainView mainView, Card updateCard, Runnable afterUpdateEvent) {
+    public UpdateCardView(MainView mainView, Card updateCard, FileUtils.ViewTypeDto viewType, Runnable afterUpdateEvent) {
         this.mainView = mainView;
-        this.viewType = updateCard.getViewType();
+        this.viewType = viewType;
         this.minPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.min", "0"));
         this.maxPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.max", "10"));
 
@@ -83,6 +84,8 @@ public class UpdateCardView extends CardDialogView {
                 setSelectValue(engineSelect, updateCard.getEngine(), GameEngine.values());
             }
         }
+        // type view
+        updateDialog.add(getViewTypeSelector(viewType));
         // link
         if (nonNull(getTitles().get(GRID_LINK))) {
             updateDialog.add(getLinkFiled());
@@ -150,6 +153,7 @@ public class UpdateCardView extends CardDialogView {
                 CardMapper cardMapper = Mappers.getMapper(CardMapper.class);
                 CardDto old = cardMapper.toDto(updateCard);
                 updateCard.setTitle(getTextFieldValue(cardTitle));
+                updateCard.setViewType(getValue(viewTypeDtoSelect, viewType).id());
                 updateCard.setInfo(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""));
                 updateCard.setLink(getTextFieldValue(link));
                 updateCard.setEngine(getValue(engineSelect, GameEngine.DEFAULT));

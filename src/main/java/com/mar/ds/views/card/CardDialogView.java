@@ -5,7 +5,6 @@ import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
-import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
@@ -14,6 +13,7 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.BigDecimalField;
@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.mar.ds.data.GridInfo.GRID_DATE_GAME;
 import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
@@ -46,19 +48,24 @@ import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Диалоговое окно с информацией по карточке.
  */
 public abstract class CardDialogView {
 
+    public static final String URL_PATTERN = "^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$";
+    public static final String URL_HELPER = "Pattern: http(s)://(www.)your.site.com/bla-bla.bla";
+
     protected MainView mainView;
-    protected ViewType viewType;
+    protected FileUtils.ViewTypeDto viewType;
     protected int minPoint;
     protected int maxPoint;
     protected TextField cardTitle;
     protected BigDecimalField point;
     protected Select<GameEngine> engineSelect;
+    protected Select<FileUtils.ViewTypeDto> viewTypeDtoSelect;
     protected TextField link;
     protected DatePicker updDate;
     protected DatePicker gameDate;
@@ -87,6 +94,13 @@ public abstract class CardDialogView {
     protected void checkValues() throws Exception {
         if (isBlank(getTextFieldValue(cardTitle))) {
             throw new RuntimeException(format("'%s' not be blank.", getTitles().get(GRID_TITLE)));
+        }
+        if (isNotBlank(getTextFieldValue(link))) {
+            String url = getTextFieldValue(link);
+            Matcher matcher = Pattern.compile(URL_PATTERN).matcher(url);
+            if (!matcher.find()) {
+                throw new RuntimeException(format("'%s' is not URL format.", getTitles().get(GRID_LINK)));
+            }
         }
         if (nonNull(point)) {
             double cardPoint = getDoubleValue(point);
@@ -132,15 +146,37 @@ public abstract class CardDialogView {
                     return new HorizontalLayout(icon, new Label(gameEngine.getName()));
                 }
         ));
-//        engineSelect.setTextRenderer(GameEngine::getName);
         engineSelect.setWidthFull();
         engineSelect.setValue(GameEngine.RENPY);
         return engineSelect;
     }
 
+    protected Component getViewTypeSelector(FileUtils.ViewTypeDto initValue) {
+        List<FileUtils.ViewTypeDto> viewTypeDtos = mainView.getViewTypeList();
+        viewTypeDtoSelect = new Select<>(viewTypeDtos.toArray(FileUtils.ViewTypeDto[]::new));
+        viewTypeDtoSelect.setEmptySelectionAllowed(false);
+        viewTypeDtoSelect.setWidthFull();
+        viewTypeDtoSelect.setRenderer(new ComponentRenderer<>(
+                viewTypeDto -> {
+                    Icon icon = viewTypeDto.icon().create();
+                    icon.setColor("var(--_lumo-button-color, var(--lumo-primary-text-color))");
+                    return new HorizontalLayout(icon, new Label(viewTypeDto.title()));
+                }
+        ));
+        viewTypeDtoSelect.setValue(
+                viewTypeDtos.stream()
+                        .filter(viewTypeDto -> viewTypeDto.id().equals(initValue.id()))
+                        .findFirst()
+                        .orElse(initValue)
+        );
+        return viewTypeDtoSelect;
+    }
+
     protected Component getLinkFiled() {
         link = new TextField(getTitles().get(GRID_LINK));
         link.setWidthFull();
+        link.setPattern(URL_PATTERN);
+        link.setHelperText(URL_HELPER);
         return link;
     }
 

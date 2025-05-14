@@ -4,7 +4,6 @@ import com.mar.ds.db.dto.CardDto;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
-import com.mar.ds.db.entity.ViewType;
 import com.mar.ds.db.jpa.CardRepository;
 import com.mar.ds.db.mapper.CardMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +23,7 @@ import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 import static com.mar.ds.db.service.CardStatusService.TECH_HASE_UPD_ID;
+import static com.mar.ds.utils.Utils.getDateWithoutTime;
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 
@@ -42,10 +42,10 @@ public class CardService {
     /**
      * Конструктор.
      *
-     * @param cardRepository репозиторий по работе с карточками.
-     * @param cardStatusService сервис по работе со статусами карточки.
+     * @param cardRepository     репозиторий по работе с карточками.
+     * @param cardStatusService  сервис по работе со статусами карточки.
      * @param cardHistoryService сервис по работе с истории изменения карточки.
-     * @param cardMapper маппер карточки.
+     * @param cardMapper         маппер карточки.
      */
     @Autowired
     public CardService(
@@ -79,11 +79,11 @@ public class CardService {
         cardHistoryService.saveHistory(oldNewCards);
     }
 
-    public Page<Card> findAllByView(@NotNull ViewType view, Pageable pageable) {
+    public Page<Card> findAllByView(@NotNull Integer view, Pageable pageable) {
         return cardRepository.findAllByView(view, pageable);
     }
 
-    public Page<Card> findAllByViewAndLikeTitleMap(@NotNull ViewType view, String searchText, Pageable pageable) {
+    public Page<Card> findAllByViewAndLikeTitleMap(@NotNull Integer view, String searchText, Pageable pageable) {
         return cardRepository.findAllByViewAndLikeTitleMap(view, searchText, pageable);
     }
 
@@ -151,7 +151,7 @@ public class CardService {
         cardRepository.delete(card);
     }
 
-    public List<Card> findWithOrderByPoint(ViewType viewType) {
+    public List<Card> findWithOrderByPoint(Integer viewType) {
         return cardRepository.findWithOrderByPoint(viewType);
     }
 
@@ -173,13 +173,12 @@ public class CardService {
             return;
         }
 
-        long deltaGame = -1;
+        long deltaGame = 0;
         if (card.getLastGame() != null) {
-            long now = new Date().getTime() / 86400000;
-            long lastGameTime = card.getLastGame().getTime() / 86400000;
-            deltaGame = now - lastGameTime;
+            long now = getDateWithoutTime(new Date());
+            long lastGameTime = getDateWithoutTime(card.getLastGame());
+            deltaGame = (now - lastGameTime) / 43200000;
         }
-
         card.setRate(card.getPoint() * deltaGame * 0.01);
     }
 }

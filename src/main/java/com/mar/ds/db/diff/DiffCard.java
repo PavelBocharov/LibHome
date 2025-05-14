@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.mar.ds.utils.Utils.getDateWithoutTime;
+
 public class DiffCard {
 
     public static final String CARD_TITLE = "title";
@@ -36,7 +38,7 @@ public class DiffCard {
             if (updatedCard.getId() != null) {
                 return List.of(
                         CardHistory.builder()
-                                .titlePage(updatedCard.getViewType().getTitle())
+                                .titlePage(String.valueOf(updatedCard.getViewType()))
                                 .columnName("CREATE CARD")
                                 .oldValue("")
                                 .newValue(updatedCard.toString())
@@ -54,8 +56,14 @@ public class DiffCard {
                 .append(CARD_POINT, oldCard.getPoint(), updatedCard.getPoint())
                 .append(CARD_INFO, oldCard.getInfo(), updatedCard.getInfo())
                 .append(CARD_LINK, oldCard.getLink(), updatedCard.getLink())
-                .append(CARD_LAST_GAME_DATE, oldCard.getLastGame().getTime(), updatedCard.getLastGame().getTime())
-                .append(CARD_LAST_UPD_DATE, oldCard.getLastUpdate().getTime(), updatedCard.getLastUpdate().getTime())
+                .append(CARD_LAST_GAME_DATE,
+                        getDateWithoutTime(oldCard.getLastGame()),
+                        getDateWithoutTime(updatedCard.getLastGame())
+                )
+                .append(CARD_LAST_UPD_DATE,
+                        getDateWithoutTime(oldCard.getLastUpdate()),
+                        getDateWithoutTime(updatedCard.getLastUpdate())
+                )
                 .append(CARD_LANGUAGE, oldCard.getLanguage(), updatedCard.getLanguage())
                 .append(CARD_VIEW_TYPE, oldCard.getViewType(), updatedCard.getViewType())
                 .append(CARD_TYPE, oldCard.getCardType(), updatedCard.getCardType())
@@ -84,7 +92,7 @@ public class DiffCard {
                     CardHistory.builder()
                             .editableId(oldCard.getId())
                             .columnName(diff.getFieldName())
-                            .titlePage(oldCard.getViewType().getTitle())
+                            .titlePage(String.valueOf(oldCard.getViewType()))
                             .oldValue(String.valueOf(diff.getLeft()))
                             .newValue(String.valueOf(diff.getRight()))
                             .updateCardTime(updDate)

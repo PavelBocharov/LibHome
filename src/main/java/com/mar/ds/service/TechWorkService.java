@@ -69,7 +69,6 @@ public class TechWorkService {
             lastTechId = removeRateHistory();
             log.debug("Remove rate history. END.");
         }
-
     }
 
     private long createTechStatus_HaseUpd() {

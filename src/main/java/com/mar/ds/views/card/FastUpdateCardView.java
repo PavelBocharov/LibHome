@@ -4,6 +4,7 @@ import com.mar.ds.db.dto.CardDto;
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.Language;
 import com.mar.ds.db.mapper.CardMapper;
+import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.vaadin.flow.component.Unit;
@@ -30,10 +31,10 @@ public class FastUpdateCardView extends CardDialogView {
     private final Dialog dialog;
     private final Card card;
 
-    public FastUpdateCardView(MainView mainView, Card updCard) {
+    public FastUpdateCardView(MainView mainView, Card updCard, FileUtils.ViewTypeDto viewType) {
         this.mainView = mainView;
         this.card = updCard;
-        this.viewType = card.getViewType();
+        this.viewType = viewType;
 
         dialog = new Dialog();
         dialog.add(new Label("Fast update card info"));
