@@ -17,7 +17,7 @@
     <description>LibHome - your book, game, music and other library.</description>
 
     <modules>
-        <module>LibHomeDto</module>
+        <module>LibHomeData</module>
         <module>LibHomeDB</module>
         <module>LibHomeUI</module>
     </modules>
@@ -32,6 +32,7 @@
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <org.apache.lang3.version>3.12.0</org.apache.lang3.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+        <fastxml.version>2.19.2</fastxml.version>
     </properties>
 
     <repositories>
@@ -45,7 +46,7 @@
         <dependencies>
             <dependency>
                 <groupId>com.mar</groupId>
-                <artifactId>LibHomeDto</artifactId>
+                <artifactId>LibHomeData</artifactId>
                 <version>${com.mar.libhome.dto}</version>
             </dependency>
             <dependency>
@@ -64,6 +65,11 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${org.apache.lang3.version}</version>
             </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.fasterxml.jackson.core</groupId>-->
+<!--                <artifactId>jackson-databind</artifactId>-->
+<!--                <version>${fastxml.version}</version>-->
+<!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
 

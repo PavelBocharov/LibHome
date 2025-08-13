@@ -1,7 +1,7 @@
 package com.mar.libhome.db.api;
 
-import com.mar.libhome.dto.CardHistoryDto;
 import com.mar.libhome.db.mongo.service.CardHistoryService;
+import com.mar.libhome.dto.CardHistoryDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +28,11 @@ public class CardHistoryApi {
     private CardHistoryService cardHistoryService;
 
     @GetMapping("/{id}")
-    public Mono<CardHistoryDto> getById(@PathVariable UUID id) {
-        log.debug(">> get card history by id: {}", id);
-        return cardHistoryService.getById(id)
-                .doOnSuccess(dto -> log.debug("<< get card history by id: {}, dto: {}", id, dto))
-                .doOnError(throwable -> log.error("!!! get card history by id: {}", id, throwable));
+    public Mono<List<CardHistoryDto>> getByCardId(@PathVariable UUID id) {
+        log.debug(">> get card history by card id: {}", id);
+        return cardHistoryService.getByCardId(id)
+                .doOnSuccess(dto -> log.debug("<< get card history by card id: {}, dto: {}", id, dto))
+                .doOnError(throwable -> log.error("!!! get card history by card id: {}", id, throwable));
     }
 
     @GetMapping

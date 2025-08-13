@@ -21,7 +21,7 @@
     <dependencies>
         <dependency>
             <groupId>com.mar</groupId>
-            <artifactId>LibHomeDto</artifactId>
+            <artifactId>LibHomeData</artifactId>
         </dependency>
 
         <dependency>

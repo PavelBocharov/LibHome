@@ -1,6 +1,7 @@
 package com.mar.libhome.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,13 +13,14 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@Builder
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class CardHistoryDto implements Serializable {
 
     private UUID id;
-    private Long editableId;
+    private UUID editableId;
     private Date updateCardTime = new Date();
     private String titlePage;
     private String columnName;

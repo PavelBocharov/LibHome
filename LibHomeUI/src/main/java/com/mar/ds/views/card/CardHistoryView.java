@@ -1,8 +1,8 @@
 package com.mar.ds.views.card;
 
 import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.entity.CardHistory;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.dto.CardHistoryDto;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -14,6 +14,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
+import java.util.UUID;
 
 import static com.mar.ds.db.diff.DiffCard.CARD_LAST_GAME_DATE;
 import static com.mar.ds.db.diff.DiffCard.CARD_LAST_UPD_DATE;
@@ -57,12 +58,12 @@ public class CardHistoryView extends Dialog {
 
     private void init() {
         this.removeAll();
-        Grid<CardHistory> historyGrid = new Grid<>();
+        Grid<CardHistoryDto> historyGrid = new Grid<>();
         historyGrid.setSizeFull();
 
-        historyGrid.addColumn(CardHistory::getColumnName)
+        historyGrid.addColumn(CardHistoryDto::getColumnName)
                 .setHeader("Column name");
-        historyGrid.addColumn(CardHistory::getUpdateCardTime)
+        historyGrid.addColumn(CardHistoryDto::getUpdateCardTime)
                 .setHeader("UPD date")
                 .setSortable(true);
         historyGrid.addColumn(cardHistory ->
@@ -85,7 +86,8 @@ public class CardHistoryView extends Dialog {
         ).setHeader("New value");
 
         historyGrid.setItems(
-                mainView.getCardHistoryService().findAllByCardId(card.getId())
+//                mainView.getCardHistoryService().findAllByCardId(card.getId())
+                mainView.getCardHistoryService().findAllByCardId(new UUID(card.getId(), card.getId()))
         );
 
         Button backBtn = new Button("Back", VaadinIcon.ARROW_BACKWARD.create());

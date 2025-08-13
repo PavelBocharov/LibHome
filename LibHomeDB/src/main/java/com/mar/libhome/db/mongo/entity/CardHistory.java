@@ -29,7 +29,7 @@ public class CardHistory implements MongoEntity<UUID> {
     private UUID id;
 
     @Field(name = "editable_id")
-    private Long editableId;
+    private UUID editableId;
 
     @Field(name = "update_card_time")
     private Date updateCardTime = new Date();
@@ -58,10 +58,10 @@ public class CardHistory implements MongoEntity<UUID> {
         if (isBlank(columnName)) {
             errors.add("History update column name is blank.");
         }
-        if (isBlank(oldValue)) {
+        if (isNull(oldValue)) {
             errors.add("History column old value is null.");
         }
-        if (isBlank(newValue)) {
+        if (isNull(newValue)) {
             errors.add("History column new value is null.");
         }
         return errors;

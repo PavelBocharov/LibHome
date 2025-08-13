@@ -3,9 +3,9 @@ package com.mar.ds.db.service;
 import com.mar.ds.db.diff.DiffCard;
 import com.mar.ds.db.dto.CardDto;
 import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.entity.CardHistory;
 import com.mar.ds.db.jpa.CardHistoryRepository;
 import com.mar.ds.db.mapper.CardMapper;
+import com.mar.libhome.dto.CardHistoryDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import javax.transaction.Transactional;
 
@@ -48,7 +49,7 @@ public class CardHistoryService {
      */
     public void saveHistory(@Nullable CardDto old, CardDto actual) {
         assert nonNull(actual);
-        List<CardHistory> diff = DiffCard.compare(old, actual);
+        List<CardHistoryDto> diff = DiffCard.compare(old, actual);
         log.debug("save/upd card history: {}", diff);
         cardHistoryRepository.saveAll(diff);
     }
@@ -60,7 +61,7 @@ public class CardHistoryService {
      */
     public void saveHistory(List<Pair<CardDto, CardDto>> cards) {
         assert nonNull(cards);
-        List<CardHistory> diff = new LinkedList<>();
+        List<CardHistoryDto> diff = new LinkedList<>();
 
         for (Pair<CardDto, CardDto> oldNewCards : cards) {
             CardDto oldCard = oldNewCards.getLeft();
@@ -78,8 +79,8 @@ public class CardHistoryService {
      */
     public void saveDeleteCard(CardDto card) {
         cardHistoryRepository.save(
-                CardHistory.builder()
-                        .editableId(card.getId())
+                CardHistoryDto.builder()
+                        .editableId(new UUID(card.getId(), card.getId()))
                         .columnName("DELETED")
                         .titlePage(String.valueOf(card.getViewType()))
                         .oldValue(card.toString())
@@ -94,7 +95,7 @@ public class CardHistoryService {
      * @param cardId ID карточки.
      * @return история изменения карточки.
      */
-    public List<CardHistory> findAllByCardId(long cardId) {
+    public List<CardHistoryDto> findAllByCardId(UUID cardId) {
         return cardHistoryRepository.findAllByEditableId(cardId);
     }
 
@@ -103,7 +104,8 @@ public class CardHistoryService {
      *
      * @return удаленная история.
      */
-    public List<CardHistory> deleteAllByRate() {
+    @Deprecated
+    public List<CardHistoryDto> deleteAllByRate() {
         return cardHistoryRepository.deleteByColumnName(CARD_RATE);
     }
 

@@ -9,7 +9,7 @@
         <version>4.1.0</version>
     </parent>
 
-    <artifactId>LibHomeDto</artifactId>
+    <artifactId>LibHomeData</artifactId>
     <version>${com.mar.libhome.dto}</version>
 
     <properties>
@@ -22,6 +22,10 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
     </dependencies>
 

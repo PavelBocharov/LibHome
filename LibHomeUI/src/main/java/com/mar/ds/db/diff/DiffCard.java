@@ -2,7 +2,7 @@ package com.mar.ds.db.diff;
 
 import com.mar.ds.db.dto.CardDto;
 import com.mar.ds.db.dto.CardTypeTagDto;
-import com.mar.ds.db.entity.CardHistory;
+import com.mar.libhome.dto.CardHistoryDto;
 import org.apache.commons.lang3.builder.Diff;
 import org.apache.commons.lang3.builder.DiffBuilder;
 import org.apache.commons.lang3.builder.DiffResult;
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.mar.ds.utils.Utils.getDateWithoutTime;
@@ -33,16 +34,18 @@ public class DiffCard {
     public static final String CARD_TAG = "tag";
     public static final String CARD_ENGINE = "engine";
 
-    public static List<CardHistory> compare(CardDto oldCard, CardDto updatedCard) {
+    public static List<CardHistoryDto> compare(CardDto oldCard, CardDto updatedCard) {
         if (oldCard == null) {
             if (updatedCard.getId() != null) {
+                UUID id = new UUID(updatedCard.getId(), updatedCard.getId());
                 return List.of(
-                        CardHistory.builder()
+                        CardHistoryDto.builder()
                                 .titlePage(String.valueOf(updatedCard.getViewType()))
                                 .columnName("CREATE CARD")
                                 .oldValue("")
                                 .newValue(updatedCard.toString())
-                                .editableId(updatedCard.getId())
+//                                .editableId(updatedCard.getId())
+                                .editableId(id)
                                 .build()
                 );
             } else {
@@ -85,12 +88,14 @@ public class DiffCard {
         }
 
         DiffResult<CardDto> res = diffBuilder.build();
-        List<CardHistory> historyList = new ArrayList<>(res.getDiffs().size());
+        List<CardHistoryDto> historyList = new ArrayList<>(res.getDiffs().size());
         Date updDate = new Date();
         for (Diff<?> diff : res) {
+            UUID id = new UUID(oldCard.getId(), oldCard.getId());
             historyList.add(
-                    CardHistory.builder()
-                            .editableId(oldCard.getId())
+                    CardHistoryDto.builder()
+//                            .editableId(oldCard.getId())
+                            .editableId(id)
                             .columnName(diff.getFieldName())
                             .titlePage(String.valueOf(oldCard.getViewType()))
                             .oldValue(String.valueOf(diff.getLeft()))

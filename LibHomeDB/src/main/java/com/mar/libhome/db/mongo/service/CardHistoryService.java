@@ -24,9 +24,10 @@ public class CardHistoryService {
                 .collectList();
     }
 
-    public Mono<CardHistoryDto> getById(UUID id) {
-        return Mono.justOrEmpty(repository.findById(id))
-                .map(mapper::toDto);
+    public Mono<List<CardHistoryDto>> getByCardId(UUID id) {
+        return Flux.fromIterable(repository.findAllByEditableId(id))
+                .map(mapper::toDto)
+                .collectList();
     }
 
     public Mono<List<CardHistoryDto>> save(List<CardHistoryDto> dto) {
