@@ -1,4 +1,6 @@
 node_modules
+logs
+docker_files
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -32,3 +34,7 @@ build/
 
 ### VS Code ###
 .vscode/
+webpack.generated.js
+webpack.config.js
+package.json
+package-lock.json

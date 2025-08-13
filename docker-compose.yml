@@ -1,11 +1,10 @@
 version: '3'
-
+name: lib-home
 services:
-  lib_home:
+  ui:
     build:
-      context: .
+      context: LibHomeUI
       dockerfile: Dockerfile
-#    image: marolok/dark_sun:1.0.0
     env_file:
       - .env
     volumes:
@@ -16,6 +15,44 @@ services:
       - bridge
     ports:
       - '8080:8080'
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ${MONGO_DIR}:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=admin
+      - MONGO_WORK_DATABASE=libhomedb
+      - MONGO_WORK_USER=mrlk_u
+      - MONGO_WORK_PASSWORD=mrlk_p
+    networks:
+      - mgdb
+      - bridge
+
+    db:
+      build:
+        context: LibHomeDB
+        dockerfile: Dockerfile
+#      env_file:
+#        - .env
+#      volumes:
+#        - "${PC_DB_PATH}:${DATA_PATH}"
+      tty: true
+      restart: always
+      networks:
+        - mgdb
+#      ports:
+#        - '8080:8080'
+
+
+
 networks:
   bridge:
     driver: bridge
+  mgdb:
+    external: false

@@ -5,7 +5,7 @@ RUN update-ms-fonts
 
 WORKDIR /opt/app
 
-ADD docker_files/OpenJDK*.tar.gz /opt/app/java
+ADD ../docker_files/OpenJDK*.tar.gz /opt/app/java
 #JDK17 min
 
 COPY target/lib-home-*.jar /opt/app/japp.jar

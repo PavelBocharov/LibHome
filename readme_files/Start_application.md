@@ -9,7 +9,7 @@
    > ⚠️ Upper version crash with Lombok (tested with JDK 21).
 2) Install NodeJS - https://nodejs.org/en/download/
     * Install nvm - [Windows](https://github.com/coreybutler/nvm-windows), [Linux](https://github.com/nvm-sh/nvm)
-3) Set values in [application property](../src/main/resources/application.properties):
+3) Set values in [application property](../LibHomeUI/src/main/resources/application.properties):
    * `app.data.content.file` - [content.json](../content.json) for UI text.
    * `app.data.path` - directory for DB, images, logs and etc.
    * `app.db.file` - SQLite database file in `app.data.path`.
@@ -22,7 +22,7 @@
    mvn clean install -Pproduction
    ```
 2) Download JRE for image (min 17) - [Alpine Linux JRE 17](https://adoptium.net/temurin/releases/?os=alpine-linux&arch=x64&package=jre&version=17)
-3) Save JRE archive to `./docker_files/OpenJDK*.tar.gz` - you can set in [Dockerfile](../Dockerfile)
+3) Save JRE archive to `./docker_files/OpenJDK*.tar.gz` - you can set in [Dockerfile](../LibHomeUI/Dockerfile)
 4) Build image (set your version):
    ```bash 
    docker build --no-cache -t marolok/lib_home:4.1.0 .

@@ -1,0 +1,54 @@
+package com.mar.libhome.db.api;
+
+import com.mar.libhome.dto.CardHistoryDto;
+import com.mar.libhome.db.mongo.service.CardHistoryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@RestController
+@RequestMapping(value = "/card/history")
+public class CardHistoryApi {
+
+    private final Logger log = LoggerFactory.getLogger(CardHistoryApi.class);
+
+    @Autowired
+    private CardHistoryService cardHistoryService;
+
+    @GetMapping("/{id}")
+    public Mono<CardHistoryDto> getById(@PathVariable UUID id) {
+        log.debug(">> get card history by id: {}", id);
+        return cardHistoryService.getById(id)
+                .doOnSuccess(dto -> log.debug("<< get card history by id: {}, dto: {}", id, dto))
+                .doOnError(throwable -> log.error("!!! get card history by id: {}", id, throwable));
+    }
+
+    @GetMapping
+    public Mono<List<CardHistoryDto>> getAll() {
+        log.debug(">> get all card history");
+        return cardHistoryService.getAll()
+                .doOnSuccess(list -> log.debug("<< get all card history size: {}", Optional.ofNullable(list).orElse(Collections.emptyList()).size()))
+                .doOnError(throwable -> log.error("!!! get all card history", throwable));
+    }
+
+    @PostMapping
+    public Mono<List<CardHistoryDto>> save(@RequestBody List<CardHistoryDto> dto) {
+        log.debug(">> save card history: {}", dto);
+        return cardHistoryService.save(dto)
+                .doOnSuccess(history -> log.debug("<< create card history: {}", history))
+                .doOnError(throwable -> log.error("!!! create card history: {}", dto, throwable));
+    }
+
+}
