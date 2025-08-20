@@ -1,7 +1,7 @@
 package com.mar.ds.utils;
 
 import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.entity.HasId;
+import com.mar.libhome.dto.HasId;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.accordion.Accordion;
@@ -36,7 +36,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -185,7 +184,7 @@ public class ViewUtils {
         }
 
         T selectValue = initDataProviderList.stream()
-                .filter(hasId -> hasId.getId().equals(value.getId()))
+                .filter(hasId -> hasId.getLongId().equals(value.getLongId()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Cannot select " + value));
         if (nonNull(selectValue)) {
@@ -404,7 +403,7 @@ public class ViewUtils {
             Set<T> newSelected = new HashSet<>();
 
             for (T tag : selectedData) {
-                T item = items.stream().filter(t -> t.getId().equals(tag.getId())).findFirst().orElse(null);
+                T item = items.stream().filter(t -> t.getLongId().equals(tag.getLongId())).findFirst().orElse(null);
                 if (item != null) {
                     newSelected.add(item);
                 }

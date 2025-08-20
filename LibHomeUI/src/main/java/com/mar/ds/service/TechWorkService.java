@@ -6,10 +6,12 @@ import com.mar.ds.db.entity.LibHomeSequence;
 import com.mar.ds.db.entity.TechWork;
 import com.mar.ds.db.jpa.LibHomeSeqRepository;
 import com.mar.ds.db.jpa.TechWorkRepository;
+import com.mar.ds.db.remote.TechApiRemote;
 import com.mar.ds.db.service.CardHistoryService;
 import com.mar.ds.db.service.CardService;
 import com.mar.ds.db.service.CardStatusService;
 import com.mar.ds.db.service.MigrationToMongoService;
+import com.mar.libhome.dto.CardStatusDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,8 +46,21 @@ public class TechWorkService {
     @Autowired
     private MigrationToMongoService migrateToMongoService;
 
+    @Autowired
+    private TechApiRemote techApiRemote;
+
     @PostConstruct
     public void techWork() {
+        while (true) {
+            try {
+                Thread.sleep(5_000L);
+                techApiRemote.checkHealth();
+                break;
+            } catch (Exception e) {
+                log.warn("BD not startup - {}", e.getMessage());
+            }
+        }
+
         long lastTechId = techWorkRepository.findWithMaxTechId().orElse(0L);
         log.debug("Get last tech ID: {}", lastTechId);
         if (lastTechId < 1) {
@@ -78,11 +93,16 @@ public class TechWorkService {
             lastTechId = moveHistory();
             log.debug("Move history to MongoDB. END.");
         }
+        if (lastTechId < 8) {
+            log.debug("Move status list to MongoDB...");
+            lastTechId = moveStatus();
+            log.debug("Move status list to MongoDB. END.");
+        }
     }
 
     private long createTechStatus_HaseUpd() {
-        CardStatus cardStatus = cardStatusService.save(
-                CardStatus.builder()
+        CardStatusDto cardStatus = cardStatusService.save(
+                CardStatusDto.builder()
                         .tech(TECH_HASE_UPD_ID)
                         .title("Has UPD")
                         .icon("BELL")
@@ -94,7 +114,7 @@ public class TechWorkService {
         );
         techWorkRepository.save(
                 TechWork.builder()
-                        .title("Create tech card status 'Has UPD' with id = " + cardStatus.getId())
+                        .title("Create tech card status 'Has UPD' with id = " + cardStatus.getLongId())
                         .techId(1L)
                         .build()
         );
@@ -110,8 +130,8 @@ public class TechWorkService {
         }
         long order = orderSortSeq.getSeqValue();
 
-        List<CardStatus> cardStatusList = cardStatusService.findAll();
-        for (CardStatus cardStatus : cardStatusList) {
+        List<CardStatusDto> cardStatusList = cardStatusService.findAll();
+        for (CardStatusDto cardStatus : cardStatusList) {
             if (cardStatus.getOrder() == null) {
                 cardStatus.setOrder(order);
                 order += 10;
@@ -139,12 +159,23 @@ public class TechWorkService {
         techWorkRepository.save(techWork);
 //      ----------------
 
-        CardStatus hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
+        CardStatusDto hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
         List<Card> cards = cardService.findAll();
         for (Card card : cards) {
             if (card.getLastUpdate().after(card.getLastGame())) {
                 card.setOldCardStatus(card.getCardStatus());
-                card.setCardStatus(hasUpdStatus);
+                card.setCardStatus(
+                        CardStatus.builder()
+                                .id(hasUpdStatus.getId().getLeastSignificantBits())
+                                .order(hasUpdStatus.getOrder())
+                                .hasUpdStatus(hasUpdStatus.getHasUpdStatus())
+                                .isRate(hasUpdStatus.getIsRate())
+                                .title(hasUpdStatus.getTitle())
+                                .icon(hasUpdStatus.getIcon())
+                                .color(hasUpdStatus.getColor())
+                                .tech(hasUpdStatus.getTech())
+                                .build()
+                );
             }
         }
         cardService.saveAll(cards);
@@ -191,6 +222,17 @@ public class TechWorkService {
                         .build()
         );
         return 6L;
+    }
+
+    private long moveStatus() {
+        migrateToMongoService.moveStatus();
+        techWorkRepository.save(
+                TechWork.builder()
+                        .title("Move status list to MongoDB (good).")
+                        .techId(8L)
+                        .build()
+        );
+        return 8L;
     }
 
 }

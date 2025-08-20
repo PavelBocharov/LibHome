@@ -2,6 +2,7 @@ package com.mar.ds.views.card.status;
 
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.utils.ViewUtils;
+import com.mar.libhome.dto.CardStatusDto;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -49,7 +50,7 @@ public class CreateCardStatusView {
                 Color.decode(ViewUtils.getTextFieldValue(colorField));
 
                 cardStatusView.getService().save(
-                        CardStatus.builder()
+                        CardStatusDto.builder()
                                 .title(ViewUtils.getTextFieldValue(textField))
                                 .color(ViewUtils.getTextFieldValue(colorField))
                                 .icon(ViewUtils.getTextFieldValue(iconField))

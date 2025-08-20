@@ -29,13 +29,6 @@ public class CardHistoryRemote {
     @Value("${libhome.db.port}")
     private Integer port;
 
-    public void checkHealth() {
-        String url = getUri(host, port) + "/actuator/health";
-        log.debug(">> Check DB health: {}", url);
-        String rsJson = get(url);
-        log.debug("<< Check DB health: {}, RS: {}", url, rsJson);
-    }
-
     public List<CardHistoryDto> saveAll(List<CardHistoryDto> diff) {
         String rqJson = toJson(diff);
         String url = getUri(host, port) + "/card/history";

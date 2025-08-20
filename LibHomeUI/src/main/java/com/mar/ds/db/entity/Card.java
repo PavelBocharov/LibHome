@@ -1,11 +1,11 @@
 package com.mar.ds.db.entity;
 
+import com.mar.libhome.dto.HasId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -106,5 +106,10 @@ public class Card implements Serializable, HasId {
                 + ", rate=" + rate
                 + ", tagList=" + tagList
                 + '}';
+    }
+
+    @Override
+    public Long getLongId() {
+        return id;
     }
 }

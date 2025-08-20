@@ -2,6 +2,7 @@ package com.mar.ds.views.card.status;
 
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.utils.ViewUtils;
+import com.mar.libhome.dto.CardStatusDto;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -17,7 +18,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.ROTATE_RIGHT;
 
 public class UpdateCardStatusView {
 
-    public UpdateCardStatusView(CardStatusViewDialog cardStatusView, CardStatus updatedStatus) {
+    public UpdateCardStatusView(CardStatusViewDialog cardStatusView, CardStatusDto updatedStatus) {
         Dialog updateDialog = new Dialog();
         updateDialog.setCloseOnEsc(true);
         updateDialog.setCloseOnOutsideClick(false);
@@ -65,7 +66,8 @@ public class UpdateCardStatusView {
                                 .orElseThrow(() -> new RuntimeException("Not set card state order."))
                 );
                 cardStatusView.getService().update(
-                        updatedStatus, CardStatus.builder().hasUpdStatus(oldHasUpd).isRate(oldRate).build()
+                        updatedStatus,
+                        CardStatusDto.builder().hasUpdStatus(oldHasUpd).isRate(oldRate).build()
                 );
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);

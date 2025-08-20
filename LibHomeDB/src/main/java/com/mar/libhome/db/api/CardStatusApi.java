@@ -5,12 +5,7 @@ import com.mar.libhome.dto.CardStatusDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
@@ -34,12 +29,28 @@ public class CardStatusApi {
                 .doOnError(throwable -> log.error("!!! get all card status", throwable));
     }
 
+    @GetMapping("/tech/{techId}")
+    public Mono<CardStatusDto> findByTechId(@PathVariable("techId") String techId) {
+        log.debug(">> get card status by tech id: {}", techId);
+        return cardStatusService.findByTechId(techId)
+                .doOnSuccess(dto -> log.debug("<< get card status by tech id: {}. Data: {}", techId, dto))
+                .doOnError(throwable -> log.error("!!! get card status by tech id: {}", techId, throwable));
+    }
+
+    @GetMapping("/tech/null")
+    public Mono<List<CardStatusDto>> findAllWithTechIsNull() {
+        log.debug(">> find card list status with tech id is null");
+        return cardStatusService.findAllWithTechIsNull()
+                .doOnSuccess(status -> log.debug("<< find card list status with tech id is null: {}", status))
+                .doOnError(throwable -> log.error("!!! find card list status with tech id is null", throwable));
+    }
+
     @PostMapping
-    public Mono<CardStatusDto> save(@RequestBody CardStatusDto dto) {
-        log.debug(">> save card status: {}", dto);
-        return cardStatusService.save(dto)
-                .doOnSuccess(status -> log.debug("<< save card status: {}", status))
-                .doOnError(throwable -> log.error("!!! save card status: {}", dto, throwable));
+    public Mono<List<CardStatusDto>> save(@RequestBody List<CardStatusDto> dtoList) {
+        log.debug(">> save card list status: {}", dtoList);
+        return cardStatusService.saveAll(dtoList)
+                .doOnSuccess(status -> log.debug("<< save card list status: {}", status))
+                .doOnError(throwable -> log.error("!!! save card list status: {}", dtoList, throwable));
     }
 
     @DeleteMapping

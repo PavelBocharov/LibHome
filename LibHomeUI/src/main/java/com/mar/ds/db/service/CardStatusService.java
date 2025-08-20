@@ -2,7 +2,8 @@ package com.mar.ds.db.service;
 
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
-import com.mar.ds.db.jpa.CardStatusRepository;
+import com.mar.ds.db.remote.CardStatusRemote;
+import com.mar.libhome.dto.CardStatusDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.google.common.collect.ImmutableList.of;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Slf4j
@@ -23,9 +26,9 @@ public class CardStatusService {
     private CardService cardService;
 
     @Autowired
-    private CardStatusRepository cardStatusRepository;
+    private CardStatusRemote cardStatusRemote;
 
-    public CardStatus update(CardStatus cardStatus, CardStatus oldCardStatus) {
+    public CardStatusDto update(CardStatusDto cardStatus, CardStatusDto oldCardStatus) {
         cardStatus = this.save(cardStatus);
 
         if (oldCardStatus.getIsRate() != cardStatus.getIsRate()
@@ -37,11 +40,20 @@ public class CardStatusService {
         return cardStatus;
     }
 
-    public void delete(CardStatus cardStatus) throws Exception {
-        List<Card> cards = cardService.findByCardStatus(cardStatus);
+    public void delete(CardStatusDto cardStatus) throws Exception {
+        List<Card> cards = cardService.findByCardStatus(CardStatus.builder()
+                        .id(cardStatus.getId().getLeastSignificantBits())
+                        .color(cardStatus.getColor())
+                        .tech(cardStatus.getTech())
+                        .hasUpdStatus(cardStatus.getHasUpdStatus())
+                        .icon(cardStatus.getIcon())
+                        .title(cardStatus.getTitle())
+                        .isRate(cardStatus.getIsRate())
+                        .order(cardStatus.getOrder())
+                .build());
         if (isEmpty(cards)) {
             log.info("Not find cards by status: {}. Delete status.", cardStatus);
-            cardStatusRepository.delete(cardStatus);
+            cardStatusRemote.remove(cardStatus);
         } else {
             log.warn("Find cards by status: {}, list: {}", cardStatus, cards);
             throw new Exception(
@@ -50,24 +62,28 @@ public class CardStatusService {
         }
     }
 
-    public CardStatus save(CardStatus cardStatus) {
-        return cardStatusRepository.save(cardStatus);
+    public CardStatusDto save(CardStatusDto cardStatus) {
+        List<CardStatusDto> dtoList = saveAll(of(cardStatus));
+        if (isNotEmpty(dtoList)) {
+            return dtoList.get(0);
+        }
+        return null;
     }
 
-    public List<CardStatus> findByWithTechIdIsNull() {
-        return cardStatusRepository.findByWithTechIdIsNull();
+    public List<CardStatusDto> findByWithTechIdIsNull() {
+        return cardStatusRemote.findByTechIdIsNull();
     }
 
-    public CardStatus findByTechId(String techId) {
-        return cardStatusRepository.findByTechId(techId);
+    public CardStatusDto findByTechId(String techId) {
+        return cardStatusRemote.findByTechId(techId);
     }
 
-    public List<CardStatus> findAll() {
-        return cardStatusRepository.findAll();
+    public List<CardStatusDto> findAll() {
+        return cardStatusRemote.findAll();
     }
 
-    public List<CardStatus> saveAll(List<CardStatus> cardStatusList) {
-        return cardStatusRepository.saveAll(cardStatusList);
+    public List<CardStatusDto> saveAll(List<CardStatusDto> cardStatusList) {
+        return cardStatusRemote.saveAll(cardStatusList);
     }
 
 }

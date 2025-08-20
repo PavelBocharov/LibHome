@@ -1,5 +1,6 @@
 package com.mar.ds.db.entity;
 
+import com.mar.libhome.dto.HasId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -62,4 +63,8 @@ public class CardHistory implements Serializable, HasId {
         updateCardTime = updateCardTime == null ? new Date() : updateCardTime;
     }
 
+    @Override
+    public Long getLongId() {
+        return id;
+    }
 }

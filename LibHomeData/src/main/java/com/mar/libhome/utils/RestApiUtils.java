@@ -75,6 +75,25 @@ public class RestApiUtils {
         return response.body();
     }
 
+    public static String delete(String uri, String body) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(uri))
+                .method("DELETE", HttpRequest.BodyPublishers.ofString(body))
+                .setHeader("Content-Type", "application/json")
+                .build();
+
+        HttpResponse<String> response = null;
+        try {
+            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new BaseLibHomeException(String.format("Cannot send POST '%s'", uri), e);
+        }
+
+        if (response.statusCode() != 200) {
+            throw new BaseLibHomeException(String.format("Cannot send POST '%s'", uri), new Exception(response.body()));
+        }
+        return response.body();
+    }
 
     public static String get(String uri) {
         HttpRequest request = HttpRequest.newBuilder()

@@ -11,6 +11,7 @@ import com.mar.ds.db.mapper.CardMapper;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.dto.CardStatusDto;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -22,10 +23,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.mar.ds.data.GridInfo.GRID_DATE_GAME;
 import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
@@ -117,8 +115,12 @@ public class UpdateCardView extends CardDialogView {
         List<Component> components = new LinkedList<>();
         if (nonNull(getTitles().get(GRID_STATUS))) {
             components.add(getStatusSelector());
-            List<CardStatus> cardStatusList = mainView.getCardStatusService().findAll();
-            setSelectValue(cardStatusListSelect, updateCard.getCardStatus(), cardStatusList);
+            List<CardStatusDto> cardStatusList = mainView.getCardStatusService().findAll();
+            setSelectValue(
+                    cardStatusListSelect,
+                    CardStatusDto.builder().id(new UUID(updateCard.getCardStatus().getId(), updateCard.getCardStatus().getId())).build(),
+                    cardStatusList
+            );
         }
         if (nonNull(getTitles().get(GRID_TYPE)) && nonNull(getTitles().get(GRID_TAGS))) {
             // type
@@ -152,12 +154,22 @@ public class UpdateCardView extends CardDialogView {
                 checkValues();
                 CardMapper cardMapper = Mappers.getMapper(CardMapper.class);
                 CardDto old = cardMapper.toDto(updateCard);
+                CardStatusDto cardStatus = cardStatusListSelect.getValue();
                 updateCard.setTitle(getTextFieldValue(cardTitle));
                 updateCard.setViewType(getValue(viewTypeDtoSelect, viewType).id());
                 updateCard.setInfo(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""));
                 updateCard.setLink(getTextFieldValue(link));
                 updateCard.setEngine(getValue(engineSelect, GameEngine.DEFAULT));
-                updateCard.setCardStatus(cardStatusListSelect.getValue());
+                updateCard.setCardStatus(CardStatus.builder()
+                                .id(cardStatus.getId().getLeastSignificantBits())
+                                .color(cardStatus.getColor())
+                                .tech(cardStatus.getTech())
+                                .hasUpdStatus(cardStatus.getHasUpdStatus())
+                                .icon(cardStatus.getIcon())
+                                .title(cardStatus.getTitle())
+                                .isRate(cardStatus.getIsRate())
+                                .order(cardStatus.getOrder())
+                                .build());
                 updateCard.setCardType(cardTypeListSelect.getValue());
                 updateCard.setPoint(getDoubleValue(point));
                 updateCard.setLastUpdate(getValue(updDate, new Date()));

@@ -6,6 +6,7 @@ import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.ContentView;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.dto.CardStatusDto;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -26,7 +27,7 @@ public class CardStatusViewDialog {
     private final MainView mainView;
     private final ContentView parentView;
     private Dialog dialog;
-    private Grid<CardStatus> cardStatusList;
+    private Grid<CardStatusDto> cardStatusList;
     private Button crtBtn;
 
     public CardStatusViewDialog(MainView appLayout, ContentView parentView) {
@@ -57,10 +58,10 @@ public class CardStatusViewDialog {
                         }
                 )
                 .setHeader("Icon");
-        cardStatusList.addColumn(CardStatus::getTitle)
+        cardStatusList.addColumn(CardStatusDto::getTitle)
                 .setHeader("Title")
                 .setSortable(true);
-        cardStatusList.addColumn(CardStatus::getOrder)
+        cardStatusList.addColumn(CardStatusDto::getOrder)
                 .setHeader("Order")
                 .setSortable(true);
         cardStatusList
@@ -69,14 +70,14 @@ public class CardStatusViewDialog {
                 )
                 .setHeader("Is rate")
                 .setSortable(true)
-                .setComparator(CardStatus::getIsRate);
+                .setComparator(CardStatusDto::getIsRate);
         cardStatusList
                 .addComponentColumn(cardStatus ->
                         TRUE.equals(cardStatus.getHasUpdStatus()) ? trueIcon() : falseIcon()
                 )
                 .setHeader("Has UPD")
                 .setSortable(true)
-                .setComparator(CardStatus::getHasUpdStatus);
+                .setComparator(CardStatusDto::getHasUpdStatus);
         cardStatusList.addComponentColumn(
                 cardStatus -> {
                     Button dltBtn = new Button(

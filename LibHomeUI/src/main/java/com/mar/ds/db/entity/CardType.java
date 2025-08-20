@@ -1,6 +1,7 @@
 package com.mar.ds.db.entity;
 
 import com.mar.ds.views.build.popup.PopupEntity;
+import com.mar.libhome.dto.HasId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,4 +42,8 @@ public class CardType implements Serializable, HasId, PopupEntity {
     @LazyCollection(LazyCollectionOption.FALSE)
     List<CardTypeTag> tags;
 
+    @Override
+    public Long getLongId() {
+        return id;
+    }
 }

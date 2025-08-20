@@ -31,11 +31,25 @@ public class CardStatusService {
                 .doOnSuccess(cardStatusDto -> repository.deleteById(cardStatusDto.getId()));
     }
 
-    public Mono<CardStatusDto> save(CardStatusDto dto) {
-        return Mono.just(dto)
+    public Mono<List<CardStatusDto>> saveAll(List<CardStatusDto> dtoList) {
+        return Flux.fromIterable(dtoList)
                 .map(mapper::toEntity)
-                .map(repository::save)
+                .collectList()
+                .map(repository::saveAll)
+                .flatMapIterable(cardStatuses -> cardStatuses)
+                .map(mapper::toDto)
+                .collectList();
+    }
+
+    public Mono<CardStatusDto> findByTechId(String techId){
+        return Mono.justOrEmpty(repository.findByTech(techId))
                 .map(mapper::toDto);
+    }
+
+    public Mono<List<CardStatusDto>> findAllWithTechIsNull() {
+        return Flux.fromIterable(repository.findByTechIsNull())
+                .map(mapper::toDto)
+                .collectList();
     }
 
 }

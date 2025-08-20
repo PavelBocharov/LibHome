@@ -6,6 +6,7 @@ import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.jpa.CardRepository;
 import com.mar.ds.db.mapper.CardMapper;
+import com.mar.libhome.dto.CardStatusDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,9 +107,20 @@ public class CardService {
                 && card.getLastUpdate().after(card.getLastGame())
         ) {
             if (!status.isTech() && TRUE.equals(status.getHasUpdStatus())) {
-                CardStatus hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
+                CardStatusDto hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
                 card.setOldCardStatus(status);
-                card.setCardStatus(hasUpdStatus);
+                card.setCardStatus(
+                        CardStatus.builder()
+                                .id(hasUpdStatus.getId().getLeastSignificantBits())
+                                .order(hasUpdStatus.getOrder())
+                                .hasUpdStatus(hasUpdStatus.getHasUpdStatus())
+                                .isRate(hasUpdStatus.getIsRate())
+                                .title(hasUpdStatus.getTitle())
+                                .icon(hasUpdStatus.getIcon())
+                                .color(hasUpdStatus.getColor())
+                                .tech(hasUpdStatus.getTech())
+                                .build()
+                );
             }
         } else {
             if (status.isTech()) {

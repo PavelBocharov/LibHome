@@ -8,6 +8,7 @@ import com.mar.ds.db.entity.Language;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.dto.CardStatusDto;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -69,7 +70,7 @@ public abstract class CardDialogView {
     protected TextField link;
     protected DatePicker updDate;
     protected DatePicker gameDate;
-    protected Select<CardStatus> cardStatusListSelect;
+    protected Select<CardStatusDto> cardStatusListSelect;
     protected Select<CardType> cardTypeListSelect;
     protected MultiselectComboBox<CardTypeTag> tags;
     protected TextArea infoArea;
@@ -191,11 +192,11 @@ public abstract class CardDialogView {
     }
 
     protected Component getStatusSelector() {
-        List<CardStatus> cardStatusList = mainView.getCardStatusService().findAll();
+        List<CardStatusDto> cardStatusList = mainView.getCardStatusService().findAll();
         cardStatusListSelect = new Select<>();
         cardStatusListSelect.setLabel(getTitles().get(GRID_STATUS));
         cardStatusListSelect.setEmptySelectionAllowed(false);
-        cardStatusListSelect.setTextRenderer(CardStatus::getTitle);
+        cardStatusListSelect.setTextRenderer(CardStatusDto::getTitle);
         cardStatusListSelect.setDataProvider(new ListDataProvider<>(cardStatusList));
         cardStatusListSelect.setWidthFull();
         return cardStatusListSelect;

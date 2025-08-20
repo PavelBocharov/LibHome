@@ -1,11 +1,13 @@
 package com.mar.ds.views.card;
 
 import com.mar.ds.db.entity.Card;
+import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.dto.CardStatusDto;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -116,6 +118,7 @@ public class CreateCardView extends CardDialogView {
         crtBtn.addClickListener(click -> {
             try {
                 checkValues();
+                CardStatusDto cardStatus = cardStatusListSelect.getValue();
                 Card card = mainView.getCardService().save(
                         Card.builder()
                                 .title(getTextFieldValue(cardTitle))
@@ -126,7 +129,16 @@ public class CreateCardView extends CardDialogView {
                                 .point(getDoubleValue(point))
                                 .lastUpdate(getValue(updDate, new Date()))
                                 .lastGame(getValue(gameDate, new Date()))
-                                .cardStatus(cardStatusListSelect.getValue())
+                                .cardStatus(CardStatus.builder()
+                                        .id(cardStatus.getId().getLeastSignificantBits())
+                                        .color(cardStatus.getColor())
+                                        .tech(cardStatus.getTech())
+                                        .hasUpdStatus(cardStatus.getHasUpdStatus())
+                                        .icon(cardStatus.getIcon())
+                                        .title(cardStatus.getTitle())
+                                        .isRate(cardStatus.getIsRate())
+                                        .order(cardStatus.getOrder())
+                                        .build())
                                 .cardType(cardTypeListSelect.getValue())
                                 .tagList(tags.getValue().stream().toList())
                                 .language(getValue(languageSelect, Language.DEFAULT))

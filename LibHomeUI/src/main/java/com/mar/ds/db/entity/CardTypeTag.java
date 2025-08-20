@@ -1,5 +1,6 @@
 package com.mar.ds.db.entity;
 
+import com.mar.libhome.dto.HasId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,5 +53,10 @@ public class CardTypeTag implements HasId, Serializable {
                 + "title='" + title + '\''
                 + ", id=" + id
                 + '}';
+    }
+
+    @Override
+    public Long getLongId() {
+        return id;
     }
 }

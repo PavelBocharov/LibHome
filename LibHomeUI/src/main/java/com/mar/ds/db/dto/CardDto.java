@@ -2,6 +2,7 @@ package com.mar.ds.db.dto;
 
 import com.mar.ds.db.entity.GameEngine;
 import com.mar.ds.db.entity.Language;
+import com.mar.libhome.dto.CardStatusDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
