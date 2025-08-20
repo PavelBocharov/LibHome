@@ -9,6 +9,7 @@ import com.mar.ds.db.jpa.TechWorkRepository;
 import com.mar.ds.db.service.CardHistoryService;
 import com.mar.ds.db.service.CardService;
 import com.mar.ds.db.service.CardStatusService;
+import com.mar.ds.db.service.MigrationToMongoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,9 @@ public class TechWorkService {
     @Autowired
     private LibHomeSeqRepository libHomeSeqRepository;
 
+    @Autowired
+    private MigrationToMongoService migrateToMongoService;
+
     @PostConstruct
     public void techWork() {
         long lastTechId = techWorkRepository.findWithMaxTechId().orElse(0L);
@@ -68,6 +72,11 @@ public class TechWorkService {
             log.debug("Remove rate history...");
             lastTechId = removeRateHistory();
             log.debug("Remove rate history. END.");
+        }
+        if (lastTechId < 6) {
+            log.debug("Move history to MongoDB...");
+            lastTechId = moveHistory();
+            log.debug("Move history to MongoDB. END.");
         }
     }
 
@@ -171,6 +180,17 @@ public class TechWorkService {
                         .build()
         );
         return 5L;
+    }
+
+    private long moveHistory() {
+        migrateToMongoService.moveHistory();
+        techWorkRepository.save(
+                TechWork.builder()
+                        .title("Move history to MongoDB.")
+                        .techId(6L)
+                        .build()
+        );
+        return 6L;
     }
 
 }

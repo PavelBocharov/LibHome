@@ -3,7 +3,7 @@ package com.mar.ds.db.service;
 import com.mar.ds.db.diff.DiffCard;
 import com.mar.ds.db.dto.CardDto;
 import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.jpa.CardHistoryRepository;
+import com.mar.ds.db.remote.CardHistoryRemote;
 import com.mar.ds.db.mapper.CardMapper;
 import com.mar.libhome.dto.CardHistoryDto;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import static java.util.Objects.nonNull;
 @RequiredArgsConstructor
 public class CardHistoryService {
 
-    private final CardHistoryRepository cardHistoryRepository;
+    private final CardHistoryRemote cardHistoryRemote;
     private final CardMapper cardMapper;
 
     /**
@@ -51,7 +51,7 @@ public class CardHistoryService {
         assert nonNull(actual);
         List<CardHistoryDto> diff = DiffCard.compare(old, actual);
         log.debug("save/upd card history: {}", diff);
-        cardHistoryRepository.saveAll(diff);
+        cardHistoryRemote.saveAll(diff);
     }
 
     /**
@@ -68,8 +68,8 @@ public class CardHistoryService {
             CardDto newCard = oldNewCards.getRight();
             diff.addAll(DiffCard.compare(oldCard, newCard));
         }
-        log.debug("save/upd card history: {}", diff);
-        cardHistoryRepository.saveAll(diff);
+        log.debug("save/upd card list history: {}", diff);
+        cardHistoryRemote.saveAll(diff);
     }
 
     /**
@@ -78,7 +78,7 @@ public class CardHistoryService {
      * @param card карточка.
      */
     public void saveDeleteCard(CardDto card) {
-        cardHistoryRepository.save(
+        cardHistoryRemote.save(
                 CardHistoryDto.builder()
                         .editableId(new UUID(card.getId(), card.getId()))
                         .columnName("DELETED")
@@ -96,7 +96,7 @@ public class CardHistoryService {
      * @return история изменения карточки.
      */
     public List<CardHistoryDto> findAllByCardId(UUID cardId) {
-        return cardHistoryRepository.findAllByEditableId(cardId);
+        return cardHistoryRemote.findAllByEditableId(cardId);
     }
 
     /**
@@ -106,7 +106,7 @@ public class CardHistoryService {
      */
     @Deprecated
     public List<CardHistoryDto> deleteAllByRate() {
-        return cardHistoryRepository.deleteByColumnName(CARD_RATE);
+        return cardHistoryRemote.deleteByColumnName(CARD_RATE);
     }
 
 }
