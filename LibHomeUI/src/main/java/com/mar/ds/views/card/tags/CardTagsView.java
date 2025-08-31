@@ -5,6 +5,9 @@ import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.dto.CardDto;
+import com.mar.libhome.dto.CardTypeDto;
+import com.mar.libhome.dto.CardTypeTagDto;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -30,27 +33,27 @@ public class CardTagsView {
 
     private final MainView mainView;
 
-    private Select<CardType> cardTypeListSelect;
-    private Grid<CardTypeTag> tagsGrid;
+    private Select<CardTypeDto> cardTypeListSelect;
+    private Grid<CardTypeTagDto> tagsGrid;
 
     public void showDialog() {
         Dialog dialog = new Dialog();
         dialog.setHeight(50, Unit.PERCENTAGE);
         dialog.setWidth(50, Unit.PERCENTAGE);
 
-        List<CardType> cardTypeList = mainView.getRepositoryService().getCardTypeRepository().findAll();
+        List<CardTypeDto> cardTypeList = mainView.getCardTypeService().findAll();
         cardTypeListSelect = new Select<>();
         cardTypeListSelect.setPlaceholder("Type");
         cardTypeListSelect.setEmptySelectionAllowed(false);
-        cardTypeListSelect.setTextRenderer(CardType::getTitle);
+        cardTypeListSelect.setTextRenderer(CardTypeDto::getTitle);
         cardTypeListSelect.setDataProvider(new ListDataProvider<>(cardTypeList));
         cardTypeListSelect.setWidthFull();
 
         tagsGrid = new Grid<>();
-        tagsGrid.addColumn(CardTypeTag::getId).setHeader("ID")
+        tagsGrid.addColumn(CardTypeTagDto::getId).setHeader("ID")
                 .setAutoWidth(true).setFlexGrow(0)
                 .setTextAlign(ColumnTextAlign.START);
-        tagsGrid.addColumn(CardTypeTag::getTitle).setHeader("Title")
+        tagsGrid.addColumn(CardTypeTagDto::getTitle).setHeader("Title")
                 .setAutoWidth(true)
                 .setTextAlign(ColumnTextAlign.CENTER);
         tagsGrid.addComponentColumn(
@@ -58,10 +61,10 @@ public class CardTagsView {
                             Button dltBtn = new Button(
                                     VaadinIcon.CLOSE_CIRCLE.create(),
                                     event -> {
-                                        List<Card> cards = mainView.getCardService().findByTag(tag.getId());
+                                        List<CardDto> cards = mainView.getCardService().findByTag(tag.getId());
                                         if (isEmpty(cards)) {
                                             log.info("Delete card status tag: {}", tag);
-                                            mainView.getRepositoryService().getCardTypeTagRepository().delete(tag);
+                                            mainView.getCardTypeTagService().delete(tag);
                                             reloadData();
                                         } else {
                                             log.warn("Find cards with status tag: {}, list: {}", tag, cards);
@@ -135,11 +138,10 @@ public class CardTagsView {
     }
 
     public void reloadData() {
-        CardType cardType = cardTypeListSelect.getValue();
+        CardTypeDto cardType = cardTypeListSelect.getValue();
         if (cardType != null) {
-            List<CardTypeTag> tagList = mainView
-                    .getRepositoryService()
-                    .getCardTypeTagRepository()
+            List<CardTypeTagDto> tagList = mainView
+                    .getCardTypeTagService()
                     .findByCardType(cardType);
             tagsGrid.setItems(tagList);
             mainView.getActiveView().reloadData();

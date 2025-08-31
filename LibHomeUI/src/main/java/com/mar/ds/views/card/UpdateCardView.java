@@ -1,17 +1,14 @@
 package com.mar.ds.views.card;
 
-import com.mar.ds.db.dto.CardDto;
-import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.entity.CardStatus;
-import com.mar.ds.db.entity.CardType;
-import com.mar.ds.db.entity.CardTypeTag;
-import com.mar.ds.db.entity.GameEngine;
-import com.mar.ds.db.entity.Language;
-import com.mar.ds.db.mapper.CardMapper;
+import com.mar.libhome.enums.GameEngine;
+import com.mar.libhome.enums.Language;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardStatusDto;
+import com.mar.libhome.dto.CardTypeDto;
+import com.mar.libhome.dto.CardTypeTagDto;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -21,7 +18,6 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import lombok.extern.slf4j.Slf4j;
-import org.mapstruct.factory.Mappers;
 
 import java.util.*;
 
@@ -50,7 +46,7 @@ public class UpdateCardView extends CardDialogView {
 
     private final Dialog updateDialog;
 
-    public UpdateCardView(MainView mainView, Card updateCard, FileUtils.ViewTypeDto viewType, Runnable afterUpdateEvent) {
+    public UpdateCardView(MainView mainView, CardDto updateCard, FileUtils.ViewTypeDto viewType, Runnable afterUpdateEvent) {
         this.mainView = mainView;
         this.viewType = viewType;
         this.minPoint = Integer.parseInt(mainView.getEnv().getProperty("app.card.point.min", "0"));
@@ -118,20 +114,19 @@ public class UpdateCardView extends CardDialogView {
             List<CardStatusDto> cardStatusList = mainView.getCardStatusService().findAll();
             setSelectValue(
                     cardStatusListSelect,
-                    CardStatusDto.builder().id(new UUID(updateCard.getCardStatus().getId(), updateCard.getCardStatus().getId())).build(),
+                    CardStatusDto.builder().id(updateCard.getCardStatus().getId()).build(),
                     cardStatusList
             );
         }
         if (nonNull(getTitles().get(GRID_TYPE)) && nonNull(getTitles().get(GRID_TAGS))) {
             // type
             components.add(getTypeSelector());
-            List<CardType> cardTypeList = mainView.getRepositoryService().getCardTypeRepository().findAll();
+            List<CardTypeDto> cardTypeList = mainView.getCardTypeService().findAll();
             setSelectValue(cardTypeListSelect, updateCard.getCardType(), cardTypeList);
             // type tags
             components.add(getTagMultiselector());
-            List<CardTypeTag> tagList = mainView
-                    .getRepositoryService()
-                    .getCardTypeTagRepository()
+            List<CardTypeTagDto> tagList = mainView
+                    .getCardTypeTagService()
                     .findByCardType(updateCard.getCardType());
             setMultiSelectComboBoxValue(tags, tagList, updateCard.getTagList());
         }
@@ -152,16 +147,17 @@ public class UpdateCardView extends CardDialogView {
         updBtn.addClickListener(click -> {
             try {
                 checkValues();
-                CardMapper cardMapper = Mappers.getMapper(CardMapper.class);
-                CardDto old = cardMapper.toDto(updateCard);
+//                CardMapper cardMapper = Mappers.getMapper(CardMapper.class);
+//                CardDto old = cardMapper.toDto(updateCard);
+                CardDto old = updateCard.copy();
                 CardStatusDto cardStatus = cardStatusListSelect.getValue();
                 updateCard.setTitle(getTextFieldValue(cardTitle));
                 updateCard.setViewType(getValue(viewTypeDtoSelect, viewType).id());
                 updateCard.setInfo(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""));
                 updateCard.setLink(getTextFieldValue(link));
                 updateCard.setEngine(getValue(engineSelect, GameEngine.DEFAULT));
-                updateCard.setCardStatus(CardStatus.builder()
-                                .id(cardStatus.getId().getLeastSignificantBits())
+                updateCard.setCardStatus(CardStatusDto.builder()
+                                .id(cardStatus.getId())
                                 .color(cardStatus.getColor())
                                 .tech(cardStatus.getTech())
                                 .hasUpdStatus(cardStatus.getHasUpdStatus())
@@ -179,7 +175,8 @@ public class UpdateCardView extends CardDialogView {
 
                 mainView.getCardHistoryService().saveHistory(
                         old,
-                        cardMapper.toDto(mainView.getCardService().save(updateCard))
+                        mainView.getCardService().save(updateCard)
+//                        cardMapper.toDto(mainView.getCardService().save(updateCard))
                 );
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);

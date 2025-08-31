@@ -1,6 +1,8 @@
 package com.mar.ds.db.entity;
 
 import com.mar.libhome.dto.HasId;
+import com.mar.libhome.enums.GameEngine;
+import com.mar.libhome.enums.Language;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +36,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "card")
+@Deprecated
 public class Card implements Serializable, HasId {
 
     @Id

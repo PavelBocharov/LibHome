@@ -1,10 +1,8 @@
 package com.mar.ds.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardStatus;
-import com.mar.ds.db.entity.CardTypeTag;
-import com.mar.ds.db.entity.Language;
+import com.mar.libhome.dto.CardDto;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -29,11 +27,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -106,7 +102,7 @@ public class FileUtils {
         return viewInfos;
     }
 
-    public static FileDownloadWrapper getDownloadFileButton(String fileName, Supplier<List<Card>> cardSupplier) {
+    public static FileDownloadWrapper getDownloadFileButton(String fileName, Supplier<List<CardDto>> cardSupplier) {
         Button downloadJson = new Button("Export to Excel", new Icon(DOWNLOAD));
         downloadJson.setWidthFull();
         downloadJson.getStyle().set("color", "black");
@@ -121,7 +117,7 @@ public class FileUtils {
     }
 
     @SneakyThrows
-    public static ByteArrayInputStream createExcel(List<Card> cardList) {
+    public static ByteArrayInputStream createExcel(List<CardDto> cardList) {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("Employee Data");
 
@@ -131,7 +127,7 @@ public class FileUtils {
         Map<String, Object[]> data = new TreeMap<>();
         int i = 1;
         data.put(String.valueOf(i++), header);
-        for (Card card : cardList) {
+        for (CardDto card : cardList) {
             data.put(String.valueOf(i++), convertToArray(card));
         }
 
@@ -202,18 +198,19 @@ public class FileUtils {
         return new ByteArrayInputStream(bos.toByteArray());
     }
 
-    private static Object[] convertToArray(Card card) {
+    // TODO
+    private static Object[] convertToArray(CardDto card) {
         Object[] rez = new Object[9];
 
         rez[0] = card.getCardStatus();
-        rez[1] = card.getEngine().getName();
-        rez[2] = Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getTitle();
-        rez[3] = card.getTitle();
+//        rez[1] = card.getEngine().getName();
+//        rez[2] = Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getTitle();
+//        rez[3] = card.getTitle();
         rez[4] = card.getPoint();
-        rez[5] = card.getLink();
+//        rez[5] = card.getLink();
         rez[6] = card.getLastUpdate();
-        rez[7] = card.getCardType().getTitle();
-        rez[8] = card.getTagList().stream().map(CardTypeTag::getTitle).collect(Collectors.joining(", "));
+//        rez[7] = card.getCardType().getTitle();
+//        rez[8] = card.getTagList().stream().map(CardTypeTag::getTitle).collect(Collectors.joining(", "));
 
         return rez;
     }

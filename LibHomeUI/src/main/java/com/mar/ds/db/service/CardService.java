@@ -1,26 +1,19 @@
 package com.mar.ds.db.service;
 
-import com.mar.ds.db.dto.CardDto;
-import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.entity.CardStatus;
-import com.mar.ds.db.entity.CardType;
-import com.mar.ds.db.jpa.CardRepository;
-import com.mar.ds.db.mapper.CardMapper;
+import com.mar.ds.db.remote.CardRemote;
+import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardStatusDto;
+import com.mar.libhome.dto.CardTypeDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import javax.validation.constraints.NotNull;
 
 import static com.mar.ds.db.service.CardStatusService.TECH_HASE_UPD_ID;
@@ -33,59 +26,38 @@ import static java.util.Objects.nonNull;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CardService {
 
-    private final CardRepository cardRepository;
+    private final CardRemote cardRemote;
     private final CardStatusService cardStatusService;
     private final CardHistoryService cardHistoryService;
-    private final CardMapper cardMapper;
-
-    /**
-     * Конструктор.
-     *
-     * @param cardRepository     репозиторий по работе с карточками.
-     * @param cardStatusService  сервис по работе со статусами карточки.
-     * @param cardHistoryService сервис по работе с истории изменения карточки.
-     * @param cardMapper         маппер карточки.
-     */
-    @Autowired
-    public CardService(
-            CardRepository cardRepository,
-            @Lazy CardStatusService cardStatusService,
-            CardHistoryService cardHistoryService,
-            CardMapper cardMapper
-    ) {
-        this.cardRepository = cardRepository;
-        this.cardStatusService = cardStatusService;
-        this.cardHistoryService = cardHistoryService;
-        this.cardMapper = cardMapper;
-    }
 
     /**
      * Проверяет все карточки в БД и обновляет (рейтинг, статус и т.д.).
      */
     public void checkAndUpdateAllCards() {
-        List<Card> cards = cardRepository.findAll();
+        List<com.mar.libhome.dto.CardDto> cards = cardRemote.findAll();
 
-        ArrayList<Card> forUpd = new ArrayList<>(cards.size());
+        ArrayList<CardDto> forUpd = new ArrayList<>(cards.size());
         List<Pair<CardDto, CardDto>> oldNewCards = new LinkedList<>();
-        for (Card card : cards) {
-            CardDto oldDto = cardMapper.toDto(card);
-            Card toSaveCard = checkCard(card);
-            CardDto newDto = cardMapper.toDto(toSaveCard);
-            forUpd.add(toSaveCard);
+        for (CardDto oldDto : cards) {
+            CardDto newDto = checkCard(oldDto);
+            forUpd.add(newDto);
             oldNewCards.add(Pair.of(oldDto, newDto));
         }
         saveAll(forUpd);
         cardHistoryService.saveHistory(oldNewCards);
     }
 
-    public Page<Card> findAllByView(@NotNull Integer view, Pageable pageable) {
-        return cardRepository.findAllByView(view, pageable);
+    public Page<CardDto> findAllByView(@NotNull Integer view, PageRequest pageRequest) {
+        List<CardDto> dtoList = cardRemote.findAllByView(view, pageRequest);
+        return new PageImpl<>(dtoList);
     }
 
-    public Page<Card> findAllByViewAndLikeTitleMap(@NotNull Integer view, String searchText, Pageable pageable) {
-        return cardRepository.findAllByViewAndLikeTitleMap(view, searchText, pageable);
+    public Page<CardDto> findAllByViewAndLikeTitleMap(@NotNull Integer view, String searchText, PageRequest pageRequest) {
+        List<CardDto> dtoList = cardRemote.findAllByViewAndLikeTitleMap(view, searchText, pageRequest);
+        return new PageImpl<>(dtoList);
     }
 
     /**
@@ -95,13 +67,13 @@ public class CardService {
      * @param card карточка.
      * @return проверенная карточка.
      */
-    public Card checkCard(Card card) {
+    public CardDto checkCard(CardDto card) {
         assert nonNull(card);
         assert nonNull(card.getCardStatus());
 
         // update status
-        CardStatus status = card.getCardStatus();
-        CardStatus oldStatus = card.getOldCardStatus();
+        CardStatusDto status = card.getCardStatus();
+        CardStatusDto oldStatus = card.getOldCardStatus();
 
         if (nonNull(card.getLastGame()) && nonNull(card.getLastUpdate())
                 && card.getLastUpdate().after(card.getLastGame())
@@ -110,8 +82,8 @@ public class CardService {
                 CardStatusDto hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
                 card.setOldCardStatus(status);
                 card.setCardStatus(
-                        CardStatus.builder()
-                                .id(hasUpdStatus.getId().getLeastSignificantBits())
+                        CardStatusDto.builder()
+                                .id(hasUpdStatus.getId())
                                 .order(hasUpdStatus.getOrder())
                                 .hasUpdStatus(hasUpdStatus.getHasUpdStatus())
                                 .isRate(hasUpdStatus.getIsRate())
@@ -141,8 +113,8 @@ public class CardService {
         return card;
     }
 
-    public Card save(Card card) {
-        return cardRepository.save(checkCard(card));
+    public CardDto save(CardDto card) {
+        return cardRemote.save(checkCard(card));
     }
 
     /**
@@ -151,35 +123,35 @@ public class CardService {
      * @param cards список карточек.
      * @return сохраненные карточки (с ID).
      */
-    public List<Card> saveAll(Collection<Card> cards) {
-        return cardRepository.saveAll(cards.stream().map(this::checkCard).toList());
+    public List<CardDto> saveAll(Collection<CardDto> cards) {
+        return cardRemote.saveAll(cards.stream().map(this::checkCard).toList());
     }
 
-    public List<Card> findAll() {
-        return cardRepository.findAll();
+    public List<CardDto> findAll() {
+        return cardRemote.findAll();
     }
 
-    public void delete(Card card) {
-        cardRepository.delete(card);
+    public void remove(CardDto card) {
+        cardRemote.delete(card);
     }
 
-    public List<Card> findWithOrderByPoint(Integer viewType) {
-        return cardRepository.findWithOrderByPoint(viewType);
+    public List<CardDto> findWithOrderByPoint(Integer viewType) {
+        return cardRemote.findWithOrderByPoint(viewType);
     }
 
-    public List<Card> findByCardStatus(CardStatus cardStatus) {
-        return cardRepository.findByCardStatus(cardStatus);
+    public List<CardDto> findByCardStatus(CardStatusDto cardStatus) {
+        return cardRemote.findByCardStatus(cardStatus);
     }
 
-    public List<Card> findByTag(Long tagId) {
-        return cardRepository.findByTagIn(tagId);
+    public List<CardDto> findByTag(UUID tagId) {
+        return cardRemote.findByTagId(tagId);
     }
 
-    public List<Card> findByCardType(CardType cardType) {
-        return cardRepository.findByCardType(cardType);
+    public List<CardDto> findByCardType(CardTypeDto cardType) {
+        return cardRemote.findByCardType(cardType);
     }
 
-    private void calcRate(Card card) {
+    private void calcRate(CardDto card) {
         if (!Optional.ofNullable(card.getCardStatus().getIsRate()).orElse(false)) {
             card.setRate(0.0);
             return;

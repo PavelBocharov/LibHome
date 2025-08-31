@@ -1,13 +1,14 @@
 package com.mar.ds.views.card.type;
 
-import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.entity.CardType;
-import com.mar.ds.db.entity.CardTypeTag;
-import com.mar.ds.db.jpa.CardTypeRepository;
+import com.mar.ds.db.service.CardTypeService;
+import com.mar.ds.db.service.CardTypeTagService;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.mar.ds.views.build.popup.ViewDialog;
+import com.mar.libhome.dto.CardDto;
+import com.mar.libhome.dto.CardTypeDto;
+import com.mar.libhome.dto.CardTypeTagDto;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -17,14 +18,14 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Slf4j
 public class CardTypeViewDialog
-        extends ViewDialog<CardType, CardTypeRepository, CardTypeCreateDialog, CardTypeUpdateDialog> {
+        extends ViewDialog<CardTypeDto, CardTypeService, CardTypeCreateDialog, CardTypeUpdateDialog> {
 
     public CardTypeViewDialog(MainView appLayout) {
         super(appLayout, "Card type");
     }
 
     @Override
-    protected String getText(CardType entity) {
+    protected String getText(CardTypeDto entity) {
         return entity.getTitle();
     }
 
@@ -43,19 +44,16 @@ public class CardTypeViewDialog
     }
 
     @Override
-    protected void deleteData(CardType entity) {
+    protected void deleteData(CardTypeDto entity) {
         try {
             new DeleteDialogWidget(() -> {
-                List<Card> cards = appLayout.getCardService().findByCardType(entity);
+                List<CardDto> cards = appLayout.getCardService().findByCardType(entity);
                 if (isEmpty(cards)) {
                     log.info("Delete card type: {}", entity);
-                    List<CardTypeTag> tags = appLayout
-                            .getRepositoryService()
-                            .getCardTypeTagRepository()
-                            .findByCardType(entity);
-                    for (CardTypeTag tag : tags) {
+                    List<CardTypeTagDto> tags = getTagRepository().findByCardType(entity);
+                    for (CardTypeTagDto tag : tags) {
                         log.info("Delete card type tag: {}", tag);
-                        appLayout.getRepositoryService().getCardTypeTagRepository().deleteById(tag.getId());
+                        getTagRepository().deleteById(tag.getId());
                     }
                     getRepository().delete(entity);
                     reloadData();
@@ -74,7 +72,11 @@ public class CardTypeViewDialog
         }
     }
 
-    public CardTypeRepository getRepository() {
-        return appLayout.getRepositoryService().getCardTypeRepository();
+    public CardTypeService getRepository() {
+        return appLayout.getCardTypeService();
+    }
+
+    public CardTypeTagService getTagRepository() {
+        return appLayout.getCardTypeTagService();
     }
 }

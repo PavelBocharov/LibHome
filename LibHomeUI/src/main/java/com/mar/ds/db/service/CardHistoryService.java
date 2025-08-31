@@ -1,10 +1,8 @@
 package com.mar.ds.db.service;
 
 import com.mar.ds.db.diff.DiffCard;
-import com.mar.ds.db.dto.CardDto;
-import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.remote.CardHistoryRemote;
-import com.mar.ds.db.mapper.CardMapper;
+import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardHistoryDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,15 +28,14 @@ import static java.util.Objects.nonNull;
 public class CardHistoryService {
 
     private final CardHistoryRemote cardHistoryRemote;
-    private final CardMapper cardMapper;
 
     /**
      * Сохранить данные по новой карточки.
      *
      * @param card карточка.
      */
-    public void saveCreateCard(Card card) {
-        saveHistory(null, cardMapper.toDto(card));
+    public void saveCreateCard(CardDto card) {
+        saveHistory(null, card);
     }
 
     /**
@@ -80,7 +77,7 @@ public class CardHistoryService {
     public void saveDeleteCard(CardDto card) {
         cardHistoryRemote.save(
                 CardHistoryDto.builder()
-                        .editableId(new UUID(card.getId(), card.getId()))
+                        .editableId(card.getId())
                         .columnName("DELETED")
                         .titlePage(String.valueOf(card.getViewType()))
                         .oldValue(card.toString())

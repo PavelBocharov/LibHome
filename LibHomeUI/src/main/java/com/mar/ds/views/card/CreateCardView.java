@@ -1,9 +1,8 @@
 package com.mar.ds.views.card;
 
-import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.entity.CardStatus;
-import com.mar.ds.db.entity.GameEngine;
-import com.mar.ds.db.entity.Language;
+import com.mar.libhome.dto.CardDto;
+import com.mar.libhome.enums.GameEngine;
+import com.mar.libhome.enums.Language;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
@@ -119,8 +118,8 @@ public class CreateCardView extends CardDialogView {
             try {
                 checkValues();
                 CardStatusDto cardStatus = cardStatusListSelect.getValue();
-                Card card = mainView.getCardService().save(
-                        Card.builder()
+                CardDto card = mainView.getCardService().save(
+                        CardDto.builder()
                                 .title(getTextFieldValue(cardTitle))
                                 .viewType(getValue(viewTypeDtoSelect, viewType).id())
                                 .info(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""))
@@ -129,8 +128,8 @@ public class CreateCardView extends CardDialogView {
                                 .point(getDoubleValue(point))
                                 .lastUpdate(getValue(updDate, new Date()))
                                 .lastGame(getValue(gameDate, new Date()))
-                                .cardStatus(CardStatus.builder()
-                                        .id(cardStatus.getId().getLeastSignificantBits())
+                                .cardStatus(CardStatusDto.builder()
+                                        .id(cardStatus.getId())
                                         .color(cardStatus.getColor())
                                         .tech(cardStatus.getTech())
                                         .hasUpdStatus(cardStatus.getHasUpdStatus())

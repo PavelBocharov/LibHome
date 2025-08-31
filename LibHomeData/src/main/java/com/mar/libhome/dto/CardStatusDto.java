@@ -30,4 +30,8 @@ public class CardStatusDto implements Serializable, HasId {
         return id.getLeastSignificantBits();
     }
 
+    public boolean isTech() {
+        return tech != null && !tech.isBlank();
+    }
+
 }

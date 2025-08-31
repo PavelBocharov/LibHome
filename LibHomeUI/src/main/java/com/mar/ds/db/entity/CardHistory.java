@@ -32,6 +32,7 @@ import javax.persistence.TemporalType;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "card_history")
+@Deprecated
 public class CardHistory implements Serializable, HasId {
 
     @Id

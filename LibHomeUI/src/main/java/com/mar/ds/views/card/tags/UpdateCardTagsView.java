@@ -3,6 +3,7 @@ package com.mar.ds.views.card.tags;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.dto.CardTypeTagDto;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -19,7 +20,7 @@ public class UpdateCardTagsView {
 
     private final MainView mainView;
     private final CardTagsView parentView;
-    private final CardTypeTag tag;
+    private final CardTypeTagDto tag;
 
     public void showDialog() {
         Dialog dialog = new Dialog();
@@ -34,7 +35,7 @@ public class UpdateCardTagsView {
                 VaadinIcon.PLUS.create(),
                 event -> {
                     tag.setTitle(ViewUtils.getTextFieldValue(title));
-                    mainView.getRepositoryService().getCardTypeTagRepository().save(tag);
+                    mainView.getCardTypeTagService().save(tag);
                     dialog.close();
                     parentView.reloadData();
                 }

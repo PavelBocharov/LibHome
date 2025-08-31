@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
+@Deprecated
 public interface CardTypeTagRepository extends JpaRepository<CardTypeTag, Long> {
 
     List<CardTypeTag> findByCardType(CardType cardType);

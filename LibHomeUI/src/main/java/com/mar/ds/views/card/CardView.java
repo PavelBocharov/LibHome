@@ -1,11 +1,9 @@
 package com.mar.ds.views.card;
 
-import com.mar.ds.db.dto.CardDto;
-import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardTypeTag;
-import com.mar.ds.db.entity.GameEngine;
-import com.mar.ds.db.entity.Language;
-import com.mar.ds.db.mapper.CardMapper;
+import com.mar.libhome.dto.CardTypeTagDto;
+import com.mar.libhome.enums.GameEngine;
+import com.mar.libhome.enums.Language;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
@@ -15,6 +13,7 @@ import com.mar.ds.views.build.pagination.PaginationGridService;
 import com.mar.ds.views.card.status.CardStatusViewDialog;
 import com.mar.ds.views.card.tags.CardTagsView;
 import com.mar.ds.views.card.type.CardTypeViewDialog;
+import com.mar.libhome.dto.CardDto;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -36,7 +35,6 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.vaadin.olli.FileDownloadWrapper;
@@ -49,18 +47,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.mar.ds.data.GridInfo.GRID_DATE_GAME;
-import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
-import static com.mar.ds.data.GridInfo.GRID_ENGINE;
-import static com.mar.ds.data.GridInfo.GRID_ID;
-import static com.mar.ds.data.GridInfo.GRID_LANGUAGE;
-import static com.mar.ds.data.GridInfo.GRID_LINK;
-import static com.mar.ds.data.GridInfo.GRID_POINT;
-import static com.mar.ds.data.GridInfo.GRID_RATE;
-import static com.mar.ds.data.GridInfo.GRID_STATUS;
-import static com.mar.ds.data.GridInfo.GRID_TAGS;
-import static com.mar.ds.data.GridInfo.GRID_TITLE;
-import static com.mar.ds.data.GridInfo.GRID_TYPE;
+import static com.mar.ds.data.GridInfo.*;
 import static com.mar.ds.db.diff.DiffCard.CARD_ENGINE;
 import static com.mar.ds.db.diff.DiffCard.CARD_LANGUAGE;
 import static com.mar.ds.db.diff.DiffCard.CARD_LAST_GAME_DATE;
@@ -101,8 +88,8 @@ public class CardView implements ContentView {
     private int maxPoint;
     private long minRate = Integer.MAX_VALUE;
     private long maxRate = Integer.MIN_VALUE;
-    private Grid<Card> grid;
-    private PaginationGridService<Card> paginationGridService;
+    private Grid<com.mar.libhome.dto.CardDto> grid;
+    private PaginationGridService<CardDto> paginationGridService;
     private int pageSize;
 
     public VerticalLayout getContent() {
@@ -114,11 +101,11 @@ public class CardView implements ContentView {
         // TABLE
         grid = new Grid<>();
         TextField searchField = new TextField();
-        paginationGridService = new PaginationGridService<Card>(grid, pageSize,
+        paginationGridService = new PaginationGridService<CardDto>(grid, pageSize,
                 data -> {
                     // calc min/max rate
-                    List<Card> cardList = mainView.getCardService().findWithOrderByPoint(viewType.id());
-                    for (Card card : cardList) {
+                    List<CardDto> cardList = mainView.getCardService().findWithOrderByPoint(viewType.id());
+                    for (CardDto card : cardList) {
                         double rate = card.getRate();
                         if (rate < minRate) {
                             minRate = (long) rate;
@@ -212,12 +199,13 @@ public class CardView implements ContentView {
         return new Component[]{crtBtn, cardStatusView, cardTypeView, cardTypeTagView, buttonWrapper};
     }
 
-    private Component getEngineIcon(Card card) {
+    private Component getEngineIcon(CardDto card) {
         try {
             GameEngine engine = GameEngine.DEFAULT;
-            if (card != null && card.getEngine() != null) {
-                engine = card.getEngine();
-            }
+            // TODO
+//            if (card != null && card.getEngine() != null) {
+//                engine = card.getEngine();
+//            }
             Image icon = new Image(engine.getIconPath(), engine.getName());
             icon.setTitle(engine.getName());
             icon.setHeight(DEFAULT_GRID_ICON_SIZE_VAR);
@@ -231,7 +219,7 @@ public class CardView implements ContentView {
         }
     }
 
-    private void openInfo(Card card) {
+    private void openInfo(CardDto card) {
         if (card != null) {
             CardInfoView info = new CardInfoView(mainView, card, viewType);
             info.open();
@@ -293,7 +281,7 @@ public class CardView implements ContentView {
                 dialogItemDoubleClickEvent -> openInfo(dialogItemDoubleClickEvent.getItem())
         );
 
-        GridContextMenu<Card> menu = grid.addContextMenu();
+        GridContextMenu<CardDto> menu = grid.addContextMenu();
         menu.addItem("View", event -> event.getItem().ifPresent(this::openInfo));
         if (gridConfig.containsKey(GRID_LINK)) {
             menu.addItem("Link", event -> event.getItem().ifPresent(card -> {
@@ -318,9 +306,9 @@ public class CardView implements ContentView {
         });
         menu.addItem("Delete", event ->
                 event.getItem().ifPresent(card -> new DeleteDialogWidget(() -> {
-                    CardDto cardDto = Mappers.getMapper(CardMapper.class).toDto(card);
-                    mainView.getCardService().delete(card);
-                    mainView.getCardHistoryService().saveDeleteCard(cardDto);
+//                    CardDto cardDto = Mappers.getMapper(CardMapper.class).toDto(card);
+                    mainView.getCardService().remove(card);
+                    mainView.getCardHistoryService().saveDeleteCard(card);
                     reloadData();
                     FileUtils.deleteDir(mainView.getEnv().getProperty("app.data.path") + "cards/" + card.getId());
                 }))
@@ -334,7 +322,7 @@ public class CardView implements ContentView {
         assert nonNull(gridConfig);
 
         if (gridConfig.containsKey(GRID_ID)) {
-            grid.addColumn(Card::getId)
+            grid.addColumn(CardDto::getId)
                     .setHeader(gridConfig.get(GRID_ID))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.START)
@@ -357,10 +345,12 @@ public class CardView implements ContentView {
                     .setId(GRID_ENGINE);
         }
         if (gridConfig.containsKey(GRID_LANGUAGE)) {
-            grid.addComponentColumn(card -> Optional
-                            .ofNullable(card.getLanguage())
-                            .orElse(Language.DEFAULT)
-                            .getImage(DEFAULT_GRID_ICON_SIZE_INT)
+            grid.addComponentColumn(card ->
+                            ViewUtils.getImage(Optional
+                                            .ofNullable(card.getLanguage())
+                                            .orElse(Language.DEFAULT),
+                                    DEFAULT_GRID_ICON_SIZE_INT
+                            )
                     )
                     .setHeader(paginationGridService.getHeader(
                             COMMENT_O, gridConfig.get(GRID_LANGUAGE), CARD_LANGUAGE
@@ -370,7 +360,7 @@ public class CardView implements ContentView {
                     .setId(GRID_LANGUAGE);
         }
         if (gridConfig.containsKey(GRID_TITLE)) {
-            grid.addColumn(Card::getTitle)
+            grid.addColumn(CardDto::getTitle)
                     .setHeader(paginationGridService.getHeader(
                             TEXT_LABEL, gridConfig.get(GRID_TITLE), CARD_TITLE
                     ))
@@ -426,7 +416,7 @@ public class CardView implements ContentView {
             grid.addColumn(card -> card.getTagList() == null || card.getTagList().isEmpty()
                             ? "---"
                             : card.getTagList().stream()
-                            .map(CardTypeTag::getTitle)
+                            .map(CardTypeTagDto::getTitle)
                             .collect(Collectors.joining(", "))
                     )
                     .setHeader(gridConfig.get(GRID_TAGS))

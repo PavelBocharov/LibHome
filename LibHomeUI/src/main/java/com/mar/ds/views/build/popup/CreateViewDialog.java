@@ -1,6 +1,7 @@
 package com.mar.ds.views.build.popup;
 
 import com.mar.ds.utils.ViewUtils;
+import com.mar.libhome.view.PopupEntity;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;

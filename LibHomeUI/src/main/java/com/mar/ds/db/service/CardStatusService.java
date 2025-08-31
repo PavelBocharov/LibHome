@@ -1,8 +1,7 @@
 package com.mar.ds.db.service;
 
-import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.remote.CardStatusRemote;
+import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardStatusDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +39,9 @@ public class CardStatusService {
         return cardStatus;
     }
 
-    public void delete(CardStatusDto cardStatus) throws Exception {
-        List<Card> cards = cardService.findByCardStatus(CardStatus.builder()
-                        .id(cardStatus.getId().getLeastSignificantBits())
+    public void remove(CardStatusDto cardStatus) throws Exception {
+        List<CardDto> cards = cardService.findByCardStatus(CardStatusDto.builder()
+                        .id(cardStatus.getId())
                         .color(cardStatus.getColor())
                         .tech(cardStatus.getTech())
                         .hasUpdStatus(cardStatus.getHasUpdStatus())

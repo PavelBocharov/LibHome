@@ -1,4 +1,4 @@
-package com.mar.ds.db.entity;
+package com.mar.libhome.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

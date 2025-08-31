@@ -1,7 +1,10 @@
 package com.mar.ds.utils;
 
 import com.mar.ds.db.entity.Card;
+import com.mar.ds.views.card.CardView;
+import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.HasId;
+import com.mar.libhome.enums.Language;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.accordion.Accordion;
@@ -337,7 +340,7 @@ public class ViewUtils {
         return content;
     }
 
-    public static Icon getStatusIcon(Card card) {
+    public static Icon getStatusIcon(CardDto card) {
         Icon icon;
 
         if (card != null && card.getCardStatus() != null && isNotBlank(card.getCardStatus().getColor())) {
@@ -411,6 +414,21 @@ public class ViewUtils {
             select.select(newSelected);
         }
         return select;
+    }
+
+    public Image getImage(Language language) {
+        Image langIcon = new Image(language.getIcon(), language.getTitle());
+        langIcon.setWidth(CardView.DEFAULT_GRID_ICON_SIZE_VAR);
+        langIcon.setHeight(CardView.DEFAULT_GRID_ICON_SIZE_VAR);
+        langIcon.getStyle().set("margin-bottom", "-6px");
+        return langIcon;
+    }
+
+    public Image getImage(Language language, int size) {
+        Image langIcon = getImage(language);
+        langIcon.setWidth("var(--iron-icon-width, " + size + "px)");
+        langIcon.setHeight("var(--iron-icon-width, " + size + "px)");
+        return langIcon;
     }
 
 }

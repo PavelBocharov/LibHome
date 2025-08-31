@@ -4,6 +4,8 @@ import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.dto.CardTypeDto;
+import com.mar.libhome.dto.CardTypeTagDto;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -20,7 +22,7 @@ public class CreateCardTagsView {
 
     private final MainView mainView;
     private final CardTagsView parentView;
-    private final CardType cardType;
+    private final CardTypeDto cardType;
 
     public void showDialog() {
         Dialog dialog = new Dialog();
@@ -33,10 +35,10 @@ public class CreateCardTagsView {
                 "Create tag",
                 VaadinIcon.PLUS.create(),
                 event -> {
-                    mainView.getRepositoryService().getCardTypeTagRepository().save(
-                            CardTypeTag.builder()
+                    mainView.getCardTypeTagService().save(
+                            CardTypeTagDto.builder()
                                     .title(ViewUtils.getTextFieldValue(title))
-                                    .cardType(cardType)
+                                    .cardTypeId(cardType.getId())
                                     .build()
                     );
                     dialog.close();

@@ -1,8 +1,10 @@
-package com.mar.ds.views.build.popup;
+package com.mar.libhome.view;
+
+import java.util.UUID;
 
 public interface PopupEntity {
 
-    Long getId();
+    UUID getId();
 
     default Long getEntityId() {
         return null;

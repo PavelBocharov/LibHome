@@ -1,18 +1,14 @@
 package com.mar.ds.db.diff;
 
-import com.mar.ds.db.dto.CardDto;
-import com.mar.ds.db.dto.CardTypeTagDto;
+import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardHistoryDto;
+import com.mar.libhome.dto.CardTypeTagDto;
 import org.apache.commons.lang3.builder.Diff;
 import org.apache.commons.lang3.builder.DiffBuilder;
 import org.apache.commons.lang3.builder.DiffResult;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.mar.ds.utils.Utils.getDateWithoutTime;
@@ -34,10 +30,11 @@ public class DiffCard {
     public static final String CARD_TAG = "tag";
     public static final String CARD_ENGINE = "engine";
 
+    // TODO
     public static List<CardHistoryDto> compare(CardDto oldCard, CardDto updatedCard) {
         if (oldCard == null) {
             if (updatedCard.getId() != null) {
-                UUID id = new UUID(updatedCard.getId(), updatedCard.getId());
+                UUID id = updatedCard.getId();
                 return List.of(
                         CardHistoryDto.builder()
                                 .titlePage(String.valueOf(updatedCard.getViewType()))
@@ -73,15 +70,17 @@ public class DiffCard {
                 .append(CARD_STATUS, oldCard.getCardStatus(), updatedCard.getCardStatus())
                 .append(CARD_OLD_STATUS, oldCard.getOldCardStatus(), updatedCard.getOldCardStatus());
 
-        Set<Long> oldTags = oldCard.getTagList().stream().map(CardTypeTagDto::getId).collect(Collectors.toSet());
-        Set<Long> newTags = updatedCard.getTagList().stream().map(CardTypeTagDto::getId).collect(Collectors.toSet());
-        for (Long tagId : oldTags) {
+        Set<UUID> oldTags = oldCard.getTagList().stream().map(CardTypeTagDto::getId)
+                .collect(Collectors.toSet());
+        Set<UUID> newTags = updatedCard.getTagList().stream().map(CardTypeTagDto::getId)
+                .collect(Collectors.toSet());
+        for (UUID tagId : oldTags) {
             if (!newTags.contains(tagId)) {
                 diffBuilder.append("REMOVE " + CARD_TAG, tagId, "");
             }
         }
 
-        for (Long tagId : newTags) {
+        for (UUID tagId : newTags) {
             if (!oldTags.contains(tagId)) {
                 diffBuilder.append("ADD " + CARD_TAG, "", tagId);
             }
@@ -91,11 +90,9 @@ public class DiffCard {
         List<CardHistoryDto> historyList = new ArrayList<>(res.getDiffs().size());
         Date updDate = new Date();
         for (Diff<?> diff : res) {
-            UUID id = new UUID(oldCard.getId(), oldCard.getId());
             historyList.add(
                     CardHistoryDto.builder()
-//                            .editableId(oldCard.getId())
-                            .editableId(id)
+                            .editableId(oldCard.getId())
                             .columnName(diff.getFieldName())
                             .titlePage(String.valueOf(oldCard.getViewType()))
                             .oldValue(String.valueOf(diff.getLeft()))

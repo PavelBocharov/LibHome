@@ -1,14 +1,13 @@
 package com.mar.ds.views.card;
 
-import com.mar.ds.db.entity.CardStatus;
-import com.mar.ds.db.entity.CardType;
-import com.mar.ds.db.entity.CardTypeTag;
-import com.mar.ds.db.entity.GameEngine;
-import com.mar.ds.db.entity.Language;
+import com.mar.libhome.enums.GameEngine;
+import com.mar.libhome.enums.Language;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.mar.libhome.dto.CardStatusDto;
+import com.mar.libhome.dto.CardTypeDto;
+import com.mar.libhome.dto.CardTypeTagDto;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -71,8 +70,8 @@ public abstract class CardDialogView {
     protected DatePicker updDate;
     protected DatePicker gameDate;
     protected Select<CardStatusDto> cardStatusListSelect;
-    protected Select<CardType> cardTypeListSelect;
-    protected MultiselectComboBox<CardTypeTag> tags;
+    protected Select<CardTypeDto> cardTypeListSelect;
+    protected MultiselectComboBox<CardTypeTagDto> tags;
     protected TextArea infoArea;
     protected Select<Language> languageSelect;
     private volatile Map<String, String> titles;
@@ -203,11 +202,11 @@ public abstract class CardDialogView {
     }
 
     protected Component getTypeSelector() {
-        List<CardType> cardTypeList = mainView.getRepositoryService().getCardTypeRepository().findAll();
+        List<CardTypeDto> cardTypeList = mainView.getCardTypeService().findAll();
         cardTypeListSelect = new Select<>();
         cardTypeListSelect.setLabel(getTitles().get(GRID_TYPE));
         cardTypeListSelect.setEmptySelectionAllowed(false);
-        cardTypeListSelect.setTextRenderer(CardType::getTitle);
+        cardTypeListSelect.setTextRenderer(CardTypeDto::getTitle);
         cardTypeListSelect.setDataProvider(new ListDataProvider<>(cardTypeList));
         cardTypeListSelect.setWidthFull();
         return cardTypeListSelect;
@@ -216,16 +215,15 @@ public abstract class CardDialogView {
     protected Component getTagMultiselector() {
         tags = new MultiselectComboBox<>();
         tags.setLabel(getTitles().get(GRID_TAGS));
-        tags.setItemLabelGenerator(CardTypeTag::getTitle);
+        tags.setItemLabelGenerator(CardTypeTagDto::getTitle);
         tags.setWidthFull();
         tags.setAllowCustomValues(false);
         tags.setClearButtonVisible(true);
         cardTypeListSelect.addValueChangeListener(event -> {
             tags.deselectAll();
             if (nonNull(event.getValue())) {
-                List<CardTypeTag> tagList = mainView
-                        .getRepositoryService()
-                        .getCardTypeTagRepository()
+                List<CardTypeTagDto> tagList = mainView
+                        .getCardTypeTagService()
                         .findByCardType(event.getValue());
                 tags.setItems(tagList);
             } else {
@@ -246,7 +244,7 @@ public abstract class CardDialogView {
         languageSelect = new Select<>(Language.values());
         languageSelect.setRenderer(
                 new ComponentRenderer<>(language -> new HorizontalLayout(
-                        language.getImage(24),
+                        ViewUtils.getImage(language, 24),
                         new Label(language.getTitle())
                 ))
         );

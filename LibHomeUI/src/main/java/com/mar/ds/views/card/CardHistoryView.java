@@ -2,6 +2,7 @@ package com.mar.ds.views.card;
 
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardHistoryDto;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -29,7 +30,7 @@ import static java.util.Objects.nonNull;
 public class CardHistoryView extends Dialog {
 
     private final MainView mainView;
-    private final Card card;
+    private final CardDto card;
 
     /**
      * Конструктор.
@@ -37,7 +38,7 @@ public class CardHistoryView extends Dialog {
      * @param mainView родительское окно.
      * @param card     по какой карточке будет история.
      */
-    public CardHistoryView(MainView mainView, Card card) {
+    public CardHistoryView(MainView mainView, CardDto card) {
         assert nonNull(mainView);
         assert nonNull(card);
 
@@ -86,8 +87,7 @@ public class CardHistoryView extends Dialog {
         ).setHeader("New value");
 
         historyGrid.setItems(
-//                mainView.getCardHistoryService().findAllByCardId(card.getId())
-                mainView.getCardHistoryService().findAllByCardId(new UUID(card.getId(), card.getId()))
+                mainView.getCardHistoryService().findAllByCardId(card.getId())
         );
 
         Button backBtn = new Button("Back", VaadinIcon.ARROW_BACKWARD.create());

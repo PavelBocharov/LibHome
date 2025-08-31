@@ -1,7 +1,5 @@
 package com.mar.ds.service;
 
-import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.LibHomeSequence;
 import com.mar.ds.db.entity.TechWork;
 import com.mar.ds.db.jpa.LibHomeSeqRepository;
@@ -11,6 +9,7 @@ import com.mar.ds.db.service.CardHistoryService;
 import com.mar.ds.db.service.CardService;
 import com.mar.ds.db.service.CardStatusService;
 import com.mar.ds.db.service.MigrationToMongoService;
+import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardStatusDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,13 +159,13 @@ public class TechWorkService {
 //      ----------------
 
         CardStatusDto hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
-        List<Card> cards = cardService.findAll();
-        for (Card card : cards) {
+        List<CardDto> cards = cardService.findAll();
+        for (CardDto card : cards) {
             if (card.getLastUpdate().after(card.getLastGame())) {
                 card.setOldCardStatus(card.getCardStatus());
                 card.setCardStatus(
-                        CardStatus.builder()
-                                .id(hasUpdStatus.getId().getLeastSignificantBits())
+                        CardStatusDto.builder()
+                                .id(hasUpdStatus.getId())
                                 .order(hasUpdStatus.getOrder())
                                 .hasUpdStatus(hasUpdStatus.getHasUpdStatus())
                                 .isRate(hasUpdStatus.getIsRate())

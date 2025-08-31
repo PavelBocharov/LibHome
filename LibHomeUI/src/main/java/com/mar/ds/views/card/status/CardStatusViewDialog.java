@@ -1,6 +1,5 @@
 package com.mar.ds.views.card.status;
 
-import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.service.CardStatusService;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
@@ -86,7 +85,7 @@ public class CardStatusViewDialog {
                                 try {
                                     new DeleteDialogWidget(() -> {
                                         try {
-                                            getService().delete(cardStatus);
+                                            getService().remove(cardStatus);
                                             reloadData();
                                         } catch (Exception e) {
                                             ViewUtils.showErrorMsg("Delete card status ERROR", e);

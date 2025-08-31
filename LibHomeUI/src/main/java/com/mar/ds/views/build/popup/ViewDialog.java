@@ -3,6 +3,8 @@ package com.mar.ds.views.build.popup;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.view.PopupEntity;
+import com.mar.libhome.view.ViewRepository;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
@@ -16,7 +18,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public abstract class ViewDialog<E extends PopupEntity, R
-        extends JpaRepository<E, Long>, C extends CreateViewDialog, U extends UpdateViewDialog> {
+        extends ViewRepository<E>, C extends CreateViewDialog, U extends UpdateViewDialog> {
 
     protected final MainView appLayout;
     private String nameEntity;

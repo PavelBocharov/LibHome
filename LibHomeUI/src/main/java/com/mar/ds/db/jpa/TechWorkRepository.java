@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
+@Deprecated
 public interface TechWorkRepository extends JpaRepository<TechWork, Long> {
 
     @Query("SELECT MAX(tw.techId) FROM TechWork tw")

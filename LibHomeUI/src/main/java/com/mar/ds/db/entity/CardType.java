@@ -1,6 +1,6 @@
 package com.mar.ds.db.entity;
 
-import com.mar.ds.views.build.popup.PopupEntity;
+import com.mar.libhome.view.PopupEntity;
 import com.mar.libhome.dto.HasId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +29,8 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "card_type")
-public class CardType implements Serializable, HasId, PopupEntity {
+@Deprecated
+public class CardType implements Serializable, HasId {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_type_seq")

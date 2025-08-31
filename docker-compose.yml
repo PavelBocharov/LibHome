@@ -22,7 +22,7 @@ services:
       - "27017:27017"
     volumes:
       - ${MONGO_DIR}:/data/db
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - ./db_init/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
@@ -34,18 +34,18 @@ services:
       - mgdb
       - bridge
 
-    db:
-      build:
-        context: LibHomeDB
-        dockerfile: Dockerfile
+  db:
+    build:
+      context: LibHomeDB
+      dockerfile: Dockerfile
 #      env_file:
 #        - .env
 #      volumes:
 #        - "${PC_DB_PATH}:${DATA_PATH}"
-      tty: true
-      restart: always
-      networks:
-        - mgdb
+    tty: true
+    restart: always
+    networks:
+      - mgdb
 #      ports:
 #        - '8080:8080'
 

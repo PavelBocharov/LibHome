@@ -2,6 +2,7 @@ package com.mar.ds.utils;
 
 import com.mar.ds.db.entity.Card;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.dto.CardDto;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -31,7 +32,7 @@ import static java.lang.String.valueOf;
 public class UploadFileDialog extends Dialog {
 
     public static final List<String> nameWordExc = List.of("\\", "/", ":", "*", "?", "\"", "<", ">", "|", "+", " ");
-    private final Card card;
+    private final CardDto card;
     private final String rootDir;
     private final int countFiles;
     private final boolean isCover;
@@ -42,7 +43,7 @@ public class UploadFileDialog extends Dialog {
     public UploadFileDialog(
             MainView mainView,
             String rootDir,
-            Card card,
+            CardDto card,
             boolean isCover,
             int countFiles,
             Set<String> uploadFileTypes,

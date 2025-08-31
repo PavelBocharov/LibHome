@@ -1,12 +1,13 @@
 package com.mar.ds.views.card;
 
 import com.brownie.videojs.VideoJS;
-import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardTypeTag;
-import com.mar.ds.db.entity.Language;
+import com.mar.libhome.dto.CardTypeTagDto;
+import com.mar.libhome.enums.Language;
 import com.mar.ds.utils.UploadFileDialog;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
+import com.mar.libhome.dto.CardDto;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.accordion.Accordion;
@@ -74,7 +75,7 @@ import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 public class CardInfoView extends Dialog {
 
     private final MainView mainView;
-    private final Card card;
+    private final CardDto card;
     private final com.mar.ds.utils.FileUtils.ViewTypeDto viewType;
 
     /**
@@ -84,7 +85,7 @@ public class CardInfoView extends Dialog {
      * @param card     по какой карточке будет история.
      * @param viewType тип карточки
      */
-    public CardInfoView(MainView mainView, Card card, com.mar.ds.utils.FileUtils.ViewTypeDto viewType) {
+    public CardInfoView(MainView mainView, CardDto card, com.mar.ds.utils.FileUtils.ViewTypeDto viewType) {
         this.mainView = mainView;
         this.card = card;
         this.viewType = viewType;
@@ -114,7 +115,7 @@ public class CardInfoView extends Dialog {
 
         HorizontalLayout headerInfo = new HorizontalLayout(
                 ViewUtils.getStatusIcon(card),
-                Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getImage(26),
+                ViewUtils.getImage(Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT), 26),
                 new Label(" [" + card.getId() + "] " + card.getTitle())
         );
         headerInfo.setWidthFull();
@@ -186,9 +187,9 @@ public class CardInfoView extends Dialog {
             cardInfo.add(link);
         }
         if (titles.containsKey(GRID_TAGS)) {
-            MultiselectComboBox<CardTypeTag> tags = new MultiselectComboBox<>();
+            MultiselectComboBox<CardTypeTagDto> tags = new MultiselectComboBox<>();
             tags.setLabel(titles.get(GRID_TAGS));
-            tags.setItemLabelGenerator(CardTypeTag::getTitle);
+            tags.setItemLabelGenerator(CardTypeTagDto::getTitle);
             tags.setWidthFull();
             tags.setAllowCustomValues(false);
             tags.setReadOnly(true);

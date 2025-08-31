@@ -1,16 +1,16 @@
 package com.mar.ds.views.card.type;
 
-import com.mar.ds.db.entity.CardType;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.build.popup.CreateViewDialog;
+import com.mar.libhome.dto.CardTypeDto;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 
-public class CardTypeCreateDialog extends CreateViewDialog<CardType, CardTypeViewDialog> {
+public class CardTypeCreateDialog extends CreateViewDialog<CardTypeDto, CardTypeViewDialog> {
 
     @Override
-    protected CardType getNewEntity(BigDecimalField enumId, TextField title) {
-        return CardType.builder()
+    protected CardTypeDto getNewEntity(BigDecimalField enumId, TextField title) {
+        return CardTypeDto.builder()
                 .title(ViewUtils.getTextFieldValue(title))
                 .build();
     }

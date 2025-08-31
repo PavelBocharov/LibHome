@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Репозиторий для работы с карточкой.
  */
+@Deprecated
 public interface CardRepository extends JpaRepository<Card, Long> {
 
     @Query(value = "SELECT card FROM Card card WHERE card.cardStatus = :cardStatus or card.oldCardStatus = :cardStatus")

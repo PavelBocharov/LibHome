@@ -29,6 +29,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "card_type_tag")
+@Deprecated
 public class CardTypeTag implements HasId, Serializable {
 
     @Id
