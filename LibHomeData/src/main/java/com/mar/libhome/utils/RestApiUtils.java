@@ -1,5 +1,6 @@
 package com.mar.libhome.utils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -8,7 +9,6 @@ import com.mar.libhome.exception.BaseLibHomeException;
 import lombok.experimental.UtilityClass;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -23,13 +23,16 @@ public class RestApiUtils {
             .version(HttpClient.Version.HTTP_2)
             .build();
 
+    private final ObjectMapper mapper =  new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
 
     public static String getUri(String host, Integer port) {
         return String.format("http://%s:%d", host, port);
     }
 
     public String toJson(Object obj) {
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             return mapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
@@ -39,7 +42,6 @@ public class RestApiUtils {
 
     public <Clazz> Clazz fromJson(String data, Class<Clazz> dataClass) {
         try {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             return mapper.readValue(data, dataClass);
         } catch (JsonProcessingException e) {
             throw new BaseLibHomeException(String.format("Cannot mapping JSON to obj '%s' with class '%s'", data, dataClass), e);
@@ -48,7 +50,6 @@ public class RestApiUtils {
 
     public <Clazz> Clazz fromJson(String data, TypeReference<Clazz> typeReference) {
         try {
-            ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             return mapper.readValue(data, typeReference);
         } catch (JsonProcessingException e) {
             throw new BaseLibHomeException(String.format("Cannot mapping JSON to obj '%s' with type reference '%s'", data, typeReference), e);

@@ -25,6 +25,16 @@ public class CardStatusRemote {
     @Value("${libhome.db.port}")
     private Integer port;
 
+    public List<CardStatusDto> findAll() {
+        String url = getUri(host, port) + "/card/status/";
+        log.debug(">> Find all card status - {}", url);
+        String rsJson = get(url);
+        log.debug("<< Find all card status. RS: {}", rsJson);
+        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() {});
+        log.debug("<< Find all card status. List mapping rs: {}", rs);
+        return rs;
+    }
+
     public List<CardStatusDto> saveAll(List<CardStatusDto> cardStatusList) {
         String rqJson = toJson(cardStatusList);
         String url = getUri(host, port) + "/card/status";
@@ -32,7 +42,7 @@ public class CardStatusRemote {
         String rsJson = post(url, rqJson);
         log.debug("<< Save all card status list rs: {}", rsJson);
         List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() {});
-        log.debug("<< Save all history mapping rs: {}", rs);
+        log.debug("<< Save all card status list mapping rs: {}", rs);
         return rs;
     }
 
@@ -48,16 +58,6 @@ public class CardStatusRemote {
         log.debug("<< Delete card status rs: {}", rsJson);
         CardStatusDto rs = fromJson(rsJson, CardStatusDto.class);
         log.debug("<< Delete card status mapping rs: {}", rs);
-        return rs;
-    }
-
-    public List<CardStatusDto> findAll() {
-        String url = getUri(host, port) + "/card/status/";
-        log.debug(">> Find all card status - {}", url);
-        String rsJson = get(url);
-        log.debug("<< Find all card status. RS: {}", rsJson);
-        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() {});
-        log.debug("<< Find all card status. List mapping rs: {}", rs);
         return rs;
     }
 

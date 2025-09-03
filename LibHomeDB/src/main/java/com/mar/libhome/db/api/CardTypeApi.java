@@ -35,11 +35,11 @@ public class CardTypeApi {
     }
 
     @PostMapping
-    public Mono<CardTypeDto> save(@RequestBody CardTypeDto dto) {
-        log.debug(">> save card type: {}", dto);
-        return cardTypeService.save(dto)
+    public Mono<List<CardTypeDto>> save(@RequestBody List<CardTypeDto> dtoList) {
+        log.debug(">> save card type: {}", dtoList);
+        return cardTypeService.save(dtoList)
                 .doOnSuccess(type -> log.debug("<< save card type: {}", type))
-                .doOnError(throwable -> log.error("!!! save card type: {}", dto, throwable));
+                .doOnError(throwable -> log.error("!!! save card type: {}", dtoList, throwable));
     }
 
     @DeleteMapping

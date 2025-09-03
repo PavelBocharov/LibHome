@@ -21,6 +21,9 @@ public class CardTypeTagDto implements HasId, Serializable, PopupEntity {
 
     @Override
     public Long getLongId() {
+        if (id == null) {
+            return null;
+        }
         return id.getLeastSignificantBits();
     }
 }

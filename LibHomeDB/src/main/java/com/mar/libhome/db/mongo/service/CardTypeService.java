@@ -31,11 +31,14 @@ public class CardTypeService {
                 .doOnSuccess(cardTypeDto -> repository.deleteById(cardTypeDto.getId()));
     }
 
-    public Mono<CardTypeDto> save(CardTypeDto dto) {
-        return Mono.just(dto)
+    public Mono<List<CardTypeDto>> save(List<CardTypeDto> dtoList) {
+        return Flux.fromIterable(dtoList)
                 .map(mapper::toEntity)
-                .map(repository::save)
-                .map(mapper::toDto);
+                .collectList()
+                .map(repository::saveAll)
+                .flatMapIterable(cardTypes -> cardTypes)
+                .map(mapper::toDto)
+                .collectList();
     }
 
 }

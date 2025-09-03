@@ -39,7 +39,7 @@ public class CardTypeService implements ViewRepository<CardTypeDto> {
 
     @Override
     public CardTypeDto delete(CardTypeDto dto) {
-        return cardTypeRemote.delete(dto);
+        return cardTypeRemote.remove(dto);
     }
 
 }

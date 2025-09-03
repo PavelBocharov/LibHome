@@ -89,9 +89,8 @@ public class FileUtils {
         if (viewInfos == null) {
             synchronized (FileUtils.class) {
                 if (viewInfos == null) {
-                    ObjectMapper mapper = new ObjectMapper();
                     try {
-                        viewInfos = mapper.readValue(new File(filePath), Map.class);
+                        viewInfos = new ObjectMapper().readValue(new File(filePath), Map.class);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

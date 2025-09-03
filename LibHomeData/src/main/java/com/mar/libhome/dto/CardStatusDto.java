@@ -27,6 +27,9 @@ public class CardStatusDto implements Serializable, HasId {
     private Long order = 0L;
 
     public Long getLongId() {
+        if (id == null) {
+            return null;
+        }
         return id.getLeastSignificantBits();
     }
 

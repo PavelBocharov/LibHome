@@ -1,6 +1,5 @@
 package com.mar.libhome.db.mongo.service;
 
-import com.mar.libhome.db.mongo.entity.CardTypeTag;
 import com.mar.libhome.db.mongo.mapper.CardTypeTagMapper;
 import com.mar.libhome.db.mongo.repo.CardTypeRepository;
 import com.mar.libhome.db.mongo.repo.CardTypeTagRepository;
@@ -37,11 +36,11 @@ public class CardTypeTagService {
                 .doOnSuccess(cardTypeDto -> repository.deleteById(cardTypeDto.getId()));
     }
 
-    public Mono<CardTypeTagDto> save(CardTypeTagDto dto) {
-        return Mono.just(dto)
+    public Mono<List<CardTypeTagDto>> save(List<CardTypeTagDto> dto) {
+        return Flux.fromIterable(dto)
                 .map(tag -> {
-                    if (dto.getCardTypeId() == null) {
-                        new RuntimeException("Cannot find card type for create tag = id is NULL. Dto: " + dto);
+                    if (tag.getCardTypeId() == null) {
+                        throw new RuntimeException("Cannot find card type for create tag = id is NULL. Dto: " + dto);
                     }
                     cardTypeRepository.findById(tag.getCardTypeId())
                             .orElseThrow(
@@ -50,8 +49,11 @@ public class CardTypeTagService {
                     return tag;
                 })
                 .map(mapper::toEntity)
-                .map(repository::save)
-                .map(mapper::toDto);
+                .collectList()
+                .map(repository::saveAll)
+                .flatMapIterable(cardTypeTags -> cardTypeTags)
+                .map(mapper::toDto)
+                .collectList();
     }
 
     public Mono<List<CardTypeTagDto>> findAllByCardTypeId(UUID cardTypeId) {

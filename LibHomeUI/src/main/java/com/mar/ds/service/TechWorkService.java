@@ -97,6 +97,11 @@ public class TechWorkService {
             lastTechId = moveStatus();
             log.debug("Move status list to MongoDB. END.");
         }
+        if (lastTechId < 9) {
+            log.debug("Move types and tags to MongoDB...");
+            lastTechId = moveTypesAndTags();
+            log.debug("Move types and tags to MongoDB. END.");
+        }
     }
 
     private long createTechStatus_HaseUpd() {
@@ -232,6 +237,17 @@ public class TechWorkService {
                         .build()
         );
         return 8L;
+    }
+
+    private long moveTypesAndTags() {
+        migrateToMongoService.moveTypesAndTags();
+        techWorkRepository.save(
+                TechWork.builder()
+                        .title("Move types and tags to MongoDB.")
+                        .techId(9L)
+                        .build()
+        );
+        return 9L;
     }
 
 }
