@@ -1,13 +1,12 @@
 package com.mar.ds.views.card;
 
 import com.brownie.videojs.VideoJS;
-import com.mar.ds.db.entity.CardTypeTag;
-import com.mar.libhome.dto.CardTypeTagDto;
-import com.mar.libhome.enums.Language;
 import com.mar.ds.utils.UploadFileDialog;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.mar.libhome.dto.CardDto;
+import com.mar.libhome.dto.CardTypeTagDto;
+import com.mar.libhome.enums.Language;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.accordion.Accordion;

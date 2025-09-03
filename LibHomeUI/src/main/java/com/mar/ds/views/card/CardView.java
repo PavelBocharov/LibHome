@@ -1,9 +1,5 @@
 package com.mar.ds.views.card;
 
-import com.mar.ds.db.entity.CardTypeTag;
-import com.mar.libhome.dto.CardTypeTagDto;
-import com.mar.libhome.enums.GameEngine;
-import com.mar.libhome.enums.Language;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
@@ -14,6 +10,9 @@ import com.mar.ds.views.card.status.CardStatusViewDialog;
 import com.mar.ds.views.card.tags.CardTagsView;
 import com.mar.ds.views.card.type.CardTypeViewDialog;
 import com.mar.libhome.dto.CardDto;
+import com.mar.libhome.dto.CardTypeTagDto;
+import com.mar.libhome.enums.GameEngine;
+import com.mar.libhome.enums.Language;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -47,7 +46,18 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.mar.ds.data.GridInfo.*;
+import static com.mar.ds.data.GridInfo.GRID_DATE_GAME;
+import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
+import static com.mar.ds.data.GridInfo.GRID_ENGINE;
+import static com.mar.ds.data.GridInfo.GRID_ID;
+import static com.mar.ds.data.GridInfo.GRID_LANGUAGE;
+import static com.mar.ds.data.GridInfo.GRID_LINK;
+import static com.mar.ds.data.GridInfo.GRID_POINT;
+import static com.mar.ds.data.GridInfo.GRID_RATE;
+import static com.mar.ds.data.GridInfo.GRID_STATUS;
+import static com.mar.ds.data.GridInfo.GRID_TAGS;
+import static com.mar.ds.data.GridInfo.GRID_TITLE;
+import static com.mar.ds.data.GridInfo.GRID_TYPE;
 import static com.mar.ds.db.diff.DiffCard.CARD_ENGINE;
 import static com.mar.ds.db.diff.DiffCard.CARD_LANGUAGE;
 import static com.mar.ds.db.diff.DiffCard.CARD_LAST_GAME_DATE;
@@ -305,13 +315,13 @@ public class CardView implements ContentView {
             event.getItem().ifPresent(card -> new CardHistoryView(mainView, card).open());
         });
         menu.addItem("Delete", event ->
-                event.getItem().ifPresent(card -> new DeleteDialogWidget(() -> {
+                        event.getItem().ifPresent(card -> new DeleteDialogWidget(() -> {
 //                    CardDto cardDto = Mappers.getMapper(CardMapper.class).toDto(card);
-                    mainView.getCardService().remove(card);
-                    mainView.getCardHistoryService().saveDeleteCard(card);
-                    reloadData();
-                    FileUtils.deleteDir(mainView.getEnv().getProperty("app.data.path") + "cards/" + card.getId());
-                }))
+                            mainView.getCardService().remove(card);
+                            mainView.getCardHistoryService().saveDeleteCard(card);
+                            reloadData();
+                            FileUtils.deleteDir(mainView.getEnv().getProperty("app.data.path") + "cards/" + card.getId());
+                        }))
         );
     }
 

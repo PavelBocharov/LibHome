@@ -1,6 +1,10 @@
 package com.mar.ds.views;
 
-import com.mar.ds.db.service.*;
+import com.mar.ds.db.service.CardHistoryService;
+import com.mar.ds.db.service.CardService;
+import com.mar.ds.db.service.CardStatusService;
+import com.mar.ds.db.service.CardTypeService;
+import com.mar.ds.db.service.CardTypeTagService;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.views.card.CardView;
 import com.vaadin.flow.component.ClickEvent;
@@ -41,40 +45,31 @@ import java.util.Properties;
 )
 public class MainView extends AppLayout {
 
+    private static FileUtils.ViewTypeDto startView;
     @Getter
     private final Map<FileUtils.ViewTypeDto, ContentView> cardsView;
-
     @Getter
     @Autowired
     private CardTypeService cardTypeService;
-
     @Getter
     @Autowired
     private CardTypeTagService cardTypeTagService;
-
     @Getter
     @Autowired
     private CardService cardService;
-
     @Getter
     @Autowired
     private CardStatusService cardStatusService;
-
     @Getter
     @Autowired
     private CardHistoryService cardHistoryService;
-
     @Getter
     @Autowired
     private Environment env;
-
     private FileUtils.ViewTypeDto activeView;
     private volatile List<FileUtils.ViewTypeDto> viewTypeDtoList;
-
     private volatile boolean initTypeFlag = false;
     private Tabs tabs;
-
-    private static FileUtils.ViewTypeDto startView;
 
     public MainView() throws IOException {
         log.debug("INIT MAIN VIEW");

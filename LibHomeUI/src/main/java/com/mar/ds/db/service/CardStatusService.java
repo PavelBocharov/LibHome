@@ -41,14 +41,14 @@ public class CardStatusService {
 
     public void remove(CardStatusDto cardStatus) throws Exception {
         List<CardDto> cards = cardService.findByCardStatus(CardStatusDto.builder()
-                        .id(cardStatus.getId())
-                        .color(cardStatus.getColor())
-                        .tech(cardStatus.getTech())
-                        .hasUpdStatus(cardStatus.getHasUpdStatus())
-                        .icon(cardStatus.getIcon())
-                        .title(cardStatus.getTitle())
-                        .isRate(cardStatus.getIsRate())
-                        .order(cardStatus.getOrder())
+                .id(cardStatus.getId())
+                .color(cardStatus.getColor())
+                .tech(cardStatus.getTech())
+                .hasUpdStatus(cardStatus.getHasUpdStatus())
+                .icon(cardStatus.getIcon())
+                .title(cardStatus.getTitle())
+                .isRate(cardStatus.getIsRate())
+                .order(cardStatus.getOrder())
                 .build());
         if (isEmpty(cards)) {
             log.info("Not find cards by status: {}. Delete status.", cardStatus);

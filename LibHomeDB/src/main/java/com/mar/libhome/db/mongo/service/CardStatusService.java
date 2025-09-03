@@ -24,7 +24,7 @@ public class CardStatusService {
                 .collectList();
     }
 
-    public  Mono<CardStatusDto> deleteById(UUID id) {
+    public Mono<CardStatusDto> deleteById(UUID id) {
         return Mono.justOrEmpty(id)
                 .map(uuid -> repository.findById(uuid).orElseThrow(() -> new RuntimeException("Cannot find card status with id: " + uuid)))
                 .map(mapper::toDto)
@@ -41,7 +41,7 @@ public class CardStatusService {
                 .collectList();
     }
 
-    public Mono<CardStatusDto> findByTechId(String techId){
+    public Mono<CardStatusDto> findByTechId(String techId) {
         return Mono.justOrEmpty(repository.findByTech(techId))
                 .map(mapper::toDto);
     }

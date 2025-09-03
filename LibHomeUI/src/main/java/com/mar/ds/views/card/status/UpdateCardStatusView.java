@@ -1,6 +1,5 @@
 package com.mar.ds.views.card.status;
 
-import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.libhome.dto.CardStatusDto;
 import com.vaadin.flow.component.button.Button;

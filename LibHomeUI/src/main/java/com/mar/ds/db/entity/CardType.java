@@ -1,6 +1,5 @@
 package com.mar.ds.db.entity;
 
-import com.mar.libhome.view.PopupEntity;
 import com.mar.libhome.dto.HasId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,16 +31,14 @@ import javax.persistence.Table;
 @Deprecated
 public class CardType implements Serializable, HasId {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_type_seq")
-    private Long id;
-
-    @Column(name = "title", nullable = false, unique = true)
-    private String title;
-
     @OneToMany(mappedBy = "id")
     @LazyCollection(LazyCollectionOption.FALSE)
     List<CardTypeTag> tags;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "card_type_seq")
+    private Long id;
+    @Column(name = "title", nullable = false, unique = true)
+    private String title;
 
     @Override
     public Long getLongId() {

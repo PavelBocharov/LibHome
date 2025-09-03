@@ -1,6 +1,5 @@
 package com.mar.ds.views.card;
 
-import com.mar.ds.db.entity.Card;
 import com.mar.ds.views.MainView;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardHistoryDto;
@@ -15,7 +14,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
-import java.util.UUID;
 
 import static com.mar.ds.db.diff.DiffCard.CARD_LAST_GAME_DATE;
 import static com.mar.ds.db.diff.DiffCard.CARD_LAST_UPD_DATE;

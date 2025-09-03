@@ -1,6 +1,5 @@
 package com.mar.ds.utils;
 
-import com.mar.ds.db.entity.Card;
 import com.mar.ds.views.card.CardView;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.HasId;
@@ -358,7 +357,7 @@ public class ViewUtils {
     /**
      * Получение иконки по имени.
      *
-     * @param iconName    именование иконки.
+     * @param iconName именование иконки.
      * @return иконка (<code>VaadinIcon.BULLSEYE</code>, если не нашел).
      */
     public static Icon getIconByText(@NotBlank String iconName) {
@@ -368,7 +367,7 @@ public class ViewUtils {
     /**
      * Получение иконки по имени.
      *
-     * @param iconName    именование иконки.
+     * @param iconName именование иконки.
      * @return иконка (<code>VaadinIcon.BULLSEYE</code>, если не нашел).
      */
     public static VaadinIcon getVaadinIconByText(@NotBlank String iconName) {

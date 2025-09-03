@@ -16,7 +16,9 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.mar.ds.data.GridInfo.*;
+import static com.mar.ds.data.GridInfo.GRID_DATE_GAME;
+import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
+import static com.mar.ds.data.GridInfo.GRID_LANGUAGE;
 import static com.mar.ds.utils.ViewUtils.getValue;
 import static com.mar.ds.utils.ViewUtils.setSelectValue;
 import static com.mar.ds.utils.ViewUtils.setValue;

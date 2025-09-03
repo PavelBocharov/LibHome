@@ -9,7 +9,12 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 
-import static com.mar.libhome.utils.RestApiUtils.*;
+import static com.mar.libhome.utils.RestApiUtils.delete;
+import static com.mar.libhome.utils.RestApiUtils.fromJson;
+import static com.mar.libhome.utils.RestApiUtils.get;
+import static com.mar.libhome.utils.RestApiUtils.getUri;
+import static com.mar.libhome.utils.RestApiUtils.post;
+import static com.mar.libhome.utils.RestApiUtils.toJson;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -30,7 +35,7 @@ public class CardStatusRemote {
         log.debug(">> Find all card status - {}", url);
         String rsJson = get(url);
         log.debug("<< Find all card status. RS: {}", rsJson);
-        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() {});
+        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() { });
         log.debug("<< Find all card status. List mapping rs: {}", rs);
         return rs;
     }
@@ -41,7 +46,7 @@ public class CardStatusRemote {
         log.debug(">> Save all card status list to uri: {}, rq: {}", url, rqJson);
         String rsJson = post(url, rqJson);
         log.debug("<< Save all card status list rs: {}", rsJson);
-        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() {});
+        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() { });
         log.debug("<< Save all card status list mapping rs: {}", rs);
         return rs;
     }
@@ -79,7 +84,7 @@ public class CardStatusRemote {
         log.debug(">> Find card status by tech id is null - {}", url);
         String rsJson = get(url);
         log.debug("<< Find card status by tech id is null. RS: {}", rsJson);
-        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() {});
+        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() { });
         log.debug("<< Find card status by tech id is null. List mapping rs: {}", rs);
         return rs;
     }

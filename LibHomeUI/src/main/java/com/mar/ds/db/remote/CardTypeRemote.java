@@ -19,13 +19,11 @@ import static com.mar.libhome.utils.RestApiUtils.toJson;
 @Service
 public class CardTypeRemote {
 
+    public static final String REMOTE_API = "/card/type";
     @Value("${libhome.db.url}")
     private String host;
-
     @Value("${libhome.db.port}")
     private Integer port;
-
-    public static final String REMOTE_API = "/card/type";
 
     public List<CardTypeDto> findAll() {
         String url = getUri(host, port) + REMOTE_API;

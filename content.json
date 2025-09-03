@@ -17,7 +17,7 @@
     "grid_link": "\uD83D\uDD17",
     "grid_btns": "",
     "grid_info": "Информация",
-    "grid_image":"Скриншоты",
+    "grid_image": "Скриншоты",
     "grid_video": "Трейлеры и др. видео",
     "grid_files": "Файлы",
     "grid_language": "Язык"
@@ -38,7 +38,7 @@
     "grid_link": "\uD83D\uDD17",
     "grid_btns": "",
     "grid_info": "Информация",
-    "grid_image":"Скриншоты",
+    "grid_image": "Скриншоты",
     "grid_video": "Видео",
     "grid_files": "Файлы"
   },
@@ -57,7 +57,7 @@
     "grid_date_upd": "Дата выпуска",
     "grid_btns": "",
     "grid_info": "Информация",
-    "grid_image":"Скриншоты",
+    "grid_image": "Скриншоты",
     "grid_video": "Видео",
     "grid_files": "Файлы"
   },
@@ -77,7 +77,7 @@
     "grid_date_game": "Дата крайнего альбома",
     "grid_btns": "",
     "grid_info": "Информация",
-    "grid_image":"Скриншоты",
+    "grid_image": "Скриншоты",
     "grid_video": "Видео и клипы",
     "grid_files": "Файлы",
     "grid_language": "Язык"
@@ -98,7 +98,7 @@
     "grid_date_game": "Дата ???",
     "grid_btns": "",
     "grid_info": "Информация",
-    "grid_image":"Фото",
+    "grid_image": "Фото",
     "grid_video": "Видео и клипы",
     "grid_files": "Файлы",
     "grid_language": "Язык"

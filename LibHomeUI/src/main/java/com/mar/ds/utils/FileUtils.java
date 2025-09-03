@@ -82,8 +82,6 @@ public class FileUtils {
         return views;
     }
 
-    public record ViewTypeDto(Integer id, String title, String key, VaadinIcon icon, Integer order) { }
-
     public static Map<String, Map<String, String>> loadContentInfo(@NotBlank @NotNull String filePath) {
 
         if (viewInfos == null) {
@@ -212,6 +210,9 @@ public class FileUtils {
 //        rez[8] = card.getTagList().stream().map(CardTypeTag::getTitle).collect(Collectors.joining(", "));
 
         return rez;
+    }
+
+    public record ViewTypeDto(Integer id, String title, String key, VaadinIcon icon, Integer order) {
     }
 
 }

@@ -1,6 +1,5 @@
 package com.mar.ds.utils;
 
-import com.mar.ds.db.entity.Card;
 import com.mar.ds.views.MainView;
 import com.mar.libhome.dto.CardDto;
 import com.vaadin.flow.component.Text;

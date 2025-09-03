@@ -1,8 +1,5 @@
 package com.mar.ds.views.card.tags;
 
-import com.mar.ds.db.entity.Card;
-import com.mar.ds.db.entity.CardType;
-import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.mar.libhome.dto.CardDto;

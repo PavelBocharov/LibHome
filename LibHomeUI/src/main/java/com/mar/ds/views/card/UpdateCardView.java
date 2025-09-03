@@ -1,7 +1,5 @@
 package com.mar.ds.views.card;
 
-import com.mar.libhome.enums.GameEngine;
-import com.mar.libhome.enums.Language;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
@@ -9,6 +7,8 @@ import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardStatusDto;
 import com.mar.libhome.dto.CardTypeDto;
 import com.mar.libhome.dto.CardTypeTagDto;
+import com.mar.libhome.enums.GameEngine;
+import com.mar.libhome.enums.Language;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
@@ -19,7 +19,10 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 import static com.mar.ds.data.GridInfo.GRID_DATE_GAME;
 import static com.mar.ds.data.GridInfo.GRID_DATE_UPD;
@@ -157,15 +160,15 @@ public class UpdateCardView extends CardDialogView {
                 updateCard.setLink(getTextFieldValue(link));
                 updateCard.setEngine(getValue(engineSelect, GameEngine.DEFAULT));
                 updateCard.setCardStatus(CardStatusDto.builder()
-                                .id(cardStatus.getId())
-                                .color(cardStatus.getColor())
-                                .tech(cardStatus.getTech())
-                                .hasUpdStatus(cardStatus.getHasUpdStatus())
-                                .icon(cardStatus.getIcon())
-                                .title(cardStatus.getTitle())
-                                .isRate(cardStatus.getIsRate())
-                                .order(cardStatus.getOrder())
-                                .build());
+                        .id(cardStatus.getId())
+                        .color(cardStatus.getColor())
+                        .tech(cardStatus.getTech())
+                        .hasUpdStatus(cardStatus.getHasUpdStatus())
+                        .icon(cardStatus.getIcon())
+                        .title(cardStatus.getTitle())
+                        .isRate(cardStatus.getIsRate())
+                        .order(cardStatus.getOrder())
+                        .build());
                 updateCard.setCardType(cardTypeListSelect.getValue());
                 updateCard.setPoint(getDoubleValue(point));
                 updateCard.setLastUpdate(getValue(updDate, new Date()));

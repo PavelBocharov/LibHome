@@ -35,7 +35,7 @@ public class CardHistoryRemote {
         log.debug(">> Save all history to uri: {}, rq: {}", url, rqJson);
         String rsJson = post(url, rqJson);
         log.debug("<< Save all history rs: {}", rsJson);
-        List<CardHistoryDto> rs = fromJson(rsJson, new TypeReference<List<CardHistoryDto>>() {});
+        List<CardHistoryDto> rs = fromJson(rsJson, new TypeReference<List<CardHistoryDto>>() { });
         log.debug("<< Save all history mapping rs: {}", rs);
         return rs;
     }
@@ -49,7 +49,7 @@ public class CardHistoryRemote {
         log.debug(">> GET history by card id. Uri: {}", url);
         String rsJson = get(url);
         log.debug("<< GET history by card id. RS: {}", rsJson);
-        List<CardHistoryDto> rs = fromJson(rsJson, new TypeReference<List<CardHistoryDto>>() {});
+        List<CardHistoryDto> rs = fromJson(rsJson, new TypeReference<List<CardHistoryDto>>() { });
         log.debug("<< GET history by card id. History mapping rs: {}", rs);
         return rs;
     }

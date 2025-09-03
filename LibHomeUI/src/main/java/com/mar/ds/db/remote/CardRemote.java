@@ -4,8 +4,6 @@ import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardStatusDto;
 import com.mar.libhome.dto.CardTypeDto;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -14,13 +12,6 @@ import java.util.UUID;
 
 @Service
 public class CardRemote {
-
-    public List<CardDto> saveAll(List<CardDto> dtoList) {
-        return Collections.emptyList();
-    }
-    public CardDto save(CardDto dto) {
-        return dto;
-    }
 
     public List<CardDto> findAll() {
         return Collections.emptyList();
@@ -40,6 +31,7 @@ public class CardRemote {
 
         return Collections.emptyList();
     }
+
     public List<CardDto> findWithOrderByPoint(Integer viewType) {
         return Collections.emptyList();
     }
@@ -54,6 +46,14 @@ public class CardRemote {
 
     public List<CardDto> findByCardType(CardTypeDto cardType) {
         return Collections.emptyList();
+    }
+
+    public List<CardDto> saveAll(List<CardDto> dtoList) {
+        return Collections.emptyList();
+    }
+
+    public CardDto save(CardDto dto) {
+        return dto;
     }
 
     public CardDto delete(CardDto dto) {

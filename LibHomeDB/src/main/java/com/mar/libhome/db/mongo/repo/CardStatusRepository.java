@@ -9,6 +9,7 @@ import java.util.UUID;
 public interface CardStatusRepository extends MongoRepository<CardStatus, UUID> {
 
     CardStatus findByTech(String tech);
+
     List<CardStatus> findByTechIsNull();
 
 }

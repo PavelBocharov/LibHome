@@ -23,7 +23,7 @@ public class RestApiUtils {
             .version(HttpClient.Version.HTTP_2)
             .build();
 
-    private final ObjectMapper mapper =  new ObjectMapper()
+    private final ObjectMapper mapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
