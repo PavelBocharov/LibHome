@@ -42,11 +42,19 @@ public class CardDto implements Serializable {
         return CardDto.builder()
                 .id(id)
                 .viewType(viewType)
+                .title(title)
                 .point(point)
+                .info(info)
+                .link(link)
                 .lastGame(lastGame)
                 .lastUpdate(lastUpdate)
-                .cardStatus(cardStatus)
-                .oldCardStatus(oldCardStatus)
+                .engine(engine)
+                .language(language)
+                .rate(rate)
+                .cardType(cardType)             // TODO copy
+                .cardStatus(cardStatus)         // TODO copy
+                .oldCardStatus(oldCardStatus)   // TODO copy
+                .tagList(tagList)               // TODO copy
                 .build();
     }
 }

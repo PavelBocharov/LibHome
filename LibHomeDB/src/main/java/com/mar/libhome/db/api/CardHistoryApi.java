@@ -31,7 +31,7 @@ public class CardHistoryApi {
     public Mono<List<CardHistoryDto>> getByCardId(@PathVariable UUID id) {
         log.debug(">> get card history by card id: {}", id);
         return cardHistoryService.getByCardId(id)
-                .doOnSuccess(dto -> log.debug("<< get card history by card id: {}, dto: {}", id, dto))
+                .doOnSuccess(dto -> log.debug("<< get card history by card id: {}, size: {}", id, dto.size()))
                 .doOnError(throwable -> log.error("!!! get card history by card id: {}", id, throwable));
     }
 
@@ -39,7 +39,7 @@ public class CardHistoryApi {
     public Mono<List<CardHistoryDto>> getAll() {
         log.debug(">> get all card history");
         return cardHistoryService.getAll()
-                .doOnSuccess(list -> log.debug("<< get all card history size: {}", Optional.ofNullable(list).orElse(Collections.emptyList()).size()))
+                .doOnSuccess(list -> log.debug("<< get all card history size: {}", list.size()))
                 .doOnError(throwable -> log.error("!!! get all card history", throwable));
     }
 
@@ -47,7 +47,7 @@ public class CardHistoryApi {
     public Mono<List<CardHistoryDto>> save(@RequestBody List<CardHistoryDto> dto) {
         log.debug(">> save card history: {}", dto);
         return cardHistoryService.save(dto)
-                .doOnSuccess(history -> log.debug("<< create card history: {}", history))
+                .doOnSuccess(history -> log.debug("<< create card history size: {}", history.size()))
                 .doOnError(throwable -> log.error("!!! create card history: {}", dto, throwable));
     }
 

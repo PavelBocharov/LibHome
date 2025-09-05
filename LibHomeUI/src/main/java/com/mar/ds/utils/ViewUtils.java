@@ -71,6 +71,8 @@ public class ViewUtils {
     }
 
     public static void showErrorMsg(String title, Throwable ex, int duration) {
+        log.error("ERROR", ex);
+
         Notification notification = new Notification();
         notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
         notification.setDuration(duration);
@@ -78,7 +80,8 @@ public class ViewUtils {
 
         VerticalLayout layout = new VerticalLayout();
         Accordion accordion = new Accordion();
-        accordion.add(title + ": ", new Label(ExceptionUtils.getRootCauseMessage(ex)));
+        String ttl = isBlank(ExceptionUtils.getRootCauseMessage(ex)) ? ex.getLocalizedMessage() : ExceptionUtils.getRootCauseMessage(ex);
+        accordion.add(title + ": ", new Label(ttl));
         accordion.close();
 
         Button clsBtn = new Button();

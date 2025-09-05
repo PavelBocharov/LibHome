@@ -28,22 +28,22 @@ public class CardHistory implements MongoEntity<UUID> {
     @Id
     private UUID id;
 
-    @Field(name = "editable_id")
+    @Field("editable_id")
     private UUID editableId;
 
-    @Field(name = "update_card_time")
+    @Field("update_card_time")
     private Date updateCardTime = new Date();
 
-    @Field(name = "title_page")
+    @Field("title_page")
     private String titlePage;
 
-    @Field(name = "column_name")
+    @Field("column_name")
     private String columnName;
 
-    @Field(name = "old_value")
+    @Field("old_value")
     private String oldValue;
 
-    @Field(name = "new_value")
+    @Field("new_value")
     private String newValue;
 
     @Override

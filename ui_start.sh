@@ -1,3 +1,4 @@
+mvn -pl LibHomeUI -am clean install
 java -jar \
   -Dapp.data.content.file='/home/marolok/IdeaProjects/LibHome/content.json' \
   -Dapp.data.path='/home/marolok/IdeaProjects/_temp/LIbHome/db/' \

@@ -34,19 +34,16 @@ public class DiffCard {
     public static final String CARD_TAG = "tag";
     public static final String CARD_ENGINE = "engine";
 
-    // TODO
     public static List<CardHistoryDto> compare(CardDto oldCard, CardDto updatedCard) {
         if (oldCard == null) {
             if (updatedCard.getId() != null) {
-                UUID id = updatedCard.getId();
                 return List.of(
                         CardHistoryDto.builder()
                                 .titlePage(String.valueOf(updatedCard.getViewType()))
                                 .columnName("CREATE CARD")
                                 .oldValue("")
                                 .newValue(updatedCard.toString())
-//                                .editableId(updatedCard.getId())
-                                .editableId(id)
+                                .editableId(updatedCard.getId())
                                 .build()
                 );
             } else {

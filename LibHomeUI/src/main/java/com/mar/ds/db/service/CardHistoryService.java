@@ -46,6 +46,7 @@ public class CardHistoryService {
      */
     public void saveHistory(@Nullable CardDto old, CardDto actual) {
         assert nonNull(actual);
+        log.debug("save/upd card history old: {}, actual: {}", old, actual);
         List<CardHistoryDto> diff = DiffCard.compare(old, actual);
         log.debug("save/upd card history: {}", diff);
         cardHistoryRemote.saveAll(diff);

@@ -1,2 +1,2 @@
-mvn clean install -U
+mvn -pl LibHomeDB -am clean install
 java -jar ./LibHomeDB/target/LibHomeDB-*.jar

@@ -36,16 +36,16 @@ public class CardStatus implements MongoEntity<UUID> {
 
     private String icon;
 
-    @Field(name = "is_rate")
+    @Field("is_rate")
     private Boolean isRate;
 
-    @Field(name = "has_upd_status")
+    @Field("has_upd_status")
     private Boolean hasUpdStatus;
 
-    @Field(name = "tech_id")
+    @Field("tech_id")
     private String tech;
 
-    @Field(name = "sort_order")
+    @Field("sort_order")
     private Long order;
 
     @Override

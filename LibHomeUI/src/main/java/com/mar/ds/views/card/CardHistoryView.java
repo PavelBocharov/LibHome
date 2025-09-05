@@ -93,7 +93,7 @@ public class CardHistoryView extends Dialog {
         backBtn.setWidthFull();
 
         VerticalLayout verticalLayout = new VerticalLayout(
-                new H3(format("Card history: [%d] %s", card.getId(), card.getTitle())),
+                new H3(format("Card history: [%s] %s", card.getId(), card.getTitle())),
                 historyGrid,
                 backBtn
         );

@@ -159,7 +159,7 @@ public class UpdateCardView extends CardDialogView {
                 updateCard.setInfo(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""));
                 updateCard.setLink(getTextFieldValue(link));
                 updateCard.setEngine(getValue(engineSelect, GameEngine.DEFAULT));
-                updateCard.setCardStatus(CardStatusDto.builder()
+                updateCard.setCardStatus(CardStatusDto.builder() // TODO а надо?
                         .id(cardStatus.getId())
                         .color(cardStatus.getColor())
                         .tech(cardStatus.getTech())

@@ -27,7 +27,7 @@ import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 
 /**
- * Сервис по работе с карточки.
+ * Сервис по работе с карточками.
  */
 @Slf4j
 @Service
@@ -137,7 +137,7 @@ public class CardService {
     }
 
     public void remove(CardDto card) {
-        cardRemote.delete(card);
+        cardRemote.remove(card);
     }
 
     public List<CardDto> findWithOrderByPoint(Integer viewType) {

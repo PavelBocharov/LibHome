@@ -212,10 +212,9 @@ public class CardView implements ContentView {
     private Component getEngineIcon(CardDto card) {
         try {
             GameEngine engine = GameEngine.DEFAULT;
-            // TODO
-//            if (card != null && card.getEngine() != null) {
-//                engine = card.getEngine();
-//            }
+            if (card != null && card.getEngine() != null) {
+                engine = card.getEngine();
+            }
             Image icon = new Image(engine.getIconPath(), engine.getName());
             icon.setTitle(engine.getName());
             icon.setHeight(DEFAULT_GRID_ICON_SIZE_VAR);
@@ -341,7 +340,7 @@ public class CardView implements ContentView {
         if (gridConfig.containsKey(GRID_STATUS)) {
             grid.addComponentColumn(ViewUtils::getStatusIcon)
                     .setHeader(paginationGridService.getHeader(
-                            MEDAL, gridConfig.get(GRID_STATUS), "cs.order"
+                            MEDAL, gridConfig.get(GRID_STATUS), "order"
                     ))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
@@ -417,7 +416,7 @@ public class CardView implements ContentView {
             grid.addColumn(card -> card.getCardType().getTitle())
                     .setAutoWidth(true).setFlexGrow(0)
                     .setHeader(paginationGridService.getHeader(
-                            COMPILE, gridConfig.get(GRID_TYPE), CARD_TYPE + ".title"
+                            COMPILE, gridConfig.get(GRID_TYPE), CARD_TYPE + "title"
                     ))
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_TYPE);
@@ -425,9 +424,7 @@ public class CardView implements ContentView {
         if (gridConfig.containsKey(GRID_TAGS)) {
             grid.addColumn(card -> card.getTagList() == null || card.getTagList().isEmpty()
                             ? "---"
-                            : card.getTagList().stream()
-                            .map(CardTypeTagDto::getTitle)
-                            .collect(Collectors.joining(", "))
+                            : card.getTagList().stream().map(CardTypeTagDto::getTitle).collect(Collectors.joining(", "))
                     )
                     .setHeader(gridConfig.get(GRID_TAGS))
                     .setAutoWidth(true)
