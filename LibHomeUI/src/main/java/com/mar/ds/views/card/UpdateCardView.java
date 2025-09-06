@@ -18,6 +18,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -150,25 +151,14 @@ public class UpdateCardView extends CardDialogView {
         updBtn.addClickListener(click -> {
             try {
                 checkValues();
-//                CardMapper cardMapper = Mappers.getMapper(CardMapper.class);
-//                CardDto old = cardMapper.toDto(updateCard);
-                CardDto old = updateCard.copy();
+                CardDto old = SerializationUtils.clone(updateCard);
                 CardStatusDto cardStatus = cardStatusListSelect.getValue();
                 updateCard.setTitle(getTextFieldValue(cardTitle));
                 updateCard.setViewType(getValue(viewTypeDtoSelect, viewType).id());
                 updateCard.setInfo(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""));
                 updateCard.setLink(getTextFieldValue(link));
                 updateCard.setEngine(getValue(engineSelect, GameEngine.DEFAULT));
-                updateCard.setCardStatus(CardStatusDto.builder() // TODO а надо?
-                        .id(cardStatus.getId())
-                        .color(cardStatus.getColor())
-                        .tech(cardStatus.getTech())
-                        .hasUpdStatus(cardStatus.getHasUpdStatus())
-                        .icon(cardStatus.getIcon())
-                        .title(cardStatus.getTitle())
-                        .isRate(cardStatus.getIsRate())
-                        .order(cardStatus.getOrder())
-                        .build());
+                updateCard.setCardStatus(SerializationUtils.clone(cardStatus));
                 updateCard.setCardType(cardTypeListSelect.getValue());
                 updateCard.setPoint(getDoubleValue(point));
                 updateCard.setLastUpdate(getValue(updDate, new Date()));
@@ -179,7 +169,6 @@ public class UpdateCardView extends CardDialogView {
                 mainView.getCardHistoryService().saveHistory(
                         old,
                         mainView.getCardService().save(updateCard)
-//                        cardMapper.toDto(mainView.getCardService().save(updateCard))
                 );
             } catch (Exception ex) {
                 ViewUtils.showErrorMsg("ERROR", ex);

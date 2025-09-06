@@ -1,17 +1,21 @@
 package com.mar.ds.db.service;
 
+import com.mar.ds.db.entity.Card;
 import com.mar.ds.db.entity.CardHistory;
 import com.mar.ds.db.entity.CardStatus;
 import com.mar.ds.db.entity.CardType;
 import com.mar.ds.db.entity.CardTypeTag;
 import com.mar.ds.db.jpa.CardHistoryRepository;
+import com.mar.ds.db.jpa.CardRepository;
 import com.mar.ds.db.jpa.CardStatusRepository;
 import com.mar.ds.db.jpa.CardTypeRepository;
 import com.mar.ds.db.jpa.CardTypeTagRepository;
 import com.mar.ds.db.remote.CardHistoryRemote;
+import com.mar.ds.db.remote.CardRemote;
 import com.mar.ds.db.remote.CardStatusRemote;
 import com.mar.ds.db.remote.CardTypeRemote;
 import com.mar.ds.db.remote.CardTypeTagRemote;
+import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardHistoryDto;
 import com.mar.libhome.dto.CardStatusDto;
 import com.mar.libhome.dto.CardTypeDto;
@@ -33,12 +37,14 @@ public class MigrationToMongoService {
     public static final int MAX_ARRAY_SEND_SIZE = 50;
 
     // old sqlite
+    private final CardRepository cardRepository;
     private final CardHistoryRepository cardHistoryRepository;
     private final CardStatusRepository cardStatusRepository;
     private final CardTypeRepository cardTypeRepository;
     private final CardTypeTagRepository cardTypeTagRepository;
 
     // remote mongo
+    private final CardRemote cardRemote;
     private final CardHistoryRemote cardHistoryRemote;
     private final CardStatusRemote cardStatusRemote;
     private final CardTypeRemote cardTypeRemote;
@@ -124,9 +130,58 @@ public class MigrationToMongoService {
                 );
             }
         }
-
-
     }
 
+    public void moveCardsToMongoDB() {
+        List<Card> cards = cardRepository.findAll();
+        log.debug("Size cards to migrate: {}", cards.size());
+        int i = 0;
+        ArrayList<CardDto> cardsToSave = new ArrayList<>(25);
+        for (Card card : cards) {
+            if (i >= 25) {
+                cardRemote.saveAll(cardsToSave);
+                cardsToSave = new ArrayList<>(25);
+                i = 0;
+            }
+            cardsToSave.add(
+                    CardDto.builder()
+                            .id(new UUID(card.getId(), card.getId()))
+                            .viewType(card.getViewType())
+                            .title(card.getTitle())
+                            .point(card.getPoint())
+                            .info(card.getInfo())
+                            .link(card.getLink())
+                            .lastUpdate(card.getLastUpdate())
+                            .lastGame(card.getLastGame())
+                            .engine(card.getEngine())
+                            .language(card.getLanguage())
+                            .rate(card.getRate())
+                            .cardType(CardTypeDto.builder()
+                                    .id(new UUID(card.getCardType().getId(), card.getCardType().getId()))
+                                    .build()
+                            )
+                            .cardStatus(CardStatusDto.builder()
+                                    .id(new UUID(card.getCardStatus().getId(), card.getCardStatus().getId()))
+                                    .build()
+                            )
+                            .oldCardStatus(
+                                    card.getOldCardStatus() == null
+                                            ? null
+                                            : CardStatusDto.builder()
+                                            .id(new UUID(card.getOldCardStatus().getId(), card.getOldCardStatus().getId()))
+                                            .build()
+                            )
+                            .tagList(card.getTagList().parallelStream()
+                                    .map(tag -> CardTypeTagDto.builder().id(new UUID(tag.getId(), tag.getId())).build())
+                                    .toList()
+                            )
+                            .build()
+            );
+            i++;
+        }
+        if (!cardsToSave.isEmpty()) {
+            cardRemote.saveAll(cardsToSave);
+        }
+    }
 
 }

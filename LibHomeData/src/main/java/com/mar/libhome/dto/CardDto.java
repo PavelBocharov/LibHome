@@ -38,23 +38,4 @@ public class CardDto implements Serializable {
     private CardStatusDto oldCardStatus;
     private List<CardTypeTagDto> tagList;
 
-    public CardDto copy() {
-        return CardDto.builder()
-                .id(id)
-                .viewType(viewType)
-                .title(title)
-                .point(point)
-                .info(info)
-                .link(link)
-                .lastGame(lastGame)
-                .lastUpdate(lastUpdate)
-                .engine(engine)
-                .language(language)
-                .rate(rate)
-                .cardType(cardType)             // TODO copy
-                .cardStatus(cardStatus)         // TODO copy
-                .oldCardStatus(oldCardStatus)   // TODO copy
-                .tagList(tagList)               // TODO copy
-                .build();
-    }
 }

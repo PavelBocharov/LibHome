@@ -101,7 +101,6 @@ public class UploadFileDialog extends Dialog {
             }
         });
 
-        // TODO: SEND ERROR MSG
         uploadFile.addFileRejectedListener(fileRejectedEvent -> {
                     log.warn("FileRejectedListener -->  {}", fileRejectedEvent.getErrorMessage());
                     ViewUtils.showErrorMsg("Send post exception: ", new Exception(fileRejectedEvent.getErrorMessage()));
@@ -128,7 +127,7 @@ public class UploadFileDialog extends Dialog {
         String formatName = FilenameUtils.getExtension(fileName);
         String uploadFileName = isCover
                 ? "cover." + formatName
-                : getName(valueOf(card.getId()), card.getTitle(), card.getCardType().getTitle(), formatName);
+                : getName(card.getTitle(), card.getCardType().getTitle(), formatName);
 
         if (isCover) {
             Collection<File> coverDirList = FileUtils.listFiles(new File(rootDir), null, true);
@@ -183,17 +182,16 @@ public class UploadFileDialog extends Dialog {
         return rez;
     }
 
-    private String getName(String prefix, String name, String suffix, String format) {
-        String p = replaceWord(prefix.trim(), nameWordExc, "_");
+    private String getName(String name, String suffix, String format) {
         String n = replaceWord(name.trim(), nameWordExc, "_");
         String s = replaceWord(suffix.trim(), nameWordExc, "_");
 
-        String rez = String.join("_", p, n, s) + "." + format;
+        String rez = String.join("_", n, s) + "." + format;
 
         int number = 1;
         File file = new File(this.rootDir + rez);
         while (file.exists()) {
-            rez = String.join("_", p, n, s, valueOf(number++)) + "." + format;
+            rez = String.join("_", n, s, valueOf(number++)) + "." + format;
             file = new File(this.rootDir + rez);
         }
 

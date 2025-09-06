@@ -53,10 +53,10 @@ public class CardStatusApi {
 
     @PostMapping
     public Mono<List<CardStatusDto>> save(@RequestBody List<CardStatusDto> dtoList) {
-        log.debug(">> save card list status: {}", dtoList);
+        log.debug(">> save card status list size: {}", dtoList.size());
         return cardStatusService.saveAll(dtoList)
                 .doOnSuccess(status -> log.debug("<< save card list status: {}", status))
-                .doOnError(throwable -> log.error("!!! save card list status: {}", dtoList, throwable));
+                .doOnError(throwable -> log.error("!!! save card status list size: {}", dtoList.size(), throwable));
     }
 
     @DeleteMapping

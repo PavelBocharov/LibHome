@@ -18,8 +18,6 @@ public class PaginationPageUtils {
     public static char UPPER_NUMB_7 = '⁷';
     public static char UPPER_NUMB_8 = '⁸';
     public static char UPPER_NUMB_9 = '⁹';
-    public static char UPPER_LEFT_BRACKET = '⁽';
-    public static char UPPER_RIGHT_BRACKET = '⁾';
 
     public static Map<Character, Character> intToUpperChar = Map.of(
             '1', UPPER_NUMB_1,
@@ -57,7 +55,7 @@ public class PaginationPageUtils {
         if (number == null) {
             return "";
         }
-        return UPPER_LEFT_BRACKET + getUpperNumb(number) + UPPER_RIGHT_BRACKET;
+        return getUpperNumb(number);
     }
 
 }

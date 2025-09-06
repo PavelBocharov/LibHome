@@ -3,9 +3,9 @@ package com.mar.ds.db.remote;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardRq;
+import com.mar.libhome.dto.CardRs;
 import com.mar.libhome.dto.CardStatusDto;
 import com.mar.libhome.dto.CardTypeDto;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -91,7 +91,7 @@ public class CardRemote {
         return map;
     }
 
-    public List<CardDto> findAllByView(Integer view, PageRequest pageRequest) {
+    public CardRs findAllByView(Integer view, PageRequest pageRequest) {
         return search(CardRq.builder()
                 .view(view)
                 .page(pageRequest.getPageNumber())
@@ -101,7 +101,7 @@ public class CardRemote {
         );
     }
 
-    public List<CardDto> findAllByViewAndLikeTitleMap(Integer view, String searchText, PageRequest pageRequest) {
+    public CardRs findAllByViewAndLikeTitleMap(Integer view, String searchText, PageRequest pageRequest) {
         return search(CardRq.builder()
                 .view(view)
                 .searchText(searchText)
@@ -112,7 +112,7 @@ public class CardRemote {
         );
     }
 
-    public List<CardDto> findWithOrderByPoint(Integer viewType) {
+    public CardRs findWithOrderByPoint(Integer viewType) {
         return search(CardRq.builder()
                 .view(viewType)
                 .sort(Map.of("point", CardRq.SortOrder.DESC))
@@ -120,14 +120,14 @@ public class CardRemote {
         );
     }
 
-    public List<CardDto> findByCardStatus(CardStatusDto cardStatus) {
+    public CardRs findByCardStatus(CardStatusDto cardStatus) {
         return search(CardRq.builder()
                 .cardStatusId(cardStatus.getId())
                 .build()
         );
     }
 
-    public List<CardDto> findByCardType(CardTypeDto cardType) {
+    public CardRs findByCardType(CardTypeDto cardType) {
         return search(CardRq.builder()
                 .cardTypeId(cardType.getId())
                 .build()
@@ -138,13 +138,13 @@ public class CardRemote {
         return Collections.emptyList();
     }
 
-    private List<CardDto> search(CardRq rq) {
+    private CardRs search(CardRq rq) {
         String rqJson = toJson(rq);
         String url = getUri(host, port) + REMOTE_API + "/search";
         log.debug(">> Search card to uri: {}, rq: {}", url, rqJson);
         String rsJson = post(url, rqJson);
-        log.debug("<< Search card rs: {}", rsJson);
-        List<CardDto> rs = fromJson(rsJson, new TypeReference<List<CardDto>>() { });
+        log.debug("<< Search card rs: OK");
+        CardRs rs = fromJson(rsJson, CardRs.class);
         log.debug("<< Search card mapping rs: {}", rs);
         return rs;
     }

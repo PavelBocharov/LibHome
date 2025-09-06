@@ -12,11 +12,18 @@ import com.mar.ds.db.service.MigrationToMongoService;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardStatusDto;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FileFileFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 
 import static com.mar.ds.db.service.CardStatusService.TECH_HASE_UPD_ID;
@@ -26,6 +33,9 @@ import static com.mar.ds.db.service.CardStatusService.TECH_HASE_UPD_ID;
 public class TechWorkService {
 
     public static final String CARD_STATUS_ORDER_SEQ_NAME = "card-status-order";
+
+    @Value("${app.data.path:./}")
+    private String dataPath;
 
     @Autowired
     private TechWorkRepository techWorkRepository;
@@ -101,6 +111,16 @@ public class TechWorkService {
             log.debug("Move types and tags to MongoDB...");
             lastTechId = moveTypesAndTags();
             log.debug("Move types and tags to MongoDB. END.");
+        }
+        if (lastTechId < 10) {
+            log.debug("Rename card folders...");
+            lastTechId = renameCardFolders();
+            log.debug("Rename card folders. END.");
+        }
+        if (lastTechId < 11) {
+            log.debug("Move cards to mongo...");
+            lastTechId = moveCardToMongo();
+            log.debug("Move cards to mongo. END.");
         }
     }
 
@@ -248,6 +268,58 @@ public class TechWorkService {
                         .build()
         );
         return 9L;
+    }
+
+    private long renameCardFolders() {
+        File cardDir = new File(dataPath + "cards/");
+        if (!cardDir.exists()) {
+            log.debug("Rename card folders. Dir not exist.");
+            techWorkRepository.save(
+                    TechWork.builder()
+                            .title("Rename card folders. Dir not exist.")
+                            .techId(10L)
+                            .build()
+            );
+            return 10L;
+        }
+        if (!cardDir.isDirectory()) {
+            throw new RuntimeException("'" + dataPath + "cards/' is not folder.");
+        }
+
+        Collection<File> folders = FileUtils.listFilesAndDirs(cardDir, FileFileFilter.INSTANCE, DirectoryFileFilter.INSTANCE);
+
+        folders.parallelStream()
+                .filter(File::isDirectory)
+                .filter(dir -> dir.getParentFile().equals(cardDir))
+                .forEach(dir -> {
+                    try {
+                        long name = Long.parseLong(dir.getName());
+                        UUID newName = new UUID(name, name);
+                        dir.renameTo(new File(dataPath + "cards/" + newName));
+                    } catch (NumberFormatException ex) {
+                        log.warn("Cannot rename folder. Dir name: {}", dir.getName());
+                    }
+                });
+
+        techWorkRepository.save(
+                TechWork.builder()
+                        .title("Rename card folders.")
+                        .techId(10L)
+                        .build()
+        );
+        return 10L;
+    }
+
+    private long moveCardToMongo() {
+        migrateToMongoService.moveCardsToMongoDB();
+
+        techWorkRepository.save(
+                TechWork.builder()
+                        .title("Move cards to MongoDB.")
+                        .techId(11L)
+                        .build()
+        );
+        return 11;
     }
 
 }

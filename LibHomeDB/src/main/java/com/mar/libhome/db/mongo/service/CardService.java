@@ -12,8 +12,11 @@ import com.mar.libhome.db.mongo.repo.CardTypeRepository;
 import com.mar.libhome.db.mongo.repo.CardTypeTagRepository;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardRq;
+import com.mar.libhome.dto.CardRs;
 import com.mar.libhome.dto.CardTypeTagDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -23,9 +26,9 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CardService {
@@ -45,30 +48,40 @@ public class CardService {
                 .collectList();
     }
 
-    public Mono<List<CardDto>> search(CardRq rq) {
-        return Flux.fromIterable(searchCards(rq))
-                .map(mapper::toDto)
-                .collectList();
+    public Mono<CardRs> search(CardRq rq) {
+        return Mono.just(searchCards(rq))
+                .map(page -> CardRs.builder()
+                        .page(page.getNumber())
+                        .size(page.getSize())
+                        .total(page.getTotalElements())
+                        .cards(page.stream().parallel().map(mapper::toDto).map(this::enrich).toList())
+                        .build()
+                )
+                .doOnSuccess(cardDtos -> log.debug("Search success: {}.", cardDtos));
     }
 
-    private List<Card> searchCards(CardRq rq) {
+    private Page<Card> searchCards(CardRq rq) {
         PageRequest pageRequest = getPageRequest(rq);
         if (rq.getView() != null) {
             if (rq.getSearchText() != null) {
-                return repository.findByText(rq.getView(), rq.getSearchText(), pageRequest).getContent();
+                log.debug("Search by text. RQ: {}", rq);
+                return repository.findByText(rq.getView(), rq.getSearchText(), pageRequest);
             }
-            return repository.findByViewType(rq.getView(), pageRequest).getContent();
+            log.debug("Search by view type. RQ: {}", rq);
+            return repository.findByViewType(rq.getView(), pageRequest);
         }
         if (rq.getCardTypeId() != null) {
-            return repository.findByCardTypeId(rq.getCardTypeId(), pageRequest).getContent();
+            log.debug("Search by card type. RQ: {}", rq);
+            return repository.findByCardTypeId(rq.getCardTypeId(), pageRequest);
         }
         if (rq.getCardStatusId() != null) {
-            return repository.findByCardStatusId(rq.getCardStatusId(), pageRequest).getContent();
+            log.debug("Search by card status. RQ: {}", rq);
+            return repository.findByCardStatusId(rq.getCardStatusId(), pageRequest);
         }
 //        if (rq.getCardTagId() != null) {
-//
+//          TODO
 //        }
-        return repository.findAll(pageRequest).getContent();
+        return repository.findAll(pageRequest);
     }
 
     public Mono<List<CardDto>> save(List<CardDto> dto) {

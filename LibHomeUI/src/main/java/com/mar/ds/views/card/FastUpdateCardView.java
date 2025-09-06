@@ -12,6 +12,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.Date;
 import java.util.Optional;
@@ -57,7 +58,7 @@ public class FastUpdateCardView extends CardDialogView {
         updBtn.setWidthFull();
         updBtn.setDisableOnClick(true);
         updBtn.addClickListener(buttonClickEvent -> {
-            CardDto old = updCard.copy(); // TODO
+            CardDto old = SerializationUtils.clone(updCard);
             if (getTitles().containsKey(GRID_LANGUAGE)) {
                 updCard.setLanguage(Optional.ofNullable(languageSelect.getValue()).orElse(Language.DEFAULT));
             }

@@ -2,6 +2,7 @@ package com.mar.ds.db.service;
 
 import com.mar.ds.db.remote.CardRemote;
 import com.mar.libhome.dto.CardDto;
+import com.mar.libhome.dto.CardRs;
 import com.mar.libhome.dto.CardStatusDto;
 import com.mar.libhome.dto.CardTypeDto;
 import lombok.RequiredArgsConstructor;
@@ -56,13 +57,21 @@ public class CardService {
     }
 
     public Page<CardDto> findAllByView(@NotNull Integer view, PageRequest pageRequest) {
-        List<CardDto> dtoList = cardRemote.findAllByView(view, pageRequest);
-        return new PageImpl<>(dtoList);
+        CardRs rs = cardRemote.findAllByView(view, pageRequest);
+        return new PageImpl<>(
+                rs.getCards(),
+                PageRequest.of(rs.getPage(), rs.getSize()),
+                rs.getTotal()
+        );
     }
 
     public Page<CardDto> findAllByViewAndLikeTitleMap(@NotNull Integer view, String searchText, PageRequest pageRequest) {
-        List<CardDto> dtoList = cardRemote.findAllByViewAndLikeTitleMap(view, searchText, pageRequest);
-        return new PageImpl<>(dtoList);
+        CardRs rs = cardRemote.findAllByViewAndLikeTitleMap(view, searchText, pageRequest);
+        return new PageImpl<>(
+                rs.getCards(),
+                PageRequest.of(rs.getPage(), rs.getSize()),
+                rs.getTotal()
+        );
     }
 
     /**
@@ -141,11 +150,11 @@ public class CardService {
     }
 
     public List<CardDto> findWithOrderByPoint(Integer viewType) {
-        return cardRemote.findWithOrderByPoint(viewType);
+        return cardRemote.findWithOrderByPoint(viewType).getCards();
     }
 
     public List<CardDto> findByCardStatus(CardStatusDto cardStatus) {
-        return cardRemote.findByCardStatus(cardStatus);
+        return cardRemote.findByCardStatus(cardStatus).getCards();
     }
 
     public List<CardDto> findByTag(UUID tagId) {
@@ -153,7 +162,7 @@ public class CardService {
     }
 
     public List<CardDto> findByCardType(CardTypeDto cardType) {
-        return cardRemote.findByCardType(cardType);
+        return cardRemote.findByCardType(cardType).getCards();
     }
 
     private void calcRate(CardDto card) {

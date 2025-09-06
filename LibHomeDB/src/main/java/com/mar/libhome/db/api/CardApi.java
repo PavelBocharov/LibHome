@@ -1,16 +1,12 @@
 package com.mar.libhome.db.api;
 
 import com.mar.libhome.db.mongo.service.CardService;
-import com.mar.libhome.db.mongo.service.CardStatusService;
-import com.mar.libhome.db.mongo.service.CardTypeService;
-import com.mar.libhome.db.mongo.service.CardTypeTagService;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardRq;
-import com.mar.libhome.dto.CardStatusDto;
+import com.mar.libhome.dto.CardRs;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,12 +40,9 @@ public class CardApi {
     }
 
     @PostMapping("/search")
-    public Mono<List<CardDto>> search(@RequestBody CardRq rq) {
+    public Mono<CardRs> search(@RequestBody CardRq rq) {
         return cardService.search(rq)
-                .flatMapIterable(cardDtos -> cardDtos)
-                .map(cardService::enrich)
-                .collectList()
-                .doOnSuccess(list -> log.debug("<< search card by rq({}) size: {}", rq, Optional.ofNullable(list).orElse(Collections.emptyList()).size()))
+                .doOnSuccess(rs -> log.debug("<< search card by rq({}) size: {}", rq, Optional.ofNullable(rs.getCards()).orElse(Collections.emptyList()).size()))
                 .doOnError(throwable -> log.error("!!! search card by rq({})", rq, throwable));
     }
 

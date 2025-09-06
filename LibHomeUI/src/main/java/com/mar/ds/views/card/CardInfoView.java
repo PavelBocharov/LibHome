@@ -115,7 +115,7 @@ public class CardInfoView extends Dialog {
         HorizontalLayout headerInfo = new HorizontalLayout(
                 ViewUtils.getStatusIcon(card),
                 ViewUtils.getImage(Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT), 26),
-                new Label(" [" + card.getId() + "] " + card.getTitle())
+                new Label(card.getTitle())
         );
         headerInfo.setWidthFull();
         Button returnBtn = new Button(
@@ -129,7 +129,7 @@ public class CardInfoView extends Dialog {
         HorizontalLayout header = new HorizontalLayout(returnBtn, d, headerInfo);
         header.setWidthFull();
         VerticalLayout cardInfo = new VerticalLayout();
-
+        cardInfo.add(getTextField("ID", String.valueOf(card.getId())));
         if (titles.containsKey(GRID_TYPE)) {
             cardInfo.add(getTextField(titles.get(GRID_TYPE), card.getCardType().getTitle()));
         }
