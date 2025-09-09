@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,17 +44,24 @@ public class CardService {
      * Проверяет все карточки в БД и обновляет (рейтинг, статус и т.д.).
      */
     public void checkAndUpdateAllCards() {
-        List<com.mar.libhome.dto.CardDto> cards = cardRemote.findAll();
+        int page = 0;
+        List<CardDto> cards;
+        do {
+            CardRs rs = cardRemote.findAll(PageRequest.of(page, 50));
+            cards = Optional.ofNullable(rs.getCards()).orElse(Collections.emptyList());
 
-        ArrayList<CardDto> forUpd = new ArrayList<>(cards.size());
-        List<Pair<CardDto, CardDto>> oldNewCards = new LinkedList<>();
-        for (CardDto oldDto : cards) {
-            CardDto newDto = checkCard(oldDto);
-            forUpd.add(newDto);
-            oldNewCards.add(Pair.of(oldDto, newDto));
-        }
-        saveAll(forUpd);
-        cardHistoryService.saveHistory(oldNewCards);
+            ArrayList<CardDto> forUpd = new ArrayList<>(cards.size());
+            List<Pair<CardDto, CardDto>> oldNewCards = new LinkedList<>();
+            for (CardDto oldDto : cards) {
+                CardDto newDto = checkCard(oldDto);
+                forUpd.add(newDto);
+                oldNewCards.add(Pair.of(oldDto, newDto));
+            }
+            saveAll(forUpd);
+            cardHistoryService.saveHistory(oldNewCards);
+
+            page++;
+        } while (cards.size() == 50);
     }
 
     public Page<CardDto> findAllByView(@NotNull Integer view, PageRequest pageRequest) {

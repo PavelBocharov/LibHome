@@ -48,6 +48,15 @@ public class CardRemote {
         return rs;
     }
 
+    public CardRs findAll(PageRequest pageRequest) {
+        return search(CardRq.builder()
+                .page(pageRequest.getPageNumber())
+                .size(pageRequest.getPageSize())
+                .sort(sortOrderMap(pageRequest.getSort()))
+                .build()
+        );
+    }
+
     public List<CardDto> saveAll(List<CardDto> dtoList) {
         String rqJson = toJson(dtoList);
         String url = getUri(host, port) + REMOTE_API;
