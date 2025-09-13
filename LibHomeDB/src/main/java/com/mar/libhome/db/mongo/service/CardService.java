@@ -2,6 +2,7 @@ package com.mar.libhome.db.mongo.service;
 
 import com.mar.libhome.db.mongo.entity.Card;
 import com.mar.libhome.db.mongo.entity.CardTypeTag;
+import com.mar.libhome.db.mongo.entity.CountResult;
 import com.mar.libhome.db.mongo.mapper.CardMapper;
 import com.mar.libhome.db.mongo.mapper.CardStatusMapper;
 import com.mar.libhome.db.mongo.mapper.CardTypeMapper;
@@ -17,14 +18,22 @@ import com.mar.libhome.dto.CardTypeTagDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.LookupOperation;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,7 +74,7 @@ public class CardService {
         if (rq.getView() != null) {
             if (rq.getSearchText() != null) {
                 log.debug("Search by text. RQ: {}", rq);
-                return repository.findByText(rq.getView(), rq.getSearchText(), pageRequest);
+                return searchByText(rq);
             }
             log.debug("Search by view type. RQ: {}", rq);
             return repository.findByViewType(rq.getView(), pageRequest);
@@ -82,6 +91,58 @@ public class CardService {
 //          TODO
 //        }
         return repository.findAll(pageRequest);
+    }
+
+    private final MongoTemplate mongoTemplate;
+
+    private Page<Card> searchByText(CardRq rq) {
+        PageRequest pageRequest = getPageRequest(rq);
+
+        MatchOperation preMatch = Aggregation.match(Criteria.where("view_type").is(rq.getView()));
+        LookupOperation cardTypeLookup = Aggregation.lookup("card_type", "card_type_id", "_id", "type");
+        LookupOperation cardTypeTagLookup = Aggregation.lookup("card_type_tag", "tag_id_list", "_id", "tag");
+
+        MatchOperation lookupMatch = Aggregation.match(
+                new Criteria().orOperator(
+                        Criteria.where("title").regex(rq.getSearchText(), "i"),
+                        Criteria.where("info").regex(rq.getSearchText(), "i"),
+                        Criteria.where("tag.title").regex(rq.getSearchText(), "i"),
+                        Criteria.where("type.title").regex(rq.getSearchText(), "i")
+                )
+        );
+
+        Aggregation dataPip =
+                Sort.unsorted().equals(pageRequest.getSort())
+                        ?
+                        Aggregation.newAggregation(
+                                preMatch,
+                                cardTypeLookup,
+                                cardTypeTagLookup,
+                                lookupMatch,
+                                Aggregation.skip((long) rq.getPage() * rq.getSize()),
+                                Aggregation.limit(rq.getSize()))
+                        :
+                        Aggregation.newAggregation(
+                                preMatch,
+                                Aggregation.sort(pageRequest.getSort()),
+                                cardTypeLookup,
+                                cardTypeTagLookup,
+                                lookupMatch,
+                                Aggregation.skip((long) rq.getPage() * rq.getSize()),
+                                Aggregation.limit(rq.getSize()));
+
+        Aggregation countPip = Aggregation.newAggregation(
+                preMatch, cardTypeLookup, cardTypeTagLookup, lookupMatch,
+                Aggregation.count().as("totalCount")
+        );
+
+        // TODO как-то упаковать в facet и получить все одним запросом?
+        AggregationResults<Card> res = mongoTemplate.aggregate(dataPip, "card", Card.class);
+        log.info("Get card by text: {}", res.getMappedResults());
+        AggregationResults<CountResult> totalCount = mongoTemplate.aggregate(countPip, "card", CountResult.class);
+        log.info("Get count by text: {}", totalCount.getRawResults());
+        long count = totalCount.getUniqueMappedResult() == null ? 0 : totalCount.getUniqueMappedResult().getTotalCount();
+        return new PageImpl<Card>(res.getMappedResults(), pageRequest, count);
     }
 
     public Mono<List<CardDto>> save(List<CardDto> dto) {

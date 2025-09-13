@@ -64,6 +64,7 @@ import static com.mar.ds.db.diff.DiffCard.CARD_LAST_GAME_DATE;
 import static com.mar.ds.db.diff.DiffCard.CARD_LAST_UPD_DATE;
 import static com.mar.ds.db.diff.DiffCard.CARD_POINT;
 import static com.mar.ds.db.diff.DiffCard.CARD_RATE;
+import static com.mar.ds.db.diff.DiffCard.CARD_STATUS;
 import static com.mar.ds.db.diff.DiffCard.CARD_TITLE;
 import static com.mar.ds.db.diff.DiffCard.CARD_TYPE;
 import static com.mar.ds.utils.FileUtils.getTitles;
@@ -340,7 +341,7 @@ public class CardView implements ContentView {
         if (gridConfig.containsKey(GRID_STATUS)) {
             grid.addComponentColumn(ViewUtils::getStatusIcon)
                     .setHeader(paginationGridService.getHeader(
-                            MEDAL, gridConfig.get(GRID_STATUS), "order"
+                            MEDAL, gridConfig.get(GRID_STATUS), CARD_STATUS
                     ))
                     .setAutoWidth(true).setFlexGrow(0)
                     .setTextAlign(ColumnTextAlign.CENTER)
@@ -416,7 +417,7 @@ public class CardView implements ContentView {
             grid.addColumn(card -> card.getCardType().getTitle())
                     .setAutoWidth(true).setFlexGrow(0)
                     .setHeader(paginationGridService.getHeader(
-                            COMPILE, gridConfig.get(GRID_TYPE), CARD_TYPE + "title"
+                            COMPILE, gridConfig.get(GRID_TYPE), CARD_TYPE
                     ))
                     .setTextAlign(ColumnTextAlign.CENTER)
                     .setId(GRID_TYPE);
