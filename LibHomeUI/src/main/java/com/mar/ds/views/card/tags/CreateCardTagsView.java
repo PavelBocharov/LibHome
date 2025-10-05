@@ -35,7 +35,7 @@ public class CreateCardTagsView {
                 event -> {
                     mainView.getCardTypeTagService().save(
                             CardTypeTagDto.builder()
-                                    .title(ViewUtils.getTextFieldValue(title))
+                                    .title(ViewUtils.getTextFieldValue(title).orElseThrow(() -> new RuntimeException("Card type tag TITLE is EMPTY.")))
                                     .cardTypeId(cardType.getId())
                                     .build()
                     );

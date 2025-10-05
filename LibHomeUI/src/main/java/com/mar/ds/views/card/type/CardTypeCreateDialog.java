@@ -11,7 +11,7 @@ public class CardTypeCreateDialog extends CreateViewDialog<CardTypeDto, CardType
     @Override
     protected CardTypeDto getNewEntity(BigDecimalField enumId, TextField title) {
         return CardTypeDto.builder()
-                .title(ViewUtils.getTextFieldValue(title))
+                .title(ViewUtils.getTextFieldValue(title).orElseThrow(() -> new RuntimeException("Card type TITLE is EMPTY.")))
                 .build();
     }
 

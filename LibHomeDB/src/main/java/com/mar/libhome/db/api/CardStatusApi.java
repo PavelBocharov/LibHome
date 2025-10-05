@@ -2,10 +2,13 @@ package com.mar.libhome.db.api;
 
 import com.mar.libhome.db.mongo.service.CardStatusService;
 import com.mar.libhome.dto.CardStatusDto;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,7 +59,10 @@ public class CardStatusApi {
         log.debug(">> save card status list size: {}", dtoList.size());
         return cardStatusService.saveAll(dtoList)
                 .doOnSuccess(status -> log.debug("<< save card list status: {}", status))
-                .doOnError(throwable -> log.error("!!! save card status list size: {}", dtoList.size(), throwable));
+                .doOnError(throwable -> {
+                    log.error("!!! save card status list size: {}. Msg: {}. LocalMSg: {}", dtoList.size(), throwable.getMessage(), throwable.getLocalizedMessage());
+                    Mono.error(throwable);
+                });
     }
 
     @DeleteMapping
@@ -65,6 +71,14 @@ public class CardStatusApi {
         return cardStatusService.deleteById(dto.getId())
                 .doOnSuccess(status -> log.debug("<< delete card status: {}", status))
                 .doOnError(throwable -> log.error("!!! delete card status: {}", dto, throwable));
+    }
+
+    @ExceptionHandler({Exception.class})
+    protected ResponseEntity<String> handleCustomError(Exception ex) {
+        log.debug("handleCustomError: {}", ex.getMessage());
+        return ResponseEntity
+                .status(500)
+                .body(ExceptionUtils.getMessage(ex));
     }
 
 }

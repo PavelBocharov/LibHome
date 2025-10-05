@@ -152,14 +152,15 @@ public class UpdateCardView extends CardDialogView {
             try {
                 checkValues();
                 CardDto old = SerializationUtils.clone(updateCard);
-                CardStatusDto cardStatus = cardStatusListSelect.getValue();
-                updateCard.setTitle(getTextFieldValue(cardTitle));
+                CardStatusDto cardStatus = Optional.ofNullable(cardStatusListSelect.getValue()).orElseThrow(() -> new RuntimeException("Card STATUS is empty."));
+                CardTypeDto cardType = Optional.ofNullable(cardTypeListSelect.getValue()).orElseThrow(() -> new RuntimeException("Card TYPE is empty."));
+                updateCard.setTitle(getTextFieldValue(cardTitle).orElseThrow(() -> new RuntimeException("Card status TITLE is EMPTY.")));
                 updateCard.setViewType(getValue(viewTypeDtoSelect, viewType).id());
                 updateCard.setInfo(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""));
-                updateCard.setLink(getTextFieldValue(link));
+                updateCard.setLink(getTextFieldValue(link).orElse(null));
                 updateCard.setEngine(getValue(engineSelect, GameEngine.DEFAULT));
                 updateCard.setCardStatus(SerializationUtils.clone(cardStatus));
-                updateCard.setCardType(cardTypeListSelect.getValue());
+                updateCard.setCardType(cardType);
                 updateCard.setPoint(getDoubleValue(point));
                 updateCard.setLastUpdate(getValue(updDate, new Date()));
                 updateCard.setLastGame(getValue(gameDate, new Date()));

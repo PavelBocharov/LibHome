@@ -7,12 +7,14 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 
 import java.awt.Color;
 
+import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
 
 public class CreateCardStatusView {
@@ -46,19 +48,23 @@ public class CreateCardStatusView {
         Button createBtn = new Button("Create", new Icon(PLUS));
         createBtn.addClickListener(btnEvent -> {
             try {
-                Color.decode(ViewUtils.getTextFieldValue(colorField));
+                Color.decode(getTextFieldValue(colorField)
+                        .orElseThrow(() -> new RuntimeException("Card status COLOR is EMPTY."))
+                );
 
                 cardStatusView.getService().save(
                         CardStatusDto.builder()
-                                .title(ViewUtils.getTextFieldValue(textField))
-                                .color(ViewUtils.getTextFieldValue(colorField))
-                                .icon(ViewUtils.getTextFieldValue(iconField))
+                                .title(getTextFieldValue(textField)
+                                        .orElseThrow(() -> new RuntimeException("Card status TITLE is EMPTY.")))
+                                .color(getTextFieldValue(colorField)
+                                        .orElseThrow(() -> new RuntimeException("Card status COLOR is EMPTY.")))
+                                .icon(getTextFieldValue(iconField).orElse(VaadinIcon.BULLSEYE.name()))
                                 .isRate(isRate.getValue())
                                 .hasUpdStatus(hasUpd.getValue())
                                 .order(
                                         ViewUtils
                                                 .getLongValue(orderField)
-                                                .orElseThrow(() -> new RuntimeException("Not set card status order."))
+                                                .orElseThrow(() -> new RuntimeException("Not set card status ORDER."))
                                 )
                                 .build()
                 );

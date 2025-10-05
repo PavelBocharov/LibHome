@@ -47,8 +47,6 @@ import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Диалоговое окно с информацией по карточке.
@@ -92,16 +90,17 @@ public abstract class CardDialogView {
     }
 
     protected void checkValues() throws Exception {
-        if (isBlank(getTextFieldValue(cardTitle))) {
-            throw new RuntimeException(format("'%s' not be blank.", getTitles().get(GRID_TITLE)));
-        }
-        if (isNotBlank(getTextFieldValue(link))) {
-            String url = getTextFieldValue(link);
+        getTextFieldValue(cardTitle)
+                .orElseThrow(() -> new RuntimeException(format("'%s' not be blank.", getTitles().get(GRID_TITLE))));
+
+        if (getTextFieldValue(link).isPresent()) {
+            String url = getTextFieldValue(link).get();
             Matcher matcher = Pattern.compile(URL_PATTERN).matcher(url);
             if (!matcher.find()) {
                 throw new RuntimeException(format("'%s' is not URL format.", getTitles().get(GRID_LINK)));
             }
         }
+
         if (nonNull(point)) {
             double cardPoint = getDoubleValue(point);
             if (minPoint > cardPoint || maxPoint < cardPoint) {

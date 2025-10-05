@@ -2,9 +2,10 @@ version: '3'
 name: lib-home
 services:
   ui:
-    build:
-      context: LibHomeUI
-      dockerfile: Dockerfile
+    image: marolok/lib_home:4.2.0
+#    build:
+#      context: LibHomeUI
+#      dockerfile: Dockerfile
     env_file:
       - .env
     volumes:
@@ -15,7 +16,6 @@ services:
       - bridge
     ports:
       - '8080:8080'
-
   mongo:
     image: mongo
     ports:
@@ -32,23 +32,18 @@ services:
       - MONGO_WORK_PASSWORD=mrlk_p
     networks:
       - mgdb
-      - bridge
-
   db:
-    build:
-      context: LibHomeDB
-      dockerfile: Dockerfile
-#      env_file:
-#        - .env
-#      volumes:
-#        - "${PC_DB_PATH}:${DATA_PATH}"
+    image: marolok/lib_home_db:1.0.0
+#    build:
+#      context: LibHomeDB
+#      dockerfile: Dockerfile
+    env_file:
+      - .env
     tty: true
     restart: always
     networks:
       - mgdb
-#      ports:
-#        - '8080:8080'
-
+      - bridge
 
 
 networks:

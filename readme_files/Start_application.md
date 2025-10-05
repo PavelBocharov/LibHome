@@ -11,7 +11,7 @@
 2) Install NodeJS - https://nodejs.org/en/download/
     * Install nvm - [Windows](https://github.com/coreybutler/nvm-windows), [Linux](https://github.com/nvm-sh/nvm)
 3) Set values in [application property](../LibHomeUI/src/main/resources/application.properties):
-    * `app.data.content.file` - [content.json](../content.json) for UI text.
+    * `app.data.content.file` - [content.json](../LibHomeUI/content.json) for UI text.
     * `app.data.path` - directory for DB, images, logs and etc.
     * `app.db.file` - SQLite database file in `app.data.path`.
 4) Start `Spring Run` profile.
@@ -49,18 +49,34 @@
 2) Create directory with:
     * [docker-compose.yml](../docker-compose.yml) - main config with image version
     * [.env](../.env) - file with your directories, files and database.
-    * [content.json](../content.json) - UI text.
+    * [content.json](../LibHomeUI/content.json) - UI text.
 3) Set image version in [docker-compose.yml](../docker-compose.yml) (remove `build` block).
 4) Edit [.env](../.env):
     * `PC_DB_PATH` - directory for DB, images, logs and etc for mount - `PC_DB_PATH >> DATA_PATH`.
+    * `MONGO_DIR` - MongoDB path.
+5) Create `./db_init/mongo-init.js` for init MongoDB rules. This file mount in `services.mongo.valumes` in [docker-compose.yml](../docker-compose.yml) file.
+    ``` jshelllanguage
+   db.auth('mrlk_usr', 'mrlk_pwd')
+   db = db.getSiblingDB('libhomedb')
+   db.createUser({
+     user: 'mrlk_u',
+     pwd: 'mrlk_p',
+     roles: [
+       {
+         role: 'readWrite',
+         db: 'libhomedb',
+       },
+     ],
+   });
+   ```
 
 ![How_to_mount.png](images/How_to_mount.png)
 
 * `DATA_PATH` - mount directory in **IMAGE** (default - `/opt/app/data/`).
-* `VIEW_CONTENT_JSON` - [content.json](../content.json) for UI text  (default - `/opt/app/data/content.json`)
+* `VIEW_CONTENT_JSON` - [content.json](../LibHomeUI/content.json) for UI text  (default - `/opt/app/data/content.json`)
 * `DB_FILE_IN_DATA_DIR` - SQLite database file (create in `PC_DB_PATH` & `DATA_PATH`).
 
-5) Start `docker-compose`
+6) Start `docker-compose`
    ```bash 
    docker-compose up
    ```

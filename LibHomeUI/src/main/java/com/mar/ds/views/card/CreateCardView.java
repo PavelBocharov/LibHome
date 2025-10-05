@@ -5,6 +5,7 @@ import com.mar.ds.utils.ViewUtils;
 import com.mar.ds.views.MainView;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardStatusDto;
+import com.mar.libhome.dto.CardTypeDto;
 import com.mar.libhome.enums.GameEngine;
 import com.mar.libhome.enums.Language;
 import com.vaadin.flow.component.Component;
@@ -16,6 +17,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -117,28 +119,20 @@ public class CreateCardView extends CardDialogView {
         crtBtn.addClickListener(click -> {
             try {
                 checkValues();
-                CardStatusDto cardStatus = cardStatusListSelect.getValue();
+                CardStatusDto cardStatus = Optional.ofNullable(cardStatusListSelect.getValue()).orElseThrow(() -> new RuntimeException("Card STATUS is empty."));
+                CardTypeDto cardType = Optional.ofNullable(cardTypeListSelect.getValue()).orElseThrow(() -> new RuntimeException("Card TYPE is empty."));
                 CardDto card = mainView.getCardService().save(
                         CardDto.builder()
-                                .title(getTextFieldValue(cardTitle))
+                                .title(getTextFieldValue(cardTitle).orElseThrow(() -> new RuntimeException("Card TITLE is EMPTY.")))
                                 .viewType(getValue(viewTypeDtoSelect, viewType).id())
                                 .info(Optional.ofNullable(getTextFieldValue(infoArea)).orElse(""))
-                                .link(getTextFieldValue(link))
+                                .link(getTextFieldValue(link).orElse(null))
                                 .engine(getValue(engineSelect, GameEngine.DEFAULT))
                                 .point(getDoubleValue(point))
                                 .lastUpdate(getValue(updDate, new Date()))
                                 .lastGame(getValue(gameDate, new Date()))
-                                .cardStatus(CardStatusDto.builder()
-                                        .id(cardStatus.getId())
-                                        .color(cardStatus.getColor())
-                                        .tech(cardStatus.getTech())
-                                        .hasUpdStatus(cardStatus.getHasUpdStatus())
-                                        .icon(cardStatus.getIcon())
-                                        .title(cardStatus.getTitle())
-                                        .isRate(cardStatus.getIsRate())
-                                        .order(cardStatus.getOrder())
-                                        .build())
-                                .cardType(cardTypeListSelect.getValue())
+                                .cardStatus(SerializationUtils.clone(cardStatus))
+                                .cardType(cardType)
                                 .tagList(tags.getValue().stream().toList())
                                 .language(getValue(languageSelect, Language.DEFAULT))
                                 .build()

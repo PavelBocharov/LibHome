@@ -268,11 +268,11 @@ public class ViewUtils {
         field.setValue(text == null ? "" : text);
     }
 
-    public static String getTextFieldValue(TextField field) {
-        if (field == null || isBlank(field.getValue())) {
-            return null;
+    public static Optional<String> getTextFieldValue(TextField field) {
+        if (field == null || isBlank(field.getValue()) || isBlank(field.getValue().trim())) {
+            return Optional.empty();
         }
-        return field.getValue().trim();
+        return Optional.of(field.getValue().trim());
     }
 
     public static String getTextFieldValue(TextArea field) {

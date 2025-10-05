@@ -13,6 +13,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
+
 @Slf4j
 @RequiredArgsConstructor
 public class UpdateCardTagsView {
@@ -33,7 +35,7 @@ public class UpdateCardTagsView {
                 "Update tag",
                 VaadinIcon.PLUS.create(),
                 event -> {
-                    tag.setTitle(ViewUtils.getTextFieldValue(title));
+                    tag.setTitle(getTextFieldValue(title).orElseThrow(() -> new RuntimeException("Card type tag TITLE is EMPTY.")));
                     mainView.getCardTypeTagService().save(tag);
                     dialog.close();
                     parentView.reloadData();

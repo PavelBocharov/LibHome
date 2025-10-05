@@ -10,7 +10,7 @@ public class CardTypeUpdateDialog extends UpdateViewDialog<CardTypeDto, CardType
 
     @Override
     protected CardTypeDto updateEntity(CardTypeDto entity, BigDecimalField enumId, TextField title) {
-        entity.setTitle(ViewUtils.getTextFieldValue(title));
+        entity.setTitle(ViewUtils.getTextFieldValue(title).orElseThrow(() -> new RuntimeException("Card type TITLE is EMPTY.")));
         return entity;
     }
 }

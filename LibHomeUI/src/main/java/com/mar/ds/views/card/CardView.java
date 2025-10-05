@@ -68,6 +68,7 @@ import static com.mar.ds.db.diff.DiffCard.CARD_STATUS;
 import static com.mar.ds.db.diff.DiffCard.CARD_TITLE;
 import static com.mar.ds.db.diff.DiffCard.CARD_TYPE;
 import static com.mar.ds.utils.FileUtils.getTitles;
+import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.vaadin.flow.component.icon.VaadinIcon.BAR_CHART;
 import static com.vaadin.flow.component.icon.VaadinIcon.COG;
 import static com.vaadin.flow.component.icon.VaadinIcon.COGS;
@@ -129,7 +130,7 @@ public class CardView implements ContentView {
                         maxRate = minRate + 1;
                     }
 
-                    String searchText = ViewUtils.getTextFieldValue(searchField);
+                    String searchText = getTextFieldValue(searchField).orElse("");
                     Sort sort = Sort.by(data.sortOrders());
                     PageRequest pageRequest = PageRequest.of(data.page(), data.pageSize(), sort);
                     if (isBlank(searchText)) {

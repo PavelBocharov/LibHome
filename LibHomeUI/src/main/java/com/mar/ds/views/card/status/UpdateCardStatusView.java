@@ -7,12 +7,14 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
 
 import java.awt.Color;
 
+import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.vaadin.flow.component.icon.VaadinIcon.ROTATE_RIGHT;
 
 public class UpdateCardStatusView {
@@ -52,11 +54,13 @@ public class UpdateCardStatusView {
         Button updBtn = new Button("Update", new Icon(ROTATE_RIGHT));
         updBtn.addClickListener(btnEvent -> {
             try {
-                Color.decode(ViewUtils.getTextFieldValue(colorField));
+                Color.decode(getTextFieldValue(colorField).orElseThrow(() -> new RuntimeException("Card status COLOR is EMPTY.")));
 
-                updatedStatus.setTitle(ViewUtils.getTextFieldValue(textField));
-                updatedStatus.setColor(ViewUtils.getTextFieldValue(colorField));
-                updatedStatus.setIcon(ViewUtils.getTextFieldValue(iconField));
+                updatedStatus.setTitle(getTextFieldValue(textField)
+                        .orElseThrow(() -> new RuntimeException("Card status TITLE is EMPTY.")));
+                updatedStatus.setColor(getTextFieldValue(colorField)
+                        .orElseThrow(() -> new RuntimeException("Card status COLOR is EMPTY.")));
+                updatedStatus.setIcon(getTextFieldValue(iconField).orElse(VaadinIcon.BULLSEYE.name()));
                 updatedStatus.setIsRate(isRate.getValue());
                 updatedStatus.setHasUpdStatus(hasUpd.getValue());
                 updatedStatus.setOrder(
