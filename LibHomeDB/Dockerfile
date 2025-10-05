@@ -1,0 +1,15 @@
+FROM eclipse-temurin:17.0.6_10-jre-alpine
+
+WORKDIR /opt/app
+
+COPY target/LibHomeDB-*.jar /opt/app/japp.jar
+
+ENV MONGO_HOST=localhost
+ENV MONGO_PORT=8080
+ENV MONGO_DB=db
+ENV MONGO_USER=usr
+ENV MONGO_PWD=pwd
+
+CMD ["java", "-jar", "-Dspring.data.mongodb.host=${MONGO_HOST}", "-Dspring.data.mongodb.port=${MONGO_PORT}", "-Dspring.data.mongodb.database=${MONGO_DB}", "-Dspring.data.mongodb.username=${MONGO_USER}", "-Dspring.data.mongodb.password=${MONGO_PWD}", "/opt/app/japp.jar"]
+
+EXPOSE 8088
