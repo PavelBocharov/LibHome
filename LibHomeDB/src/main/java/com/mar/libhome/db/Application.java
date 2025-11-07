@@ -3,9 +3,7 @@ package com.mar.libhome.db;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-import org.springframework.web.reactive.config.EnableWebFlux;
 
-@EnableWebFlux
 @SpringBootApplication
 @EnableMongoRepositories(basePackages = "com.mar.libhome.db.mongo")
 public class Application {
