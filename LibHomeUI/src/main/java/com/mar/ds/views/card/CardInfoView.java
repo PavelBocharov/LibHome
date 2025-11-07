@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -53,6 +54,7 @@ import static com.mar.ds.data.GridInfo.GRID_ENGINE;
 import static com.mar.ds.data.GridInfo.GRID_FILES;
 import static com.mar.ds.data.GridInfo.GRID_IMAGE;
 import static com.mar.ds.data.GridInfo.GRID_INFO;
+import static com.mar.ds.data.GridInfo.GRID_LANGUAGE;
 import static com.mar.ds.data.GridInfo.GRID_LINK;
 import static com.mar.ds.data.GridInfo.GRID_STATUS;
 import static com.mar.ds.data.GridInfo.GRID_TAGS;
@@ -108,15 +110,25 @@ public class CardInfoView extends Dialog {
         Map<String, String> titles = com.mar.ds.utils.FileUtils.getTitles(
                 viewType, mainView.getContentJson()
         );
+        assert Objects.nonNull(titles);
 
         HorizontalLayout imageAndTitle = new HorizontalLayout();
         imageAndTitle.setPadding(false);
+        HorizontalLayout headerInfo;
+        if (titles.containsKey(GRID_LANGUAGE)) {
+            headerInfo = new HorizontalLayout(
+                    ViewUtils.getStatusIcon(card),
+                    ViewUtils.getImage(Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT), 26),
+                    new Label(card.getTitle())
+            );
+        } else {
+            headerInfo = new HorizontalLayout(
+                    ViewUtils.getStatusIcon(card),
+                    new Label(card.getTitle())
+            );
+        }
 
-        HorizontalLayout headerInfo = new HorizontalLayout(
-                ViewUtils.getStatusIcon(card),
-                ViewUtils.getImage(Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT), 26),
-                new Label(card.getTitle())
-        );
+
         headerInfo.setWidthFull();
         Button returnBtn = new Button(
                 VaadinIcon.ARROW_BACKWARD.create(),
