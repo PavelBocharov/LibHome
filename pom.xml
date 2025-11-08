@@ -11,7 +11,7 @@
 
     <groupId>com.mar</groupId>
     <artifactId>lib-home</artifactId>
-    <version>4.3.0</version>
+    <version>4.3.1</version>
     <packaging>pom</packaging>
     <name>lib-home</name>
     <description>LibHome - your book, game, music and other library.</description>
