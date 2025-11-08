@@ -1,12 +1,11 @@
 package com.mar.libhome.db.mongo.service;
 
+import com.mar.libhome.db.mongo.entity.CardType;
 import com.mar.libhome.db.mongo.mapper.CardTypeMapper;
 import com.mar.libhome.db.mongo.repo.CardTypeRepository;
 import com.mar.libhome.dto.CardTypeDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,27 +17,30 @@ public class CardTypeService {
     private final CardTypeRepository repository;
     private final CardTypeMapper mapper;
 
-    public Mono<List<CardTypeDto>> getAll() {
-        return Flux.fromIterable(repository.findAll())
+    public List<CardTypeDto> getAll() {
+        return repository.findAll()
+                .parallelStream()
                 .map(mapper::toDto)
-                .collectList();
+                .toList();
     }
 
-    public Mono<CardTypeDto> deleteById(UUID id) {
-        return Mono.justOrEmpty(id)
-                .map(uuid -> repository.findById(uuid).orElseThrow(() -> new RuntimeException("Cannot find card type with id: " + uuid)))
-                .map(mapper::toDto)
-                .doOnSuccess(cardTypeDto -> repository.deleteById(cardTypeDto.getId()));
+    public CardTypeDto deleteById(UUID id) {
+        CardType type = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cannot find card type with id: " + id));
+        repository.delete(type);
+        return mapper.toDto(type);
     }
 
-    public Mono<List<CardTypeDto>> save(List<CardTypeDto> dtoList) {
-        return Flux.fromIterable(dtoList)
-                .map(mapper::toEntity)
-                .collectList()
-                .map(repository::saveAll)
-                .flatMapIterable(cardTypes -> cardTypes)
+    public List<CardTypeDto> save(List<CardTypeDto> dtos) {
+        return repository.saveAll(
+                        dtos
+                                .parallelStream()
+                                .map(mapper::toEntity)
+                                .toList()
+                )
+                .parallelStream()
                 .map(mapper::toDto)
-                .collectList();
+                .toList();
     }
 
 }

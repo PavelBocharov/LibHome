@@ -5,8 +5,6 @@ import com.mar.libhome.db.mongo.repo.CardHistoryRepository;
 import com.mar.libhome.dto.CardHistoryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,26 +16,29 @@ public class CardHistoryService {
     private final CardHistoryRepository repository;
     private final CardHistoryMapper mapper;
 
-    public Mono<List<CardHistoryDto>> getAll() {
-        return Flux.fromIterable(repository.findAll())
+    public List<CardHistoryDto> getAll() {
+        return repository.findAll()
+                .parallelStream()
                 .map(mapper::toDto)
-                .collectList();
+                .toList();
     }
 
-    public Mono<List<CardHistoryDto>> getByCardId(UUID id) {
-        return Flux.fromIterable(repository.findAllByEditableId(id))
+    public List<CardHistoryDto> getByCardId(UUID id) {
+        return repository.findAllByEditableId(id)
+                .parallelStream()
                 .map(mapper::toDto)
-                .collectList();
+                .toList();
     }
 
-    public Mono<List<CardHistoryDto>> save(List<CardHistoryDto> dto) {
-        return Flux.fromIterable(dto)
-                .map(mapper::toEntity)
-                .collectList()
-                .map(repository::saveAll)
-                .flatMapIterable(cardHistories -> cardHistories)
+    public List<CardHistoryDto> save(List<CardHistoryDto> dtos) {
+        return repository.saveAll(
+                        dtos.parallelStream()
+                                .map(mapper::toEntity)
+                                .toList()
+                )
+                .parallelStream()
                 .map(mapper::toDto)
-                .collectList();
+                .toList();
     }
 
 }

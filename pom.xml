@@ -11,7 +11,7 @@
 
     <groupId>com.mar</groupId>
     <artifactId>lib-home</artifactId>
-    <version>4.3.0</version>
+    <version>4.3.1</version>
     <packaging>pom</packaging>
     <name>lib-home</name>
     <description>LibHome - your book, game, music and other library.</description>
@@ -24,7 +24,7 @@
 
     <properties>
         <com.mar.libhome.dto>1.0.0</com.mar.libhome.dto>
-        <com.mar.libhome.db>1.0.0</com.mar.libhome.db>
+        <com.mar.libhome.db>1.1.0</com.mar.libhome.db>
 
         <java.version>17</java.version>
         <vaadin.version>14.7.3</vaadin.version>

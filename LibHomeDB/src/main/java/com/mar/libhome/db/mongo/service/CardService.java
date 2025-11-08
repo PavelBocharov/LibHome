@@ -28,12 +28,9 @@ import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -51,22 +48,21 @@ public class CardService {
     private final CardTypeMapper typeMapper;
     private final CardTypeTagMapper tagMapper;
 
-    public Mono<List<CardDto>> getAll() {
-        return Flux.fromIterable(repository.findAll())
+    public List<CardDto> getAll() {
+        return repository.findAll()
+                .parallelStream()
                 .map(mapper::toDto)
-                .collectList();
+                .toList();
     }
 
-    public Mono<CardRs> search(CardRq rq) {
-        return Mono.just(searchCards(rq))
-                .map(page -> CardRs.builder()
-                        .page(page.getNumber())
-                        .size(page.getSize())
-                        .total(page.getTotalElements())
-                        .cards(page.stream().parallel().map(mapper::toDto).map(this::enrich).toList())
-                        .build()
-                )
-                .doOnSuccess(cardDtos -> log.debug("Search success: {}.", cardDtos));
+    public CardRs search(CardRq rq) {
+        Page<Card> page = searchCards(rq);
+        return CardRs.builder()
+                .page(page.getNumber())
+                .size(page.getSize())
+                .total(page.getTotalElements())
+                .cards(page.stream().parallel().map(mapper::toDto).map(this::enrich).toList())
+                .build();
     }
 
     private Page<Card> searchCards(CardRq rq) {
@@ -145,22 +141,20 @@ public class CardService {
         return new PageImpl<Card>(res.getMappedResults(), pageRequest, count);
     }
 
-    public Mono<List<CardDto>> save(List<CardDto> dto) {
-        return Flux.fromIterable(dto)
-                .map(mapper::toEntity)
-                .collectList()
-                .map(repository::saveAll)
-                .flatMapIterable(cardHistories -> cardHistories)
+    public List<CardDto> save(List<CardDto> dtos) {
+        return repository.saveAll(
+                        dtos.parallelStream()
+                                .map(mapper::toEntity)
+                                .toList())
+                .parallelStream()
                 .map(mapper::toDto)
-                .collectList();
+                .toList();
     }
 
-    public Mono<CardDto> deleteById(UUID id) {
-        return Mono.justOrEmpty(id)
-                .map(uuid -> repository.findById(uuid).orElseThrow(() -> new RuntimeException("Cannot find card with id: " + uuid)))
-                .map(mapper::toDto)
-                .doOnSuccess(cardDto -> repository.deleteById(cardDto.getId()));
-
+    public CardDto deleteById(UUID id) {
+        Card card = repository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find card with id: " + id));
+        repository.delete(card);
+        return mapper.toDto(card);
     }
 
     public CardDto enrich(CardDto card) {
