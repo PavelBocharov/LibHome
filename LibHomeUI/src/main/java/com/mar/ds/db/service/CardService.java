@@ -1,16 +1,16 @@
 package com.mar.ds.db.service;
 
+import com.mar.ds.data.Page;
+import com.mar.ds.data.PageRequest;
 import com.mar.ds.db.remote.CardRemote;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardRs;
 import com.mar.libhome.dto.CardStatusDto;
 import com.mar.libhome.dto.CardTypeDto;
+import com.mar.libhome.exception.BaseLibHomeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public class CardService {
 
     public Page<CardDto> findAllByView(@NotNull Integer view, PageRequest pageRequest) {
         CardRs rs = cardRemote.findAllByView(view, pageRequest);
-        return new PageImpl<>(
+        return new Page<>(
                 rs.getCards(),
                 PageRequest.of(rs.getPage(), rs.getSize()),
                 rs.getTotal()
@@ -75,7 +75,7 @@ public class CardService {
 
     public Page<CardDto> findAllByViewAndLikeTitleMap(@NotNull Integer view, String searchText, PageRequest pageRequest) {
         CardRs rs = cardRemote.findAllByViewAndLikeTitleMap(view, searchText, pageRequest);
-        return new PageImpl<>(
+        return new Page<>(
                 rs.getCards(),
                 PageRequest.of(rs.getPage(), rs.getSize()),
                 rs.getTotal()
@@ -101,7 +101,8 @@ public class CardService {
                 && card.getLastUpdate().after(card.getLastGame())
         ) {
             if (!status.isTech() && TRUE.equals(status.getHasUpdStatus())) {
-                CardStatusDto hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
+                CardStatusDto hasUpdStatus = getAndCreateHaseUpdStatus();
+
                 card.setOldCardStatus(status);
                 card.setCardStatus(
                         CardStatusDto.builder()
@@ -133,6 +134,32 @@ public class CardService {
 
         calcRate(card);
         return card;
+    }
+
+    private CardStatusDto getAndCreateHaseUpdStatus() {
+        CardStatusDto hasUpdStatus = null;
+
+        try {
+            hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
+        } catch (BaseLibHomeException e) {
+            log.warn("Get TECH_HASE_UPD status error: {}", e.getMessage(), e);
+        }
+
+        if (hasUpdStatus == null) {
+            hasUpdStatus = cardStatusService.save(
+                    CardStatusDto.builder()
+                            .tech(TECH_HASE_UPD_ID)
+                            .title("Has UPD")
+                            .icon("BELL")
+                            .isRate(true)
+                            .color("#0B6623")
+                            .order(-1L)
+                            .hasUpdStatus(false)
+                            .build()
+            );
+        }
+
+        return hasUpdStatus;
     }
 
     public CardDto save(CardDto card) {

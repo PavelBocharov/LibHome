@@ -1,11 +1,11 @@
 version: '3'
-name: lib-home
+name: lib-home-idea
 services:
   ui:
-    image: marolok/lib_home:4.2.0
-#    build:
-#      context: LibHomeUI
-#      dockerfile: Dockerfile
+#    image: marolok/lib_home:4.2.0
+    build:
+      context: LibHomeUI
+      dockerfile: Dockerfile
     env_file:
       - .env
     volumes:
@@ -15,7 +15,7 @@ services:
     networks:
       - bridge
     ports:
-      - '8080:8080'
+      - '8081:8080'
   mongo:
     image: mongo
     ports:
@@ -33,7 +33,7 @@ services:
     networks:
       - mgdb
   db:
-    image: marolok/lib_home_db:1.0.0
+    image: marolok/lib_home_db:1.1.0
 #    build:
 #      context: LibHomeDB
 #      dockerfile: Dockerfile

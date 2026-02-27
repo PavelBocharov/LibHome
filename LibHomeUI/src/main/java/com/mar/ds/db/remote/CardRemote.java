@@ -1,6 +1,7 @@
 package com.mar.ds.db.remote;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.mar.ds.data.PageRequest;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardRq;
 import com.mar.libhome.dto.CardRs;
@@ -8,8 +9,6 @@ import com.mar.libhome.dto.CardStatusDto;
 import com.mar.libhome.dto.CardTypeDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -85,18 +84,28 @@ public class CardRemote {
         return rs;
     }
 
-    private Map<String, CardRq.SortOrder> sortOrderMap(Sort sort) {
+    private Map<String, CardRq.SortOrder> sortOrderMap(PageRequest.Sort sort) {
         if (sort == null) {
             return Collections.emptyMap();
         }
         Map<String, CardRq.SortOrder> map = new HashMap<>();
-        sort.forEach(order -> map.put(
-                        order.getProperty(),
-                        Sort.Direction.ASC.equals(order.getDirection())
-                                ? CardRq.SortOrder.ASC
-                                : CardRq.SortOrder.DESC
-                )
-        );
+
+        for (String property : sort.getOrder().keySet()) {
+            map.put(
+                    property,
+                    PageRequest.Sort.Direction.ASC.equals(sort.getOrder().get(property))
+                            ? CardRq.SortOrder.ASC
+                            : CardRq.SortOrder.DESC
+            );
+        }
+
+//        sort.forEach(order -> map.put(
+//                        order.getProperty(),
+//                        Sort.Direction.ASC.equals(order.getDirection())
+//                                ? CardRq.SortOrder.ASC
+//                                : CardRq.SortOrder.DESC
+//                )
+//        );
         return map;
     }
 

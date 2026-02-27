@@ -1,5 +1,6 @@
 package com.mar.ds.views.card;
 
+import com.mar.ds.data.PageRequest;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
@@ -34,8 +35,6 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.vaadin.olli.FileDownloadWrapper;
 
 import java.awt.Color;
@@ -131,7 +130,7 @@ public class CardView implements ContentView {
                     }
 
                     String searchText = getTextFieldValue(searchField).orElse("");
-                    Sort sort = Sort.by(data.sortOrders());
+                    PageRequest.Sort sort = data.sortOrders();
                     PageRequest pageRequest = PageRequest.of(data.page(), data.pageSize(), sort);
                     if (isBlank(searchText)) {
                         return mainView.getCardService()

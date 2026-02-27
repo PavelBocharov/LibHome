@@ -32,7 +32,8 @@ public class CardTypeTagRemote {
         log.debug(">> Find all card type tag list by type id - {}", url);
         String rsJson = get(url);
         log.debug("<< Find all card type tag list by type id. RS: {}", rsJson);
-        List<CardTypeTagDto> rs = fromJson(rsJson, new TypeReference<List<CardTypeTagDto>>() { });
+        List<CardTypeTagDto> rs = fromJson(rsJson, new TypeReference<List<CardTypeTagDto>>() {
+        });
         log.debug("<< Find all card type tag list by type id. List mapping rs: {}", rs);
         return rs;
     }
@@ -42,7 +43,8 @@ public class CardTypeTagRemote {
         log.debug(">> Find all card type tag list - {}", url);
         String rsJson = get(url);
         log.debug("<< Find all card type tag list. RS: {}", rsJson);
-        List<CardTypeTagDto> rs = fromJson(rsJson, new TypeReference<List<CardTypeTagDto>>() { });
+        List<CardTypeTagDto> rs = fromJson(rsJson, new TypeReference<List<CardTypeTagDto>>() {
+        });
         log.debug("<< Find all card type tag list. List mapping rs: {}", rs);
         return rs;
     }
@@ -53,7 +55,8 @@ public class CardTypeTagRemote {
         log.debug(">> Save all card type tag list to uri: {}, rq: {}", url, rqJson);
         String rsJson = post(url, rqJson);
         log.debug("<< Save all card type tag list rs: {}", rsJson);
-        List<CardTypeTagDto> rs = fromJson(rsJson, new TypeReference<List<CardTypeTagDto>>() { });
+        List<CardTypeTagDto> rs = fromJson(rsJson, new TypeReference<List<CardTypeTagDto>>() {
+        });
         log.debug("<< Save all card type tag list mapping rs: {}", rs);
         return rs;
     }

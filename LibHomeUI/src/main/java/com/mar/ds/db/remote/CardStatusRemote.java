@@ -35,7 +35,8 @@ public class CardStatusRemote {
         log.debug(">> Find all card status - {}", url);
         String rsJson = get(url);
         log.debug("<< Find all card status. RS: {}", rsJson);
-        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() { });
+        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() {
+        });
         log.debug("<< Find all card status. List mapping rs: {}", rs);
         return rs;
     }
@@ -46,7 +47,8 @@ public class CardStatusRemote {
         log.debug(">> Save all card status list to uri: {}, rq: {}", url, rqJson);
         String rsJson = post(url, rqJson);
         log.debug("<< Save all card status list rs: {}", rsJson);
-        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() { });
+        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() {
+        });
         log.debug("<< Save all card status list mapping rs: {}", rs);
         return rs;
     }
@@ -84,7 +86,8 @@ public class CardStatusRemote {
         log.debug(">> Find card status by tech id is null - {}", url);
         String rsJson = get(url);
         log.debug("<< Find card status by tech id is null. RS: {}", rsJson);
-        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() { });
+        List<CardStatusDto> rs = fromJson(rsJson, new TypeReference<List<CardStatusDto>>() {
+        });
         log.debug("<< Find card status by tech id is null. List mapping rs: {}", rs);
         return rs;
     }

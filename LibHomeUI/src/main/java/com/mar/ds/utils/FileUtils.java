@@ -1,7 +1,6 @@
 package com.mar.ds.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mar.ds.db.entity.CardStatus;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardTypeTagDto;
 import com.mar.libhome.enums.Language;
@@ -34,7 +33,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -56,7 +54,7 @@ public class FileUtils {
         }
     }
 
-    public static @Nullable Map<String, String> getTitles(
+    public static Map<String, String> getTitles(
             @NotNull FileUtils.ViewTypeDto viewType,
             @NotBlank @NotNull String filePath
     ) {
@@ -156,12 +154,13 @@ public class FileUtils {
                         cell.setCellStyle(baseStyle);
                     }
                 }
-                if (obj instanceof CardStatus) {
-                    CardStatus status = (CardStatus) obj;
-                    cell.setCellValue(status.getTitle());
-                    XSSFCellStyle statusStyle = ExcelUtils.statusStyle(workbook, status.getColor());
-                    cell.setCellStyle(statusStyle);
-                } else if (obj instanceof Double) {
+//                if (obj instanceof CardStatus) {
+//                    CardStatus status = (CardStatus) obj;
+//                    cell.setCellValue(status.getTitle());
+//                    XSSFCellStyle statusStyle = ExcelUtils.statusStyle(workbook, status.getColor());
+//                    cell.setCellStyle(statusStyle);
+//                } else
+                if (obj instanceof Double) {
                     cell.setCellValue((Double) obj);
                 } else if (obj instanceof Date) {
                     cell.setCellValue((Date) obj);

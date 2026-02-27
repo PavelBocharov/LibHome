@@ -47,12 +47,12 @@ public class CardTagsView {
         cardTypeListSelect.setWidthFull();
 
         tagsGrid = new Grid<>();
-        tagsGrid.addColumn(CardTypeTagDto::getId).setHeader("ID")
-                .setAutoWidth(true).setFlexGrow(0)
-                .setTextAlign(ColumnTextAlign.START);
+//        tagsGrid.addColumn(CardTypeTagDto::getId).setHeader("ID")
+//                .setAutoWidth(true).setFlexGrow(0)
+//                .setTextAlign(ColumnTextAlign.START);
         tagsGrid.addColumn(CardTypeTagDto::getTitle).setHeader("Title")
                 .setAutoWidth(true)
-                .setTextAlign(ColumnTextAlign.CENTER);
+                .setTextAlign(ColumnTextAlign.START);
         tagsGrid.addComponentColumn(
                         tag -> {
                             Button dltBtn = new Button(
