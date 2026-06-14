@@ -1,8 +1,8 @@
 package com.mar.ds.db.service;
 
 import com.mar.ds.data.Page;
-import com.mar.ds.data.PageRequest;
-import com.mar.ds.db.remote.CardRemote;
+import com.mar.libhome.controller.CardRemote;
+import com.mar.libhome.controller.data.PageRequest;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardRs;
 import com.mar.libhome.dto.CardStatusDto;
@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
 
 import static com.mar.ds.db.service.CardStatusService.TECH_HASE_UPD_ID;
 import static com.mar.ds.utils.Utils.getDateWithoutTime;

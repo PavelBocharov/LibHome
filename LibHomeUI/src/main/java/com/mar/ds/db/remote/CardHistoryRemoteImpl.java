@@ -1,9 +1,11 @@
 package com.mar.ds.db.remote;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.mar.libhome.controller.CardHistoryRemote;
 import com.mar.libhome.dto.CardHistoryDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -16,12 +18,10 @@ import static com.mar.libhome.utils.RestApiUtils.getUri;
 import static com.mar.libhome.utils.RestApiUtils.post;
 import static com.mar.libhome.utils.RestApiUtils.toJson;
 
-/**
- * Репозиторий работы с таблицей изменений карточки.
- */
 @Slf4j
 @Service
-public class CardHistoryRemote {
+@Profile("production")
+public class CardHistoryRemoteImpl implements CardHistoryRemote {
 
     @Value("${libhome.db.url}")
     private String host;
@@ -29,6 +29,7 @@ public class CardHistoryRemote {
     @Value("${libhome.db.port}")
     private Integer port;
 
+    @Override
     public List<CardHistoryDto> saveAll(List<CardHistoryDto> diff) {
         String rqJson = toJson(diff);
         String url = getUri(host, port) + "/card/history";
@@ -41,10 +42,12 @@ public class CardHistoryRemote {
         return rs;
     }
 
+    @Override
     public CardHistoryDto save(CardHistoryDto diff) {
         return saveAll(Collections.singletonList(diff)).get(0);
     }
 
+    @Override
     public List<CardHistoryDto> findAllByEditableId(UUID editableId) {
         String url = getUri(host, port) + "/card/history/" + editableId;
         log.debug(">> GET history by card id. Uri: {}", url);
@@ -56,6 +59,7 @@ public class CardHistoryRemote {
         return rs;
     }
 
+    @Override
     @Deprecated
     public List<CardHistoryDto> deleteByColumnName(String columnName) {
         return Collections.emptyList();

@@ -1,6 +1,6 @@
 package com.mar.ds.db.service;
 
-import com.mar.ds.db.remote.CardTypeRemote;
+import com.mar.libhome.controller.CardTypeRemote;
 import com.mar.libhome.dto.CardTypeDto;
 import com.mar.libhome.view.ViewRepository;
 import lombok.extern.slf4j.Slf4j;

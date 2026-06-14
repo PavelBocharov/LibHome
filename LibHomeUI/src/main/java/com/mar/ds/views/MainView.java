@@ -9,12 +9,14 @@ import com.mar.ds.utils.FileUtils;
 import com.mar.ds.views.card.CardView;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -113,9 +115,9 @@ public class MainView extends AppLayout {
     }
 
     public void setContentByType(FileUtils.ViewTypeDto type) {
-        if (initTypeFlag == false) {
+        if (!initTypeFlag) {
             synchronized (this) {
-                if (initTypeFlag == false) {
+                if (!initTypeFlag) {
                     StartPageView startPageView = new StartPageView(this, startView);
                     cardsView.put(startView, startPageView);
                     tabs.add(getTab(startView.title(), startView.icon(), startPageView));
@@ -125,6 +127,9 @@ public class MainView extends AppLayout {
                         tabs.add(getTab(vtd.title(), vtd.icon(), view));
                         cardsView.put(vtd, view);
                     }
+
+                    tabs.add(getLogoutBtn());
+
                     initTypeFlag = true;
                 }
             }
@@ -132,6 +137,18 @@ public class MainView extends AppLayout {
 
         activeView = type;
         setContent(getActiveView().getContent());
+    }
+
+    private Tab getLogoutBtn() {
+        Icon icon = VaadinIcon.CLOSE_CIRCLE.create();
+        icon.setColor("red");
+        Button button = new Button("Logout", icon);
+        button.setHeightFull();
+        button.addClickListener(event -> {
+            UI.getCurrent().getPage().setLocation("/logout");
+        });
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        return new Tab(button);
     }
 
     public ContentView getActiveView() {

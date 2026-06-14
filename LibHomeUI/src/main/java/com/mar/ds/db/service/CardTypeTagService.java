@@ -1,6 +1,6 @@
 package com.mar.ds.db.service;
 
-import com.mar.ds.db.remote.CardTypeTagRemote;
+import com.mar.libhome.controller.CardTypeTagRemote;
 import com.mar.libhome.dto.CardTypeDto;
 import com.mar.libhome.dto.CardTypeTagDto;
 import com.mar.libhome.view.ViewRepository;

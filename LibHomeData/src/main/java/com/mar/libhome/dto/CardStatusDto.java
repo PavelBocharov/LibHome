@@ -19,7 +19,7 @@ public class CardStatusDto implements Serializable, HasId {
 
     private UUID id;
     private String title;
-    private String color;
+    private String color = "#177AD1";
     private String icon = "BULLSEYE";
     private Boolean isRate = true;
     private Boolean hasUpdStatus = false;

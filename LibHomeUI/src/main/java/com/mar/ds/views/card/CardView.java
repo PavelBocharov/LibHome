@@ -1,6 +1,6 @@
 package com.mar.ds.views.card;
 
-import com.mar.ds.data.PageRequest;
+import com.mar.libhome.controller.data.PageRequest;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;

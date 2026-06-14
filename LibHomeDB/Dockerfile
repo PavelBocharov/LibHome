@@ -1,8 +1,9 @@
-FROM eclipse-temurin:17.0.6_10-jre-alpine
+FROM libhome-build:latest AS base
+FROM eclipse-temurin:17.0.6_10-jre-alpine AS db
 
 WORKDIR /opt/app
 
-COPY target/LibHomeDB-*.jar /opt/app/japp.jar
+COPY --from=base /opt/app/LibHomeDB/target/LibHomeDB-*.jar /opt/app/japp.jar
 
 ENV MONGO_HOST=localhost
 ENV MONGO_PORT=8080

@@ -1,9 +1,11 @@
 package com.mar.ds.db.remote;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.mar.libhome.controller.CardTypeRemote;
 import com.mar.libhome.dto.CardTypeDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +19,8 @@ import static com.mar.libhome.utils.RestApiUtils.toJson;
 
 @Slf4j
 @Service
-public class CardTypeRemote {
+@Profile("production")
+public class CardTypeRemoteImpl implements CardTypeRemote {
 
     public static final String REMOTE_API = "/card/type";
 

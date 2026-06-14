@@ -16,7 +16,7 @@ import java.util.Collection;
 public class Page<T> {
 
     private Collection<T> content;
-    private PageRequest page;
+    private com.mar.libhome.controller.data.PageRequest page;
     private long totalCount;
 
     public Long getTotalPages() {

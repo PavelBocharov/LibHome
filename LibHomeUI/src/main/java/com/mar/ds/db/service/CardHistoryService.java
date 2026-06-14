@@ -1,7 +1,7 @@
 package com.mar.ds.db.service;
 
 import com.mar.ds.db.diff.DiffCard;
-import com.mar.ds.db.remote.CardHistoryRemote;
+import com.mar.libhome.controller.CardHistoryRemote;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardHistoryDto;
 import lombok.RequiredArgsConstructor;

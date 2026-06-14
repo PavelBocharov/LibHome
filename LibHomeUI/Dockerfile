@@ -1,23 +1,21 @@
-FROM node:16.13.1-alpine
+FROM libhome-build:latest AS base
+FROM node:16.13.1-alpine AS ui
 
 RUN apk add --no-cache msttcorefonts-installer fontconfig
 RUN update-ms-fonts
 
 WORKDIR /opt/app
 
-ADD docker_files/OpenJDK*.tar.gz /opt/app/java
-#JDK17 min
+RUN apk add --no-cache openjdk17-jre
 
-COPY target/LibHomeUI-*.jar /opt/app/japp.jar
-COPY content.json /opt/app/data/content.json
+COPY --from=base /opt/app/LibHomeUI/target/LibHomeUI-*.jar /opt/app/japp.jar
+COPY --from=base /opt/app/LibHomeUI/content.json /opt/app/data/content.json
 
 ENV LIB_DB_HOST=localhost
 ENV LIB_DB_PORT=8088
 ENV DATA_PATH=/opt/app/data/
 ENV VIEW_CONTENT_JSON=/opt/app/data/content.json
 
-# Look to JAVA dir name '21.0.5_11' -> '21.0.5+11'.
-# You can look in archive real dir name.
-CMD ["/opt/app/java/jdk-21.0.4+7-jre/bin/java", "-jar", "-Dapp.data.content.file=${VIEW_CONTENT_JSON}", "-Dapp.data.path=${DATA_PATH}", "-Dspring.profiles.active=production", "-Dlibhome.db.url=${LIB_DB_HOST}", "-Dlibhome.db.port=${LIB_DB_PORT}", "/opt/app/japp.jar"]
+CMD ["java", "-jar", "-Dapp.data.content.file=${VIEW_CONTENT_JSON}", "-Dapp.data.path=${DATA_PATH}", "-Dspring.profiles.active=production", "-Dlibhome.db.url=${LIB_DB_HOST}", "-Dlibhome.db.port=${LIB_DB_PORT}", "/opt/app/japp.jar"]
 
 EXPOSE 8080

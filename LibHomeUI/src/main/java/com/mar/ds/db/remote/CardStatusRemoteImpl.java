@@ -1,9 +1,11 @@
 package com.mar.ds.db.remote;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.mar.libhome.controller.CardStatusRemote;
 import com.mar.libhome.dto.CardStatusDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -17,12 +19,10 @@ import static com.mar.libhome.utils.RestApiUtils.post;
 import static com.mar.libhome.utils.RestApiUtils.toJson;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-/**
- * Репозиторий работы с таблицей изменений карточки.
- */
 @Slf4j
 @Service
-public class CardStatusRemote {
+@Profile("production")
+public class CardStatusRemoteImpl implements CardStatusRemote {
 
     @Value("${libhome.db.url}")
     private String host;
