@@ -1,9 +1,3 @@
-./mvnw dependency:go-offline -Pproduction
-# Собирать npm что-то не помогает
-cd ./.npm_libs
-npm install
-cd ../
-
 # Имена образов
 DATE=$(date +"%Y%m%d_%H%M%S")
 BUILD_IMAGE="libhome-build:latest"
@@ -19,24 +13,23 @@ echo "UI_IMAGE: ${UI_IMAGE}"
 
 echo "Building base image with all modules..."
 docker build -f Dockerfile -t ${BUILD_IMAGE} .
-echo "Base image built with artifacts"
+echo "Base image build with artifacts"
 
 # 2. Собираем LibHomeDB
 
-echo "Building DB image (copies artifacts from base)..."
-docker build -f LibHomeDB/Dockerfile -t ${DB_IMAGE} .
-echo "DB image built"
-echo "DB size:"
-docker images ${DB_IMAGE} --format "table {{.Repository}}\t{{.Size}}"
+#echo "Building DB image (copies artifacts from base)..."
+#docker build -f LibHomeDB/Dockerfile -t ${DB_IMAGE} .
+#echo "DB image build"
+#echo "DB size:"
+#docker images ${DB_IMAGE} --format "table {{.Repository}}\t{{.Size}}"
 
 # 3. Собираем LibHomeUI
 
 echo "Building UI image (copies artifacts from base)..."
 docker build -f LibHomeUI/Dockerfile -t ${UI_IMAGE} .
-echo "UI image built"
+echo "UI image build"
 echo "UI size:"
 docker images ${UI_IMAGE} --format "table {{.Repository}}\t{{.Size}}"
 
 # Удаляем артефакты для будущих сборок
 docker rmi libhome-build:latest
-

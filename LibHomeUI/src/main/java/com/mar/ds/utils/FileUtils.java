@@ -201,7 +201,7 @@ public class FileUtils {
     private static Object[] convertToArray(CardDto card) {
         Object[] rez = new Object[9];
 
-        rez[0] = card.getCardStatus().getTitle();
+        rez[0] = card.getCardStatus().isTech() ? card.getOldCardStatus().getTitle() : card.getCardStatus().getTitle();
         rez[1] = card.getEngine().getName();
         rez[2] = Optional.ofNullable(card.getLanguage()).orElse(Language.DEFAULT).getTitle();
         rez[3] = card.getTitle();

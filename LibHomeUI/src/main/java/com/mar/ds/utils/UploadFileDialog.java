@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.imgscalr.Scalr;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -22,7 +23,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import javax.imageio.ImageIO;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
 import static java.lang.String.valueOf;

@@ -19,7 +19,7 @@ public class StartPageView implements ContentView {
 
     public Component getContent() {
         try {
-            Image image = new Image("imgs/home_lib.png", "Alt text");
+            Image image = new Image("imgs/background.jpg", "Alt text");
             VerticalLayout verticalLayout = new VerticalLayout(
                     new H3("LibHome - your book, game, music and other library."),
                     image

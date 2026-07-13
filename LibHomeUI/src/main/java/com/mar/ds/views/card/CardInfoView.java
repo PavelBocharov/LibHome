@@ -338,7 +338,7 @@ public class CardInfoView extends Dialog {
 
             Grid<File> cardFiles = new Grid<>();
             cardFiles.addComponentColumn(this::openFile).setHeader("File path")
-                    .setAutoWidth(true).setSortable(true).setComparator(File::getAbsolutePath);
+                    .setAutoWidth(true).setSortable(true).setComparator(File::getName);
             cardFiles.addColumn(file -> FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(file)))
                     .setHeader("Size").setAutoWidth(true).setFlexGrow(0)
                     .setSortable(true).setComparator(FileUtils::sizeOf);
@@ -421,7 +421,7 @@ public class CardInfoView extends Dialog {
             }
         });
 
-        Anchor link = new Anchor(streamResource, file.getAbsolutePath());
+        Anchor link = new Anchor(streamResource, file.getName());
         link.getElement().setAttribute("download", true);
 
         return link;

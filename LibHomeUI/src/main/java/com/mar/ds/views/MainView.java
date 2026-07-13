@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Properties;
 
 @Slf4j
-@Route("")
+@Route("/")
 @PageTitle("LibHome")
 @PWA(name = "LibHome",
         shortName = "LibHome",
@@ -127,9 +127,7 @@ public class MainView extends AppLayout {
                         tabs.add(getTab(vtd.title(), vtd.icon(), view));
                         cardsView.put(vtd, view);
                     }
-
                     tabs.add(getLogoutBtn());
-
                     initTypeFlag = true;
                 }
             }
@@ -144,9 +142,7 @@ public class MainView extends AppLayout {
         icon.setColor("red");
         Button button = new Button("Logout", icon);
         button.setHeightFull();
-        button.addClickListener(event -> {
-            UI.getCurrent().getPage().setLocation("/logout");
-        });
+        button.addClickListener(event -> UI.getCurrent().getPage().setLocation("/logout"));
         button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         return new Tab(button);
     }

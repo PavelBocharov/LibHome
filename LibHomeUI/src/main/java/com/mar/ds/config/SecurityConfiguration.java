@@ -50,6 +50,8 @@ public class SecurityConfiguration {
                 .loginPage(LOGIN_URL).permitAll()
                 .loginProcessingUrl(LOGIN_PROCESSING_URL)
                 .failureUrl(LOGIN_FAILURE_URL)
+                .defaultSuccessUrl("/")
+                .successForwardUrl("/")
 
                 .and()
                 .logout()
