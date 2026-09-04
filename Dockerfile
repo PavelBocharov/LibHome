@@ -1,6 +1,7 @@
 FROM node:16.13.1-alpine AS builder
 
-RUN apk add --no-cache openjdk17-jdk maven
+RUN apk add --no-cache openjdk17-jdk maven msttcorefonts-installer fontconfig
+RUN update-ms-fonts
 
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 ENV MAVEN_HOME=/usr/share/maven
@@ -8,17 +9,16 @@ ENV PATH=$JAVA_HOME/bin:$MAVEN_HOME/bin:$PATH
 
 WORKDIR /opt/app
 
-# Main POM
 COPY pom.xml ./pom.xml
-# data lib
-COPY LibHomeData/src ./LibHomeData/src
 COPY LibHomeData/pom.xml ./LibHomeData/pom.xml
-# Database
-COPY LibHomeDB/src ./LibHomeDB/src
 COPY LibHomeDB/pom.xml ./LibHomeDB/pom.xml
-# UI
-COPY LibHomeUI/src ./LibHomeUI/src
 COPY LibHomeUI/pom.xml ./LibHomeUI/pom.xml
+
+RUN mvn dependency:go-offline -B
+
+COPY LibHomeData/src ./LibHomeData/src
+COPY LibHomeDB/src ./LibHomeDB/src
+COPY LibHomeUI/src ./LibHomeUI/src
 COPY LibHomeUI/content.json ./LibHomeUI/content.json
 
-RUN mvn clean install -Pproduction
+RUN mvn clean install -Pproduction -Doffline=true

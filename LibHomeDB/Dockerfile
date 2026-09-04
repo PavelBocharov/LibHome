@@ -1,5 +1,5 @@
 FROM libhome-build:latest AS base
-FROM eclipse-temurin:17.0.6_10-jre-alpine AS db
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /opt/app
 

@@ -10,6 +10,8 @@ echo "DB_IMAGE: ${DB_IMAGE}"
 echo "UI_IMAGE: ${UI_IMAGE}"
 
 # 1. Собираем артефакты
+# В первый раз долго (качает 2 гигабайта).
+# Дальше образ лежит и докачивает если необходимо.
 
 echo "Building base image with all modules..."
 docker build -f Dockerfile -t ${BUILD_IMAGE} .
@@ -30,6 +32,3 @@ docker build -f LibHomeUI/Dockerfile -t ${UI_IMAGE} .
 echo "UI image build"
 echo "UI size:"
 docker images ${UI_IMAGE} --format "table {{.Repository}}\t{{.Size}}"
-
-# Удаляем артефакты для будущих сборок
-docker rmi libhome-build:latest

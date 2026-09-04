@@ -2,7 +2,7 @@ version: '3'
 name: lib-home-idea
 services:
   ui:
-    image: marolok/lib_home:20260904_164304
+    image: marolok/lib_home:20260904_211045
 #    image: sha256:11eeb35bf4deaef28159e98fc21aa033688e40e71b63ae296755be84911bcb81
 #    build:
 #      context: LibHomeUI
@@ -34,7 +34,7 @@ services:
     networks:
       - mgdb
   db:
-    image: marolok/lib_home_db:20260904_164304
+    image: marolok/lib_home_db:20260904_211045
 #    build:
 #      context: LibHomeDB
 #      dockerfile: Dockerfile

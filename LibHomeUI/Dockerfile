@@ -1,12 +1,9 @@
 FROM libhome-build:latest AS base
-FROM node:16.13.1-alpine AS ui
+FROM eclipse-temurin:17-jre-alpine
 
-RUN apk add --no-cache msttcorefonts-installer fontconfig
-RUN update-ms-fonts
+COPY --from=base /usr/share/fonts/ /usr/share/fonts/
 
 WORKDIR /opt/app
-
-RUN apk add --no-cache openjdk17-jre
 
 COPY --from=base /opt/app/LibHomeUI/target/LibHomeUI-*.jar /opt/app/japp.jar
 COPY --from=base /opt/app/LibHomeUI/content.json /opt/app/data/content.json
