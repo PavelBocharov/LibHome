@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -91,7 +91,7 @@ public class CardRemoteImpl implements CardRemote {
         if (sort == null) {
             return Collections.emptyMap();
         }
-        Map<String, CardRq.SortOrder> map = new HashMap<>();
+        Map<String, CardRq.SortOrder> map = new LinkedHashMap<>();
 
         for (String property : sort.getOrder().keySet()) {
             map.put(
@@ -101,14 +101,6 @@ public class CardRemoteImpl implements CardRemote {
                             : CardRq.SortOrder.DESC
             );
         }
-
-//        sort.forEach(order -> map.put(
-//                        order.getProperty(),
-//                        Sort.Direction.ASC.equals(order.getDirection())
-//                                ? CardRq.SortOrder.ASC
-//                                : CardRq.SortOrder.DESC
-//                )
-//        );
         return map;
     }
 

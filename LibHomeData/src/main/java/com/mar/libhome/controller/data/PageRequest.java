@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Data
@@ -36,7 +36,7 @@ public class PageRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Sort {
-        private Map<String, Direction> order = new HashMap<>();
+        private Map<String, Direction> order = new LinkedHashMap<>();
 
         public enum Direction {
             ASC, DESC

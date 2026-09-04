@@ -1,9 +1,9 @@
 package com.mar.ds.views.build.pagination;
 
 import com.mar.ds.data.Page;
-import com.mar.libhome.controller.data.PageRequest;
 import com.mar.ds.utils.ButtonBuilder;
 import com.mar.ds.utils.ViewUtils;
+import com.mar.libhome.controller.data.PageRequest;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
@@ -20,16 +20,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.constraints.Min;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.validation.constraints.Min;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_DOUBLE_LEFT;
 import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_DOUBLE_RIGHT;
@@ -254,15 +254,12 @@ public class PaginationGridService<T> {
     }
 
     private void initGridData(@Min(0) int page) {
-//        List<PageRequest.Sort.Order> sortOrders = directionList.stream()
-//                .sorted(Comparator.comparing(OrderSort::getOrder))
-//                .map(orderSort -> new PageRequest.Sort.Order(orderSort.getSort(), orderSort.getColumnId()))
-//                .toList();
-
-        Map<String, PageRequest.Sort.Direction> order = new HashMap<>();
+        log.info("Pre mapping column sorted: {}", directionList);
+        Map<String, PageRequest.Sort.Direction> order = new LinkedHashMap<>();
         directionList.stream()
                 .sorted(Comparator.comparing(OrderSort::getOrder))
                 .forEachOrdered(orderSort -> order.put(orderSort.getColumnId(), orderSort.getSort()));
+        log.info("Post mapping column sorted: {}", order);
 
         Page<T> cardPage = getDataFunction.apply(new GetData(page, gridPageSize, new PageRequest.Sort(order)));
         Collection<T> typeList = cardPage.getContent();
