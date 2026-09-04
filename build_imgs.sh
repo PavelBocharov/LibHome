@@ -17,11 +17,11 @@ echo "Base image build with artifacts"
 
 # 2. Собираем LibHomeDB
 
-#echo "Building DB image (copies artifacts from base)..."
-#docker build -f LibHomeDB/Dockerfile -t ${DB_IMAGE} .
-#echo "DB image build"
-#echo "DB size:"
-#docker images ${DB_IMAGE} --format "table {{.Repository}}\t{{.Size}}"
+echo "Building DB image (copies artifacts from base)..."
+docker build -f LibHomeDB/Dockerfile -t ${DB_IMAGE} .
+echo "DB image build"
+echo "DB size:"
+docker images ${DB_IMAGE} --format "table {{.Repository}}\t{{.Size}}"
 
 # 3. Собираем LibHomeUI
 

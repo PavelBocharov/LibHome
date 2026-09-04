@@ -19,12 +19,12 @@ public class CardStatusDto implements Serializable, HasId {
 
     private UUID id;
     private String title;
-    private String color = "#177AD1";
-    private String icon = "BULLSEYE";
-    private Boolean isRate = true;
-    private Boolean hasUpdStatus = false;
+    @Builder.Default private String color = "#177AD1";
+    @Builder.Default private String icon = "BULLSEYE";
+    @Builder.Default private Boolean isRate = true;
+    @Builder.Default private Boolean hasUpdStatus = false;
     private String tech;
-    private Long order = 0L;
+    @Builder.Default private Long order = 0L;
 
     public Long getLongId() {
         if (id == null) {

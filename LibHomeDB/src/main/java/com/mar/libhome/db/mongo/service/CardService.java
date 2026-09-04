@@ -28,6 +28,7 @@ import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +49,10 @@ public class CardService {
     private final CardTypeMapper typeMapper;
     private final CardTypeTagMapper tagMapper;
 
+    private final MongoTemplate mongoTemplate;
+
     public List<CardDto> getAll() {
-        return repository.findAll()
+        return repository.findAll(Sort.by(Sort.Direction.ASC, "id"))
                 .parallelStream()
                 .map(mapper::toDto)
                 .toList();
@@ -88,8 +91,6 @@ public class CardService {
 //        }
         return repository.findAll(pageRequest);
     }
-
-    private final MongoTemplate mongoTemplate;
 
     private Page<Card> searchByText(CardRq rq) {
         PageRequest pageRequest = getPageRequest(rq);
@@ -141,22 +142,23 @@ public class CardService {
         return new PageImpl<Card>(res.getMappedResults(), pageRequest, count);
     }
 
+    @Transactional
     public List<CardDto> save(List<CardDto> dtos) {
-        return repository.saveAll(
-                        dtos.parallelStream()
-                                .map(mapper::toEntity)
-                                .toList())
+        repository.saveAll(dtos.parallelStream().map(mapper::toEntity).toList());
+        return repository.findAll(Sort.by(Sort.Direction.ASC, "id"))
                 .parallelStream()
                 .map(mapper::toDto)
                 .toList();
     }
 
+    @Transactional
     public CardDto deleteById(UUID id) {
         Card card = repository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find card with id: " + id));
         repository.delete(card);
         return mapper.toDto(card);
     }
 
+    @Transactional
     public CardDto enrich(CardDto card) {
         card.setCardStatus(statusMapper.toDto(
                 statusRepository.findById(card.getCardStatus().getId()).orElseThrow()
@@ -199,6 +201,7 @@ public class CardService {
                     orders.add(Sort.Order.desc(field));
                 }
             }
+            orders.add(Sort.Order.asc("id"));
             return PageRequest.of(page, size, Sort.by(orders));
         }
     }
