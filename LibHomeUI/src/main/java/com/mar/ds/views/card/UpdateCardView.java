@@ -17,6 +17,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -46,10 +47,11 @@ import static com.mar.ds.utils.ViewUtils.setValue;
 import static java.util.Objects.nonNull;
 
 @Slf4j
-public class UpdateCardView extends CardDialogView {
+public final class UpdateCardView extends CardDialogView {
 
     private final Dialog updateDialog;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public UpdateCardView(MainView mainView, CardDto updateCard, FileUtils.ViewTypeDto viewType, Runnable afterUpdateEvent) {
         this.mainView = mainView;
         this.viewType = viewType;

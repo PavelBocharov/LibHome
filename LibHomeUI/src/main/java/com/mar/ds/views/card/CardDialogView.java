@@ -105,7 +105,7 @@ public abstract class CardDialogView {
             double cardPoint = getDoubleValue(point);
             if (minPoint > cardPoint || maxPoint < cardPoint) {
                 point.setInvalid(true);
-                throw new Exception(format("Point value ERROR.\nMin value = %d, max value = %d", minPoint, maxPoint));
+                throw new Exception(format("Point value ERROR.%nMin value = %d, max value = %d", minPoint, maxPoint));
             } else {
                 point.setInvalid(false);
             }

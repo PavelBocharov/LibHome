@@ -17,18 +17,20 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
 
 import static java.lang.Boolean.TRUE;
 
 @Slf4j
-public class CardStatusViewDialog {
+public final class CardStatusViewDialog {
     private final MainView mainView;
     private final ContentView parentView;
     private Dialog dialog;
     private Grid<CardStatusDto> cardStatusList;
     private Button crtBtn;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CardStatusViewDialog(MainView appLayout, ContentView parentView) {
         this.mainView = appLayout;
         this.parentView = parentView;

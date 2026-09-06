@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.List.of;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -30,8 +31,8 @@ public class CardStatusService {
     public CardStatusDto update(CardStatusDto cardStatus, CardStatusDto oldCardStatus) {
         cardStatus = this.save(cardStatus);
 
-        if (oldCardStatus.getIsRate() != cardStatus.getIsRate()
-                || oldCardStatus.getHasUpdStatus() != cardStatus.getHasUpdStatus()
+        if (Objects.equals(oldCardStatus.getIsRate(), cardStatus.getIsRate())
+                || Objects.equals(oldCardStatus.getHasUpdStatus(),cardStatus.getHasUpdStatus())
         ) {
             cardService.checkAndUpdateAllCards();
         }

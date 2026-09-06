@@ -31,6 +31,7 @@ import org.springframework.core.env.Environment;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -45,29 +46,33 @@ import java.util.Properties;
         description = "LibHome - your book, game, music and other library.",
         iconPath = "icons/icon.png"
 )
-public class MainView extends AppLayout {
+public final class MainView extends AppLayout {
 
-    private static FileUtils.ViewTypeDto startView;
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    private static volatile FileUtils.ViewTypeDto startView;
     @Getter
     private final Map<FileUtils.ViewTypeDto, ContentView> cardsView;
     @Getter
     @Autowired
-    private CardTypeService cardTypeService;
+    private transient CardTypeService cardTypeService;
     @Getter
     @Autowired
-    private CardTypeTagService cardTypeTagService;
+    private transient CardTypeTagService cardTypeTagService;
     @Getter
     @Autowired
-    private CardService cardService;
+    private transient CardService cardService;
     @Getter
     @Autowired
-    private CardStatusService cardStatusService;
+    private transient CardStatusService cardStatusService;
     @Getter
     @Autowired
-    private CardHistoryService cardHistoryService;
+    private transient CardHistoryService cardHistoryService;
     @Getter
     @Autowired
-    private Environment env;
+    private transient Environment env;
+
     private FileUtils.ViewTypeDto activeView;
     private volatile List<FileUtils.ViewTypeDto> viewTypeDtoList;
     private volatile boolean initTypeFlag = false;
@@ -181,12 +186,12 @@ public class MainView extends AppLayout {
         if (viewTypeDtoList == null) {
             synchronized (this) {
                 if (viewTypeDtoList == null) {
-                    viewTypeDtoList = FileUtils.getCardViewTypeList(this.getEnv().getProperty("app.data.content.file"));
-                    if (viewTypeDtoList != null) {
-                        viewTypeDtoList = viewTypeDtoList.stream()
-                                .sorted(Comparator.comparing(FileUtils.ViewTypeDto::order))
-                                .toList();
-                    }
+                    List<FileUtils.ViewTypeDto> temp = FileUtils
+                            .getCardViewTypeList(this.getEnv().getProperty("app.data.content.file"))
+                            .stream()
+                            .sorted(Comparator.comparing(FileUtils.ViewTypeDto::order))
+                            .toList();
+                    viewTypeDtoList = List.copyOf(temp);
                 }
             }
         }

@@ -11,6 +11,7 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
@@ -25,7 +26,7 @@ import static java.util.Objects.nonNull;
  * Диалоговое окно с таблицей изменения карточки.
  */
 @Slf4j
-public class CardHistoryView extends Dialog {
+public final class CardHistoryView extends Dialog {
 
     private final MainView mainView;
     private final CardDto card;
@@ -36,6 +37,7 @@ public class CardHistoryView extends Dialog {
      * @param mainView родительское окно.
      * @param card     по какой карточке будет история.
      */
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CardHistoryView(MainView mainView, CardDto card) {
         assert nonNull(mainView);
         assert nonNull(card);

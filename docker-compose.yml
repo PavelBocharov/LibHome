@@ -2,7 +2,7 @@ version: '3'
 name: lib-home-idea
 services:
   ui:
-    image: marolok/lib_home:20260904_211045
+    image: marolok/lib_home:20260906_090215
 #    image: sha256:11eeb35bf4deaef28159e98fc21aa033688e40e71b63ae296755be84911bcb81
 #    build:
 #      context: LibHomeUI
@@ -22,8 +22,9 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ${MONGO_DIR}:/data/db
-      - ./db_init/mongo-init.j2s:/docker-entrypoint-initdb.d/mongo-init.js
+      - mongo_data:/data/db
+#      - ./db_init/mongo-init.j2s:/docker-entrypoint-initdb.d/mongo-init.js
+      - ./db_init:/docker-entrypoint-initdb.d:ro
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
@@ -34,7 +35,7 @@ services:
     networks:
       - mgdb
   db:
-    image: marolok/lib_home_db:20260904_211045
+    image: marolok/lib_home_db:20260906_090215
 #    build:
 #      context: LibHomeDB
 #      dockerfile: Dockerfile
@@ -46,6 +47,8 @@ services:
       - mgdb
       - bridge
 
+volumes:
+  mongo_data:
 
 networks:
   bridge:

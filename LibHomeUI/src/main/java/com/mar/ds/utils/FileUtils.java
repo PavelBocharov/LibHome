@@ -20,21 +20,24 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.vaadin.olli.FileDownloadWrapper;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.DOWNLOAD;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -68,9 +71,7 @@ public class FileUtils {
     public static List<ViewTypeDto> getCardViewTypeList(@NotBlank @NotNull String filePath) {
         Map<String, Map<String, String>> viewTypes = loadContentInfo(filePath);
         List<ViewTypeDto> views = new ArrayList<>(viewTypes.size());
-
-        for (String key : viewTypes.keySet()) {
-            Map<String, String> mapType = viewTypes.get(key);
+        viewTypes.forEach((key, mapType) -> {
             ViewTypeDto viewTypeDto = new ViewTypeDto(
                     Integer.parseInt(mapType.get("id")),
                     mapType.get("title"),
@@ -79,18 +80,22 @@ public class FileUtils {
                     Integer.parseInt(mapType.get("order"))
             );
             views.add(viewTypeDto);
-        }
+        });
 
         return views;
     }
 
     public static Map<String, Map<String, String>> loadContentInfo(@NotBlank @NotNull String filePath) {
-
         if (viewInfos == null) {
             synchronized (FileUtils.class) {
                 if (viewInfos == null) {
                     try {
-                        viewInfos = new ObjectMapper().readValue(new File(filePath), Map.class);
+                        Map<String, Map<String, String>> data = new ObjectMapper().readValue(new File(filePath), Map.class);
+                        Map<String, Map<String, String>> temp = new HashMap<>(data.size());
+                        for (Map.Entry<String, Map<String, String>> entry : data.entrySet()) {
+                            temp.put(entry.getKey(), Collections.unmodifiableMap(entry.getValue()));
+                        }
+                        viewInfos = Collections.unmodifiableMap(temp);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -98,7 +103,7 @@ public class FileUtils {
             }
         }
 
-        return viewInfos;
+        return Collections.unmodifiableMap(viewInfos);
     }
 
     public static FileDownloadWrapper getDownloadFileButton(String fileName, Supplier<List<CardDto>> cardSupplier) {
@@ -136,16 +141,13 @@ public class FileUtils {
         XSSFCellStyle titleStyle = ExcelUtils.titleStyle(workbook);
         XSSFCellStyle linkStyle = ExcelUtils.linkStyle(workbook);
 
-        Set<String> keyset = data.keySet();
-        int rownum = 0;
-        for (String key : keyset) {
-            Row row = sheet.createRow(rownum++);
-
-            Object[] objArr = data.get(key);
+        AtomicInteger rownum = new AtomicInteger(0);
+        data.forEach((key, objArr) -> {
+            Row row = sheet.createRow(rownum.getAndIncrement());
             int cellnum = 0;
             for (Object obj : objArr) {
                 Cell cell = row.createCell(cellnum++);
-                if (rownum == 1) {
+                if (rownum.get() == 1) {
                     cell.setCellStyle(headerStyle);
                 } else {
                     if (cellnum == 4) {
@@ -186,7 +188,7 @@ public class FileUtils {
                     }
                 }
             }
-        }
+        });
 
         for (int j = 0; j < header.length; j++) {
             sheet.autoSizeColumn(j, true);
@@ -214,7 +216,9 @@ public class FileUtils {
         return rez;
     }
 
-    public record ViewTypeDto(Integer id, String title, String key, VaadinIcon icon, Integer order) {
+    public record ViewTypeDto(Integer id, String title, String key,
+                              VaadinIcon icon, Integer order
+    ) implements Serializable {
     }
 
 }

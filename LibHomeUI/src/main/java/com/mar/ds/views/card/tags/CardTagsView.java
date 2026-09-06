@@ -26,7 +26,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Slf4j
 @RequiredArgsConstructor
-public class CardTagsView {
+public final class CardTagsView {
 
     private final MainView mainView;
 

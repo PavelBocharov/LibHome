@@ -15,11 +15,6 @@ public class Utils {
         return dateFormat.format(utilDate);
     }
 
-    public static String formatUsingSimpleDateFormat(Date utilDate) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return dateFormat.format(utilDate);
-    }
-
     public static long getDateWithoutTime(Date date) {
         Calendar c = Calendar.getInstance();
         c.setTime(date);

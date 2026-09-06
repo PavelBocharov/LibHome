@@ -30,6 +30,8 @@ public class CardRemoteImpl implements CardRemote {
     public static final List<CardDto> data = List.of(
             CardDto.builder()
                     .id(UUID.randomUUID())
+                    .title("title")
+                    .info("info")
                     .rate(5.0)
                     .cardStatus(
                             CardStatusRemoteImpl.data
@@ -87,10 +89,10 @@ public class CardRemoteImpl implements CardRemote {
         }
         Map<String, CardRq.SortOrder> map = new HashMap<>();
 
-        for (String property : sort.getOrder().keySet()) {
+        for (String property : sort.order().keySet()) {
             map.put(
                     property,
-                    PageRequest.Sort.Direction.ASC.equals(sort.getOrder().get(property))
+                    PageRequest.Sort.Direction.ASC.equals(sort.order().get(property))
                             ? CardRq.SortOrder.ASC
                             : CardRq.SortOrder.DESC
             );

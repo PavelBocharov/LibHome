@@ -282,7 +282,7 @@ public class ViewUtils {
     }
 
     public static void setCheckbox(Checkbox checkbox, Boolean flag) {
-        checkbox.setValue(flag == Boolean.TRUE);
+        checkbox.setValue(Boolean.TRUE.equals(flag));
     }
 
     public static void setTextFieldValue(TextField field, String text) {
@@ -370,7 +370,11 @@ public class ViewUtils {
     public static Icon getStatusIcon(CardDto card) {
         Icon icon;
 
-        if (card != null && card.getCardStatus() != null && isNotBlank(card.getCardStatus().getColor())) {
+        if (card != null
+                && card.getCardStatus() != null
+                && card.getInfo() != null
+                && isNotBlank(card.getCardStatus().getColor())
+        ) {
             icon = getIconByText(card.getCardStatus().getIcon(), VaadinIcon.BULLSEYE.create());
             icon.setColor(card.getCardStatus().getColor());
             icon.getElement().setAttribute("title", card.getInfo());
@@ -402,7 +406,7 @@ public class ViewUtils {
         try {
             return VaadinIcon.valueOf(iconName.toUpperCase());
         } catch (Exception ex) {
-            log.error("Not find icon by text: {}", iconName);
+            log.error("Not find Vaadin icon by text: {}", iconName);
             return VaadinIcon.BULLSEYE;
         }
     }

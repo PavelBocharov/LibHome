@@ -2,6 +2,7 @@ package com.mar.ds.db.remote.local;
 
 import com.mar.libhome.controller.CardStatusRemote;
 import com.mar.libhome.dto.CardStatusDto;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class CardStatusRemoteImpl implements CardStatusRemote {
     public static final CardStatusDto data = CardStatusDto.builder()
             .id(UUID.randomUUID())
             .title("TEST STATUS")
+            .icon(VaadinIcon.SEARCH.name())
             .build();
 
     public List<CardStatusDto> findAll() {

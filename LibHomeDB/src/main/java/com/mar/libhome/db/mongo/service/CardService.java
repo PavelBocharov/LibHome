@@ -138,8 +138,12 @@ public class CardService {
         log.info("Get card by text: {}", res.getMappedResults());
         AggregationResults<CountResult> totalCount = mongoTemplate.aggregate(countPip, "card", CountResult.class);
         log.info("Get count by text: {}", totalCount.getRawResults());
-        long count = totalCount.getUniqueMappedResult() == null ? 0 : totalCount.getUniqueMappedResult().getTotalCount();
-        return new PageImpl<Card>(res.getMappedResults(), pageRequest, count);
+        CountResult countResults = totalCount.getUniqueMappedResult() ;
+        if (countResults != null) {
+            long total = countResults.getTotalCount() != null ? countResults.getTotalCount() : 0;
+            return new PageImpl<>(res.getMappedResults(), pageRequest, total);
+        }
+        return new PageImpl<>(res.getMappedResults(), pageRequest, 0);
     }
 
     @Transactional

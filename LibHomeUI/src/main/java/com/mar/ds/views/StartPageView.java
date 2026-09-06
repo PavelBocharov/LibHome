@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class StartPageView implements ContentView {
+public final class StartPageView implements ContentView {
 
     private final MainView appLayout;
     @Getter

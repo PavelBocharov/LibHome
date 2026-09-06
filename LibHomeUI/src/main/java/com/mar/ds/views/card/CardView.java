@@ -84,7 +84,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
 @RequiredArgsConstructor
-public class CardView implements ContentView {
+public final class CardView implements ContentView {
 
     public static final int DEFAULT_GRID_ICON_SIZE_INT = 36;
     public static final String DEFAULT_GRID_ICON_SIZE_VAR = "var(--iron-icon-width, "

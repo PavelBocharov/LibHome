@@ -93,10 +93,10 @@ public class CardRemoteImpl implements CardRemote {
         }
         Map<String, CardRq.SortOrder> map = new LinkedHashMap<>();
 
-        for (String property : sort.getOrder().keySet()) {
+        for (String property : sort.order().keySet()) {
             map.put(
                     property,
-                    PageRequest.Sort.Direction.ASC.equals(sort.getOrder().get(property))
+                    PageRequest.Sort.Direction.ASC.equals(sort.order().get(property))
                             ? CardRq.SortOrder.ASC
                             : CardRq.SortOrder.DESC
             );

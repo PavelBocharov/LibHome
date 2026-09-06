@@ -9,6 +9,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -28,7 +29,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.BAN;
 import static java.lang.String.valueOf;
 
 @Slf4j
-public class UploadFileDialog extends Dialog {
+public final class UploadFileDialog extends Dialog {
 
     public static final List<String> nameWordExc = List.of("\\", "/", ":", "*", "?", "\"", "<", ">", "|", "+", " ");
     private final CardDto card;
@@ -39,6 +40,7 @@ public class UploadFileDialog extends Dialog {
     private MainView mainView;
     private Upload uploadFile;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public UploadFileDialog(
             MainView mainView,
             String rootDir,
@@ -53,7 +55,7 @@ public class UploadFileDialog extends Dialog {
         this.rootDir = rootDir;
         this.countFiles = countFiles;
         this.isCover = isCover;
-        this.uploadFileTypes = uploadFileTypes;
+        this.uploadFileTypes = Set.copyOf(uploadFileTypes);
 
         Dialog dialog = new Dialog();
         dialog.setCloseOnEsc(true);
@@ -157,7 +159,9 @@ public class UploadFileDialog extends Dialog {
         File dir = new File(this.rootDir);
         if (!dir.exists()) {
             log.info("Create root dir: {}", this.rootDir);
-            dir.mkdirs();
+            if (!dir.mkdirs()) {
+                throw new RuntimeException("Create root dir failed!");
+            }
             log.info("Create root dir: {}... OK", this.rootDir);
         }
     }

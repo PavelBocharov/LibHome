@@ -14,7 +14,7 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardRs implements Serializable {
+public final class CardRs implements Serializable {
 
     Long total;
     Integer page;

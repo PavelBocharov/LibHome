@@ -17,7 +17,7 @@ import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 
 @Slf4j
 @RequiredArgsConstructor
-public class UpdateCardTagsView {
+public final class UpdateCardTagsView {
 
     private final MainView mainView;
     private final CardTagsView parentView;

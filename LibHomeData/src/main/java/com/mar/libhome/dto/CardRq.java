@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardRq implements Serializable {
+public final class CardRq implements Serializable {
 
     Integer view;
     String searchText;

@@ -13,7 +13,7 @@ import java.time.Duration;
 
 @Route("login")
 @PageTitle("LibHome UI: Login")
-public class LoginPage extends AppLayout {
+public final class LoginPage extends AppLayout {
 
     private final LoginForm login = new LoginForm();
 

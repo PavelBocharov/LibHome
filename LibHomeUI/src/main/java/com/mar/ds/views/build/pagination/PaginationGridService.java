@@ -16,18 +16,19 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.Min;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -48,7 +49,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.ELLIPSIS_DOTS_H;
  * @param <T> entity type for grid.
  */
 @Slf4j
-public class PaginationGridService<T> {
+public class PaginationGridService<T> implements Serializable {
 
     public static final String GRID_COLUMN_SORT_ASC_SUFFIX = "-sort-asc";
     public static final String GRID_COLUMN_SORT_DESC_SUFFIX = "-sort-desc";
@@ -64,10 +65,11 @@ public class PaginationGridService<T> {
     /**
      * Constructor.
      *
-     * @param grid            - table.
+     * @param grid            table.
      * @param gridPageSize    count element on page.
      * @param getDataFunction function for loading data.
      */
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public PaginationGridService(Grid<T> grid, int gridPageSize, Function<GetData, Page<T>> getDataFunction) {
         this.grid = grid;
         this.gridPageSize = gridPageSize;
@@ -255,7 +257,7 @@ public class PaginationGridService<T> {
 
     private void initGridData(@Min(0) int page) {
         log.info("Pre mapping column sorted: {}", directionList);
-        Map<String, PageRequest.Sort.Direction> order = new LinkedHashMap<>();
+        LinkedHashMap<String, PageRequest.Sort.Direction> order = new LinkedHashMap<>();
         directionList.stream()
                 .sorted(Comparator.comparing(OrderSort::getOrder))
                 .forEachOrdered(orderSort -> order.put(orderSort.getColumnId(), orderSort.getSort()));
@@ -287,7 +289,7 @@ public class PaginationGridService<T> {
 
     @Data
     @AllArgsConstructor
-    static class OrderSort {
+    static class OrderSort implements Serializable {
         Long order;
         String columnId;
         PageRequest.Sort.Direction sort;

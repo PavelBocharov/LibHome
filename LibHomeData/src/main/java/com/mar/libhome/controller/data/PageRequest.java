@@ -5,8 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Data
 @Builder
@@ -32,11 +32,15 @@ public class PageRequest {
         return PageRequest.builder().pageNumber(page).pageSize(size).sort(sort).build();
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Sort {
-        private Map<String, Direction> order = new LinkedHashMap<>();
+    public record Sort(LinkedHashMap<String, Direction> order) {
+        public Sort(LinkedHashMap<String, Direction> order) {
+            this.order = new LinkedHashMap<>(order != null ? Collections.unmodifiableMap(order) : Collections.emptyMap());
+        }
+
+        @Override
+        public LinkedHashMap<String, Direction> order() {
+            return new LinkedHashMap<>(order);
+        }
 
         public enum Direction {
             ASC, DESC
