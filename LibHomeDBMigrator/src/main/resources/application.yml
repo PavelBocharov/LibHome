@@ -1,0 +1,8 @@
+server:
+  port: 8080
+
+rest:
+  client:
+    url:
+      source: "http://localhost:8082"
+      target: "http://localhost:8083"

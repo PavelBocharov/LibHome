@@ -19,7 +19,9 @@
     <modules>
         <module>LibHomeData</module>
         <module>LibHomeDB</module>
+        <module>LibHomePostgresDB</module>
         <module>LibHomeUI</module>
+        <module>LibHomeDBMigrator</module>
     </modules>
 
     <properties>
@@ -30,6 +32,7 @@
 
         <lib.home.data.version>1.1.2</lib.home.data.version>
         <lib.home.db.version>1.2.1</lib.home.db.version>
+        <lib.home.pg.db.version>1.0.0</lib.home.pg.db.version>
         <lib.home.ui.version>5.0.0-DEV-BUILD</lib.home.ui.version>
 
         <lombok.version>1.18.46</lombok.version>
@@ -37,6 +40,12 @@
         <org.apache.lang3.version>3.20.0</org.apache.lang3.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <fastxml.version>2.19.2</fastxml.version>
+
+        <spotbugs.plugin.version>4.10.4.0</spotbugs.plugin.version>
+        <spotbugs.version>4.10.4</spotbugs.version>
+
+        <spring.feign.version>5.0.3</spring.feign.version>
+        <openfeign.version>13.14</openfeign.version>
     </properties>
 
     <repositories>
@@ -74,6 +83,14 @@
             </dependency>
 
             <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>2020.0.4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
                 <version>${org.mapstruct.version}</version>
@@ -94,7 +111,7 @@
             <dependency>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs</artifactId>
-                <version>4.10.4</version>
+                <version>${spotbugs.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

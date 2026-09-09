@@ -12,12 +12,14 @@ WORKDIR /opt/app
 COPY pom.xml ./pom.xml
 COPY LibHomeData/pom.xml ./LibHomeData/pom.xml
 COPY LibHomeDB/pom.xml ./LibHomeDB/pom.xml
+COPY LibHomePostgresDB/pom.xml ./LibHomePostgresDB/pom.xml
 COPY LibHomeUI/pom.xml ./LibHomeUI/pom.xml
 
 RUN mvn dependency:go-offline -B
 
 COPY LibHomeData/src ./LibHomeData/src
 COPY LibHomeDB/src ./LibHomeDB/src
+COPY LibHomePostgresDB/src ./LibHomePostgresDB/src
 COPY LibHomeUI/src ./LibHomeUI/src
 COPY LibHomeUI/content.json ./LibHomeUI/content.json
 

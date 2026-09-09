@@ -1,0 +1,49 @@
+package com.mar.libhome.db.api;
+
+import com.mar.libhome.db.aop.ApiLog;
+import com.mar.libhome.db.service.CardTypeTagService;
+import com.mar.libhome.dto.CardTypeTagDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping(value = "/card/type/tag")
+public class CardTypeTagApi {
+
+    @Autowired
+    private CardTypeTagService cardTypeTagService;
+
+    @ApiLog
+    @GetMapping
+    public List<CardTypeTagDto> getAllCardTypeTag() {
+        return cardTypeTagService.getAll();
+    }
+
+    @ApiLog
+    @GetMapping("/{cardTypeId}")
+    public List<CardTypeTagDto> findAllCardTypeTagByCardTypeId(@PathVariable UUID cardTypeId) {
+        return cardTypeTagService.findAllByCardTypeId(cardTypeId);
+    }
+
+    @ApiLog
+    @PostMapping
+    public List<CardTypeTagDto> saveCardTypeTagList(@RequestBody List<CardTypeTagDto> dtoList) {
+        return cardTypeTagService.save(dtoList);
+    }
+
+    @ApiLog
+    @DeleteMapping
+    public CardTypeTagDto deleteCardTypeTag(@RequestBody CardTypeTagDto dto) {
+        return cardTypeTagService.deleteById(dto.getId());
+    }
+
+}

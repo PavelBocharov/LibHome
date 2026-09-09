@@ -6,3 +6,4 @@
 /.git
 *.log
 *.md
+docker-compose.yml
