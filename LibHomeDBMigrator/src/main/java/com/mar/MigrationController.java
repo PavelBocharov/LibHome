@@ -16,11 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/migration")
@@ -35,6 +33,12 @@ public class MigrationController {
 
     @Value("${rest.client.url.target}")
     private String targetUrl;
+
+    @Value("${rest.client.batch.size:50}")
+    private Integer maxBatchSize;
+
+    @Value("${storage.files}")
+    private String filesPath;
 
     @GetMapping
     public String migrate() {
@@ -59,7 +63,6 @@ public class MigrationController {
                 }
         ).getBody();
 
-        int maxBatchSize = 3;
         List<CardDto> cards = new ArrayList<>(maxBatchSize);
         for (CardDto card : source) {
             card.setCardStatus(statusList.get(card.getCardStatus().getId()).target);
@@ -68,27 +71,60 @@ public class MigrationController {
             }
             card.setCardType(typeList.get(card.getCardType().getId()).target);
             card.setTagList(
-                    card.getTagList().stream().
-                            map(tag -> tagList.get(tag.getId()).target).
-                            toList()
+                    card.getTagList().stream()
+                            .map(tag -> tagList.get(tag.getId()).target)
+                            .toList()
             );
 
             cards.add(card);
-
             if (cards.size() == maxBatchSize) {
                 sendCards(cards);
                 cards.clear();
+                try {
+                    Thread.sleep(10_000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
+        List<CardDto> target = new ArrayList<>();
         if (!cards.isEmpty()) {
-            sendCards(cards);
+            target = sendCards(cards);
         }
 
-        System.out.println("End cards migrate.");
+        int moveCount = 0;
+        for (CardDto oldCard : source) {
+            try {
+                CardDto newCard = target.stream().filter(
+                    cardDto -> Objects.equals(cardDto.getTitle(), oldCard.getTitle())
+                        && Objects.equals(cardDto.getEngine(), oldCard.getEngine())
+                        && Objects.equals(cardDto.getLanguage(), (oldCard.getLanguage()))
+                        && Objects.equals(cardDto.getLastGame(), (oldCard.getLastGame()))
+                        && Objects.equals(cardDto.getLastUpdate(), (oldCard.getLastUpdate()))
+                        && Objects.equals(cardDto.getLink(), (oldCard.getLink()))
+                        && Objects.equals(cardDto.getPoint(), (oldCard.getPoint()))
+                        && Objects.equals(cardDto.getCardStatus().getTitle(), (oldCard.getCardStatus().getTitle()))
+                        && Objects.equals(cardDto.getCardType().getTitle(), (oldCard.getCardType().getTitle()))
+                        && Objects.equals(cardDto.getRate(), (oldCard.getRate()))
+                ).findFirst().get();
+                Path fileSource = Path.of(filesPath, oldCard.getId().toString());
+                Path fileTarget = Path.of(filesPath, newCard.getId().toString());
+                if (Files.exists(fileSource)) {
+                    Files.move(fileSource, fileTarget);
+                    moveCount++;
+                } else {
+                    System.out.println("Cannot move dir (not exist): " + oldCard.getId());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        System.out.printf("End cards migrate. Taget: %d, move: %d%n", target.size(), moveCount);
     }
 
-    private void sendCards(List<CardDto> cards) {
+    private List<CardDto> sendCards(List<CardDto> cards) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<List<CardDto>> rqList = new HttpEntity<>(cards, headers);
@@ -101,6 +137,7 @@ public class MigrationController {
                 }
         ).getBody();
         System.out.println("Send cards migrate: " + target.size());
+        return target;
     }
 
     private Map<UUID, Pair<CardStatusDto, CardStatusDto>> migrateCardStatus() {
