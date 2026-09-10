@@ -4,7 +4,6 @@
     "title": "Games",
     "icon": "Gamepad",
     "order": "5",
-
     "grid_status": "Статус",
     "grid_engine": "Движок",
     "grid_title": "Наименование",
@@ -27,12 +26,10 @@
     "title": "Films & Movies",
     "icon": "film",
     "order": "20",
-
     "grid_status": "Тип",
     "grid_title": "Наименование",
     "grid_type": "Тип контента",
     "grid_tags": "Теги",
-
     "grid_point": "Оценка",
     "grid_date_upd": "Дата выпуска",
     "grid_link": "\uD83D\uDD17",
@@ -47,12 +44,10 @@
     "title": "Book, Comix & Artbook",
     "icon": "book",
     "order": "25",
-
     "grid_status": "Тип",
     "grid_title": "Наименование",
     "grid_type": "Тип издания",
     "grid_tags": "Теги",
-
     "grid_point": "Оценка",
     "grid_date_upd": "Дата выпуска",
     "grid_btns": "",
@@ -66,12 +61,10 @@
     "title": "Music",
     "icon": "music",
     "order": "15",
-
     "grid_status": "Тип",
     "grid_title": "Наименование",
     "grid_type": "Тип издания",
     "grid_tags": "Теги",
-
     "grid_point": "Оценка",
     "grid_date_upd": "Дата первого альбома",
     "grid_date_game": "Дата крайнего альбома",
@@ -87,12 +80,10 @@
     "title": "People",
     "icon": "group",
     "order": "10",
-
     "grid_status": "Тип",
     "grid_title": "Имя",
     "grid_type": "Деятельность",
     "grid_tags": "Теги",
-
     "grid_point": "Оценка",
     "grid_date_upd": "Дата рождения",
     "grid_date_game": "Дата ???",

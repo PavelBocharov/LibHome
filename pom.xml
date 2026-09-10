@@ -11,7 +11,7 @@
 
     <groupId>com.mar</groupId>
     <artifactId>lib-home</artifactId>
-    <version>4.3.1</version>
+    <version>5.0.0-RC1</version>
     <packaging>pom</packaging>
     <name>lib-home</name>
     <description>LibHome - your book, game, music and other library.</description>
@@ -19,26 +19,58 @@
     <modules>
         <module>LibHomeData</module>
         <module>LibHomeDB</module>
+        <module>LibHomePostgresDB</module>
         <module>LibHomeUI</module>
+        <module>LibHomeDBMigrator</module>
     </modules>
 
     <properties>
-        <com.mar.libhome.dto>1.0.0</com.mar.libhome.dto>
-        <com.mar.libhome.db>1.1.0</com.mar.libhome.db>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <java.version>17</java.version>
-        <vaadin.version>14.7.3</vaadin.version>
+        <lib.home.data.version>1.2.0</lib.home.data.version>
+        <lib.home.db.version>1.2.1</lib.home.db.version>
+        <lib.home.pg.db.version>1.1.0</lib.home.pg.db.version>
+        <lib.home.ui.version>5.0.0-DEV</lib.home.ui.version>
 
+        <lombok.version>1.18.46</lombok.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
-        <org.apache.lang3.version>3.12.0</org.apache.lang3.version>
+        <org.apache.lang3.version>3.20.0</org.apache.lang3.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <fastxml.version>2.19.2</fastxml.version>
+
+        <spotbugs.plugin.version>4.10.4.0</spotbugs.plugin.version>
+        <spotbugs.version>4.10.4</spotbugs.version>
+
+        <spring.feign.version>5.0.3</spring.feign.version>
+        <openfeign.version>13.14</openfeign.version>
     </properties>
 
     <repositories>
         <repository>
             <id>vaadin-addons</id>
             <url>https://maven.vaadin.com/vaadin-addons</url>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
@@ -47,12 +79,15 @@
             <dependency>
                 <groupId>com.mar</groupId>
                 <artifactId>LibHomeData</artifactId>
-                <version>${com.mar.libhome.dto}</version>
+                <version>${lib.home.data.version}</version>
             </dependency>
+
             <dependency>
-                <groupId>com.mar</groupId>
-                <artifactId>LibHomeDB</artifactId>
-                <version>${com.mar.libhome.db}</version>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>2020.0.4</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <dependency>
@@ -65,11 +100,19 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${org.apache.lang3.version}</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>com.fasterxml.jackson.core</groupId>-->
-<!--                <artifactId>jackson-databind</artifactId>-->
-<!--                <version>${fastxml.version}</version>-->
-<!--            </dependency>-->
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs</artifactId>
+                <version>${spotbugs.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

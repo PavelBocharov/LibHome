@@ -17,7 +17,7 @@ import java.awt.Color;
 import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.vaadin.flow.component.icon.VaadinIcon.PLUS;
 
-public class CreateCardStatusView {
+public final class CreateCardStatusView {
 
     public CreateCardStatusView(CardStatusViewDialog cardStatusView) {
         Dialog createDialog = new Dialog();

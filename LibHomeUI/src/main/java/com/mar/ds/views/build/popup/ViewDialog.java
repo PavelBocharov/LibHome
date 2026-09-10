@@ -13,6 +13,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.List;
 
@@ -25,11 +26,7 @@ public abstract class ViewDialog<E extends PopupEntity, R
     private VerticalLayout docTypeList;
     private Button crtBtn;
 
-    public ViewDialog(MainView appLayout) {
-        this.appLayout = appLayout;
-        init(null);
-    }
-
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public ViewDialog(MainView appLayout, String nameEntity) {
         this.appLayout = appLayout;
         init(nameEntity);

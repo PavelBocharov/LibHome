@@ -17,11 +17,11 @@ import java.util.UUID;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class CardHistoryDto implements Serializable {
+public final class CardHistoryDto implements Serializable {
 
     private UUID id;
     private UUID editableId;
-    private Date updateCardTime = new Date();
+    @Builder.Default private Date updateCardTime = new Date();
     private String titlePage;
     private String columnName;
     private String oldValue;

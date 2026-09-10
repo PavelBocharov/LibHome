@@ -7,19 +7,19 @@ import java.util.Map;
 @UtilityClass
 public class PaginationPageUtils {
 
-    public static char UPPER_MINUS = '⁻';
-    public static char UPPER_NUMB_0 = '⁰';
-    public static char UPPER_NUMB_1 = '¹';
-    public static char UPPER_NUMB_2 = '²';
-    public static char UPPER_NUMB_3 = '³';
-    public static char UPPER_NUMB_4 = '⁴';
-    public static char UPPER_NUMB_5 = '⁵';
-    public static char UPPER_NUMB_6 = '⁶';
-    public static char UPPER_NUMB_7 = '⁷';
-    public static char UPPER_NUMB_8 = '⁸';
-    public static char UPPER_NUMB_9 = '⁹';
+    public static final char UPPER_MINUS = '⁻';
+    public static final char UPPER_NUMB_0 = '⁰';
+    public static final char UPPER_NUMB_1 = '¹';
+    public static final char UPPER_NUMB_2 = '²';
+    public static final char UPPER_NUMB_3 = '³';
+    public static final char UPPER_NUMB_4 = '⁴';
+    public static final char UPPER_NUMB_5 = '⁵';
+    public static final char UPPER_NUMB_6 = '⁶';
+    public static final char UPPER_NUMB_7 = '⁷';
+    public static final char UPPER_NUMB_8 = '⁸';
+    public static final char UPPER_NUMB_9 = '⁹';
 
-    public static Map<Character, Character> intToUpperChar = Map.of(
+    public static final Map<Character, Character> intToUpperChar = Map.of(
             '1', UPPER_NUMB_1,
             '2', UPPER_NUMB_2,
             '3', UPPER_NUMB_3,

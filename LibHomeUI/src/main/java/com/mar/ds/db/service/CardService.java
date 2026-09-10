@@ -1,18 +1,19 @@
 package com.mar.ds.db.service;
 
+import com.mar.ds.data.Page;
 import com.mar.ds.db.remote.CardRemote;
+import com.mar.libhome.api.data.PageRequest;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardRs;
 import com.mar.libhome.dto.CardStatusDto;
 import com.mar.libhome.dto.CardTypeDto;
+import com.mar.libhome.exception.BaseLibHomeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
 
 import static com.mar.ds.db.service.CardStatusService.TECH_HASE_UPD_ID;
 import static com.mar.ds.utils.Utils.getDateWithoutTime;
@@ -66,7 +66,7 @@ public class CardService {
 
     public Page<CardDto> findAllByView(@NotNull Integer view, PageRequest pageRequest) {
         CardRs rs = cardRemote.findAllByView(view, pageRequest);
-        return new PageImpl<>(
+        return new Page<>(
                 rs.getCards(),
                 PageRequest.of(rs.getPage(), rs.getSize()),
                 rs.getTotal()
@@ -75,7 +75,16 @@ public class CardService {
 
     public Page<CardDto> findAllByViewAndLikeTitleMap(@NotNull Integer view, String searchText, PageRequest pageRequest) {
         CardRs rs = cardRemote.findAllByViewAndLikeTitleMap(view, searchText, pageRequest);
-        return new PageImpl<>(
+        return new Page<>(
+                rs.getCards(),
+                PageRequest.of(rs.getPage(), rs.getSize()),
+                rs.getTotal()
+        );
+    }
+
+    public Page<CardDto> findAllByTextWithoutView(String searchText, PageRequest pageRequest) {
+        CardRs rs = cardRemote.findAllByTextWithoutView(searchText, pageRequest);
+        return new Page<>(
                 rs.getCards(),
                 PageRequest.of(rs.getPage(), rs.getSize()),
                 rs.getTotal()
@@ -101,7 +110,8 @@ public class CardService {
                 && card.getLastUpdate().after(card.getLastGame())
         ) {
             if (!status.isTech() && TRUE.equals(status.getHasUpdStatus())) {
-                CardStatusDto hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
+                CardStatusDto hasUpdStatus = getAndCreateHaseUpdStatus();
+
                 card.setOldCardStatus(status);
                 card.setCardStatus(
                         CardStatusDto.builder()
@@ -133,6 +143,32 @@ public class CardService {
 
         calcRate(card);
         return card;
+    }
+
+    private CardStatusDto getAndCreateHaseUpdStatus() {
+        CardStatusDto hasUpdStatus = null;
+
+        try {
+            hasUpdStatus = cardStatusService.findByTechId(TECH_HASE_UPD_ID);
+        } catch (BaseLibHomeException e) {
+            log.warn("Get TECH_HASE_UPD status error: {}", e.getMessage(), e);
+        }
+
+        if (hasUpdStatus == null) {
+            hasUpdStatus = cardStatusService.save(
+                    CardStatusDto.builder()
+                            .tech(TECH_HASE_UPD_ID)
+                            .title("Has UPD")
+                            .icon("BELL")
+                            .isRate(true)
+                            .color("#0B6623")
+                            .order(-1L)
+                            .hasUpdStatus(false)
+                            .build()
+            );
+        }
+
+        return hasUpdStatus;
     }
 
     public CardDto save(CardDto card) {
@@ -181,15 +217,11 @@ public class CardService {
 
         long deltaGame = 0;
         if (card.getLastGame() != null) {
-//            if (card.getLastUpdate() != null && card.getLastUpdate().getTime() - card.getLastGame().getTime() <= 0) {
-//                card.setRate(0.0);
-//                return;
-//            }
             long now = getDateWithoutTime(new Date());
             long lastGameTime = getDateWithoutTime(card.getLastGame());
             deltaGame = (now - lastGameTime) / 43200000;
         }
         double r = card.getPoint() * deltaGame * 0.01;
-        card.setRate(r < 0 ? 0.0 : r);
+        card.setRate(Math.max(r, 0.0));
     }
 }

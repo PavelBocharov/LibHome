@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardTypeTagDto implements HasId, Serializable, PopupEntity {
+public final class CardTypeTagDto implements HasId, Serializable, PopupEntity {
 
     private UUID id;
     private UUID cardTypeId;

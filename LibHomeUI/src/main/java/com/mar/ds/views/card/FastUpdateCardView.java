@@ -12,6 +12,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.Date;
@@ -24,11 +25,12 @@ import static com.mar.ds.utils.ViewUtils.getValue;
 import static com.mar.ds.utils.ViewUtils.setSelectValue;
 import static com.mar.ds.utils.ViewUtils.setValue;
 
-public class FastUpdateCardView extends CardDialogView {
+public final class FastUpdateCardView extends CardDialogView {
 
     private final Dialog dialog;
     private final CardDto card;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public FastUpdateCardView(MainView mainView, CardDto updCard, FileUtils.ViewTypeDto viewType) {
         this.mainView = mainView;
         this.card = updCard;

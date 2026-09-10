@@ -8,6 +8,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +20,7 @@ import static java.util.Objects.nonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ButtonBuilder {
 
-    private Button button;
+    private BuilderButtonInfo button;
 
     /**
      * Создает пустую кнопку.
@@ -28,12 +29,17 @@ public class ButtonBuilder {
      */
     public static ButtonBuilder createButton() {
         ButtonBuilder bb = new ButtonBuilder();
-        bb.button = new Button();
+        bb.button = new BuilderButtonInfo();
         return bb;
     }
 
     public Button build() {
-        return this.button;
+        Button btn = new Button();
+        btn.setText(this.button.getText());
+        btn.setIcon(this.button.getIcon());
+        btn.getStyle().set("color", this.button.getColor());
+        btn.addClickListener(this.button.getListener());
+        return btn;
     }
 
     public ButtonBuilder text(String text) {
@@ -75,13 +81,13 @@ public class ButtonBuilder {
      */
     public ButtonBuilder color(String color) {
         if (nonNull(color)) {
-            this.button.getStyle().set("color", color);
+            this.button.setColor(color);
         }
         return this;
     }
 
     public ButtonBuilder clickListener(ComponentEventListener<ClickEvent<Button>> listener) {
-        this.button.addClickListener(listener);
+        this.button.setListener(listener);
         return this;
     }
 
@@ -97,5 +103,13 @@ public class ButtonBuilder {
         GREEN("green");
 
         private String name;
+    }
+
+    @Data
+    private static class BuilderButtonInfo {
+        private ComponentEventListener<ClickEvent<Button>> listener;
+        private String color;
+        private Icon icon;
+        private String text;
     }
 }

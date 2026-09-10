@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="UI Local" type="JarApplication">
+    <option name="JAR_PATH" value="$PROJECT_DIR$/LibHomeUI/target/LibHomeUI-5.0.0-DEV-BUILD.jar" />
+    <option name="WORKING_DIRECTORY" value="C:\Users\user\IdeaProjects\LibHome" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="ALTERNATIVE_JRE_PATH" value="temurin-17" />
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Clean &amp; build" run_configuration_type="MavenRunConfiguration" />
+    </method>
+  </configuration>
+</component>

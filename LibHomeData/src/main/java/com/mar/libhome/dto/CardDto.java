@@ -19,7 +19,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardDto implements Serializable {
+public final class CardDto implements Serializable {
 
     private UUID id;
     private Integer viewType;

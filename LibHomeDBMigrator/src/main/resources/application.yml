@@ -1,0 +1,13 @@
+server:
+  port: 8085
+
+storage:
+  files: /home/mrlk/Docker/LibHome/LB/cards
+
+rest:
+  client:
+    url:
+      source: "http://localhost:8082"
+      target: "http://localhost:8083"
+    batch:
+      size: 50

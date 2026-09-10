@@ -1,24 +1,17 @@
-FROM node:16.13.1-alpine
+FROM libhome-build:latest AS base
+FROM eclipse-temurin:17-jre-alpine
 
-RUN apk add --no-cache msttcorefonts-installer fontconfig
-RUN update-ms-fonts
+COPY --from=base /usr/share/fonts/ /usr/share/fonts/
 
 WORKDIR /opt/app
 
-ADD docker_files/OpenJDK*.tar.gz /opt/app/java
-#JDK17 min
+COPY --from=base /opt/app/LibHomeUI/target/LibHomeUI-*.jar /opt/app/japp.jar
+COPY --from=base /opt/app/LibHomeUI/content.json /opt/app/data/content.json
 
-COPY target/LibHomeUI-*.jar /opt/app/japp.jar
-COPY content.json /opt/app/data/content.json
-
-ENV LIB_DB_HOST=localhost
-ENV LIB_DB_PORT=8088
 ENV DATA_PATH=/opt/app/data/
-ENV DB_FILE_IN_DATA_DIR=lib_home.db
 ENV VIEW_CONTENT_JSON=/opt/app/data/content.json
+ENV DB_URL=http://host:1234
 
-# Look to JAVA dir name '21.0.5_11' -> '21.0.5+11'.
-# You can look in archive real dir name.
-CMD ["/opt/app/java/jdk-21.0.4+7-jre/bin/java", "-jar", "-Dapp.data.content.file=${VIEW_CONTENT_JSON}", "-Dapp.data.path=${DATA_PATH}", "-Dapp.db.file=${DB_FILE_IN_DATA_DIR}", "-Dspring.profiles.active=production", "-Dlibhome.db.url=${LIB_DB_HOST}", "-Dlibhome.db.port=${LIB_DB_PORT}", "/opt/app/japp.jar"]
+CMD ["java", "-jar", "-Dapp.data.content.file=${VIEW_CONTENT_JSON}", "-Dapp.data.path=${DATA_PATH}", "-Dspring.profiles.active=production", "-Ddb.card.url=${DB_URL}", "/opt/app/japp.jar"]
 
 EXPOSE 8080
