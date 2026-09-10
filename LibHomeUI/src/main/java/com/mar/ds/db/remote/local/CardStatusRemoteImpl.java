@@ -1,6 +1,6 @@
 package com.mar.ds.db.remote.local;
 
-import com.mar.libhome.controller.CardStatusRemote;
+import com.mar.ds.db.remote.CardStatusRemote;
 import com.mar.libhome.dto.CardStatusDto;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import lombok.extern.slf4j.Slf4j;

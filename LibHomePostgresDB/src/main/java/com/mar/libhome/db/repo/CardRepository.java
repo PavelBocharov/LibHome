@@ -44,4 +44,27 @@ public interface CardRepository extends JpaRepository<Card, UUID> {
             """)
     Page<Card> findAllByViewAndLikeTitleMap(@NotNull Integer view, String searchText, Pageable pageable);
 
+    @Query(value = """
+            SELECT
+                c
+            FROM Card c
+            JOIN c.cardStatus cs
+            WHERE
+                c.id in (
+                    SELECT
+                        DISTINCT(card.id)
+                    FROM Card card
+                    LEFT JOIN card.tagList tags
+                    LEFT JOIN card.cardType types
+                    WHERE
+                        (
+                            lower(card.title) like lower(concat('%', :searchText,'%'))
+                            OR lower(card.info) like lower(concat('%', :searchText,'%'))
+                            OR lower(tags.title) like lower(concat('%', :searchText,'%'))
+                            OR lower(types.title) like lower(concat('%', :searchText,'%'))
+                        )
+                )
+            """)
+    Page<Card> findAllByTextWithoutView(String searchText, Pageable pageable);
+
 }

@@ -112,7 +112,9 @@ public final class CardInfoView extends Dialog {
         Map<String, String> titles = com.mar.ds.utils.FileUtils.getTitles(
                 viewType, mainView.getContentJson()
         );
-        assert Objects.nonNull(titles);
+        if (Objects.isNull(titles) || titles.isEmpty()) {
+            throw new RuntimeException("Not find titles by view type = " + viewType);
+        }
 
         HorizontalLayout imageAndTitle = new HorizontalLayout();
         imageAndTitle.setPadding(false);

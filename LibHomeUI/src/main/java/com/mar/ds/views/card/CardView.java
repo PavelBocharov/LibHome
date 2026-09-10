@@ -1,6 +1,5 @@
 package com.mar.ds.views.card;
 
-import com.mar.libhome.controller.data.PageRequest;
 import com.mar.ds.utils.DeleteDialogWidget;
 import com.mar.ds.utils.FileUtils;
 import com.mar.ds.utils.ViewUtils;
@@ -10,6 +9,7 @@ import com.mar.ds.views.build.pagination.PaginationGridService;
 import com.mar.ds.views.card.status.CardStatusViewDialog;
 import com.mar.ds.views.card.tags.CardTagsView;
 import com.mar.ds.views.card.type.CardTypeViewDialog;
+import com.mar.libhome.api.data.PageRequest;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardTypeTagDto;
 import com.mar.libhome.enums.GameEngine;
@@ -37,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.vaadin.olli.FileDownloadWrapper;
 
-import java.awt.Color;
+import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;

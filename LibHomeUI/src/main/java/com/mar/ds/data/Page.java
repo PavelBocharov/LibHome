@@ -1,5 +1,6 @@
 package com.mar.ds.data;
 
+import com.mar.libhome.api.data.PageRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,7 @@ import java.util.Collection;
 public class Page<T> {
 
     private Collection<T> content;
-    private com.mar.libhome.controller.data.PageRequest page;
+    private PageRequest page;
     private long totalCount;
 
     public Long getTotalPages() {

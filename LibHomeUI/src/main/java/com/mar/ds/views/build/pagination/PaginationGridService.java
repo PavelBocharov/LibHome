@@ -3,7 +3,7 @@ package com.mar.ds.views.build.pagination;
 import com.mar.ds.data.Page;
 import com.mar.ds.utils.ButtonBuilder;
 import com.mar.ds.utils.ViewUtils;
-import com.mar.libhome.controller.data.PageRequest;
+import com.mar.libhome.api.data.PageRequest;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;

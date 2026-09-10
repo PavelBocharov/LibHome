@@ -8,15 +8,16 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
 
 @FeignClient(
         name = "card-api",
-        url = "${db.card.url}",
-        path = "/card"
+        url = "${db.card.url}"
 )
+@RequestMapping(value = "/card")
 public interface CardApi {
 
     @GetMapping
@@ -24,6 +25,9 @@ public interface CardApi {
 
     @PostMapping("/search")
     CardRs searchCard(@RequestBody CardRq rq);
+
+    @PostMapping("/search/unviewed")
+    CardRs searchCardWithoutViewByText(@RequestBody CardRq rq);
 
     @PostMapping
     List<CardDto> saveCards(@RequestBody List<CardDto> dtoList);

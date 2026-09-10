@@ -1,8 +1,7 @@
 package com.mar.ds.db.remote;
 
 import com.mar.libhome.api.CardApi;
-import com.mar.libhome.controller.CardRemote;
-import com.mar.libhome.controller.data.PageRequest;
+import com.mar.libhome.api.data.PageRequest;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardRq;
 import com.mar.libhome.dto.CardRs;
@@ -88,6 +87,18 @@ public class CardRemoteImpl implements CardRemote {
                 .sort(sortOrderMap(pageRequest.getSort()))
                 .build()
         );
+    }
+
+    public CardRs findAllByTextWithoutView(String searchText, PageRequest pageRequest) {
+        CardRq rq = CardRq.builder()
+                .view(null)
+                .searchText(searchText)
+                .page(pageRequest.getPageNumber())
+                .size(pageRequest.getPageSize())
+                .sort(sortOrderMap(pageRequest.getSort()))
+                .build();
+
+        return cardApi.searchCardWithoutViewByText(rq);
     }
 
     public CardRs findWithOrderByPoint(Integer viewType) {

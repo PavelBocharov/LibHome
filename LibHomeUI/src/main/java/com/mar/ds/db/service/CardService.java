@@ -1,8 +1,8 @@
 package com.mar.ds.db.service;
 
 import com.mar.ds.data.Page;
-import com.mar.libhome.controller.CardRemote;
-import com.mar.libhome.controller.data.PageRequest;
+import com.mar.ds.db.remote.CardRemote;
+import com.mar.libhome.api.data.PageRequest;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardRs;
 import com.mar.libhome.dto.CardStatusDto;
@@ -75,6 +75,15 @@ public class CardService {
 
     public Page<CardDto> findAllByViewAndLikeTitleMap(@NotNull Integer view, String searchText, PageRequest pageRequest) {
         CardRs rs = cardRemote.findAllByViewAndLikeTitleMap(view, searchText, pageRequest);
+        return new Page<>(
+                rs.getCards(),
+                PageRequest.of(rs.getPage(), rs.getSize()),
+                rs.getTotal()
+        );
+    }
+
+    public Page<CardDto> findAllByTextWithoutView(String searchText, PageRequest pageRequest) {
+        CardRs rs = cardRemote.findAllByTextWithoutView(searchText, pageRequest);
         return new Page<>(
                 rs.getCards(),
                 PageRequest.of(rs.getPage(), rs.getSize()),

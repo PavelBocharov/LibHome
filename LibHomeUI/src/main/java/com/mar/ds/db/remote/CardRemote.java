@@ -1,6 +1,6 @@
-package com.mar.libhome.controller;
+package com.mar.ds.db.remote;
 
-import com.mar.libhome.controller.data.PageRequest;
+import com.mar.libhome.api.data.PageRequest;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardRs;
 import com.mar.libhome.dto.CardStatusDto;
@@ -24,6 +24,8 @@ public interface CardRemote {
     CardRs findAllByView(Integer view, PageRequest pageRequest);
 
     CardRs findAllByViewAndLikeTitleMap(Integer view, String searchText, PageRequest pageRequest);
+
+    CardRs findAllByTextWithoutView(String searchText, PageRequest pageRequest);
 
     CardRs findWithOrderByPoint(Integer viewType);
 

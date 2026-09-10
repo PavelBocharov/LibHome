@@ -17,7 +17,6 @@ import com.mar.libhome.dto.CardTypeTagDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -47,6 +46,17 @@ public class CardService {
                 .parallelStream()
                 .map(mapper::toDto)
                 .toList();
+    }
+
+    public CardRs searchCardByTextWithoutView(CardRq rq) {
+        PageRequest pageRequest = getPageRequest(rq);
+        Page<Card> page = repository.findAllByTextWithoutView(rq.getSearchText(), pageRequest);
+        return CardRs.builder()
+                .page(page.getNumber())
+                .size(page.getSize())
+                .total(page.getTotalElements())
+                .cards(page.stream().parallel().map(mapper::toDto).map(this::enrich).toList())
+                .build();
     }
 
     public CardRs search(CardRq rq) {

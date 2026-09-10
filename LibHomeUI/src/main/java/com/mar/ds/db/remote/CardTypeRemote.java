@@ -1,4 +1,4 @@
-package com.mar.libhome.controller;
+package com.mar.ds.db.remote;
 
 import com.mar.libhome.dto.CardTypeDto;
 

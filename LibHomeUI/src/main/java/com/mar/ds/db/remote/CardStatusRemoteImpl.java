@@ -1,7 +1,6 @@
 package com.mar.ds.db.remote;
 
 import com.mar.libhome.api.CardStatusApi;
-import com.mar.libhome.controller.CardStatusRemote;
 import com.mar.libhome.dto.CardStatusDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

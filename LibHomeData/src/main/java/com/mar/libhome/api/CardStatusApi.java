@@ -7,14 +7,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
 @FeignClient(
         name = "card-status-api",
-        url = "${db.card.url}",
-        path = "/card/status"
+        url = "${db.card.url}"
 )
+@RequestMapping(value = "/card/status")
 public interface CardStatusApi {
 
     @GetMapping

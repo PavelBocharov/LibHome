@@ -1,7 +1,6 @@
 package com.mar.ds.db.remote;
 
 import com.mar.libhome.api.CardHistoryApi;
-import com.mar.libhome.controller.CardHistoryRemote;
 import com.mar.libhome.dto.CardHistoryDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

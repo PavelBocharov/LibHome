@@ -1,4 +1,4 @@
-package com.mar.libhome.controller.data;
+package com.mar.libhome.api.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
