@@ -103,7 +103,7 @@ public final class CreateCardView extends CardDialogView {
         }
         if (nonNull(getTitles().get(GRID_TYPE)) && nonNull(getTitles().get(GRID_TAGS))) {
             components.add(getTypeSelector());
-            components.add(getTagMultiselector());
+            components.add(getTagMultiSelector());
         }
         if (components.size() > 1) {
             createDialog.add(new HorizontalLayout(components.toArray(new Component[0])));

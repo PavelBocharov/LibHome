@@ -211,7 +211,7 @@ public abstract class CardDialogView {
         return cardTypeListSelect;
     }
 
-    protected Component getTagMultiselector() {
+    protected Component getTagMultiSelector() {
         tags = new MultiselectComboBox<>();
         tags.setLabel(getTitles().get(GRID_TAGS));
         tags.setItemLabelGenerator(CardTypeTagDto::getTitle);

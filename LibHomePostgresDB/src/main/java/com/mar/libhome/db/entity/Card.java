@@ -45,7 +45,7 @@ public class Card {
     @Column(name = "point")
     private Double point;
 
-    @Column(name = "info")
+    @Column(name = "info", columnDefinition = "TEXT")
     private String info;
 
     @Column(name = "link")

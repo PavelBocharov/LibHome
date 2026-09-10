@@ -23,14 +23,14 @@ public class DiffCard {
     public static final String CARD_POINT = "point";
     public static final String CARD_INFO = "info";
     public static final String CARD_LINK = "link";
-    public static final String CARD_LAST_GAME_DATE = "last_game";
-    public static final String CARD_LAST_UPD_DATE = "last_update";
+    public static final String CARD_LAST_GAME_DATE = "lastGame";
+    public static final String CARD_LAST_UPD_DATE = "lastUpdate";
     public static final String CARD_LANGUAGE = "language";
-    public static final String CARD_VIEW_TYPE = "view_type";
-    public static final String CARD_RATE = "card_rate";
-    public static final String CARD_TYPE = "card_type_id";
-    public static final String CARD_STATUS = "card_status_id";
-    public static final String CARD_OLD_STATUS = "old_card_status";
+    public static final String CARD_VIEW_TYPE = "viewType";
+    public static final String CARD_RATE = "rate";
+    public static final String CARD_TYPE = "cardType";
+    public static final String CARD_STATUS = "cardStatus.order";
+    public static final String CARD_OLD_STATUS = "oldCardStatus";
     public static final String CARD_TAG = "tag";
     public static final String CARD_ENGINE = "engine";
 

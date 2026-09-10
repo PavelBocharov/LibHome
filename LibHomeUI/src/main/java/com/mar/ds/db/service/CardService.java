@@ -208,15 +208,11 @@ public class CardService {
 
         long deltaGame = 0;
         if (card.getLastGame() != null) {
-//            if (card.getLastUpdate() != null && card.getLastUpdate().getTime() - card.getLastGame().getTime() <= 0) {
-//                card.setRate(0.0);
-//                return;
-//            }
             long now = getDateWithoutTime(new Date());
             long lastGameTime = getDateWithoutTime(card.getLastGame());
             deltaGame = (now - lastGameTime) / 43200000;
         }
         double r = card.getPoint() * deltaGame * 0.01;
-        card.setRate(r < 0 ? 0.0 : r);
+        card.setRate(Math.max(r, 0.0));
     }
 }

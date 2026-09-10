@@ -130,7 +130,7 @@ public final class UpdateCardView extends CardDialogView {
             List<CardTypeDto> cardTypeList = mainView.getCardTypeService().findAll();
             setSelectValue(cardTypeListSelect, updateCard.getCardType(), cardTypeList);
             // type tags
-            components.add(getTagMultiselector());
+            components.add(getTagMultiSelector());
             List<CardTypeTagDto> tagList = mainView
                     .getCardTypeTagService()
                     .findByCardType(updateCard.getCardType());

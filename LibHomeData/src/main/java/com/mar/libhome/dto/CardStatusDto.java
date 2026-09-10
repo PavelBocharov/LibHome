@@ -37,4 +37,8 @@ public final class CardStatusDto implements Serializable, HasId {
         return tech != null && !tech.isBlank();
     }
 
+    public boolean isNotTech() {
+        return !isTech();
+    }
+
 }

@@ -2,7 +2,7 @@ version: '3'
 name: lib-home-idea
 services:
   ui:
-    image: marolok/lib_home:20260909_164606
+    image: marolok/lib_home:20260910_130146
     env_file:
       - .env
     volumes:
@@ -41,7 +41,7 @@ services:
 #      - mgdb
 #      - bridge
   db:
-    image: marolok/lib_home_postgresql_db:20260909_164606
+    image: marolok/lib_home_postgresql_db:20260910_130146
     env_file:
       - .env
     tty: true
