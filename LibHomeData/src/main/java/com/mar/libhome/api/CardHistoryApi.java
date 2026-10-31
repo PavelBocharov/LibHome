@@ -6,16 +6,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 import java.util.UUID;
 
 @FeignClient(
         name = "card-history-api",
-        url = "${db.card.url}"
+        url = "${db.card.url}",
+        path = "/card/history"
 )
-@RequestMapping(value = "/card/history")
 public interface CardHistoryApi {
 
     @GetMapping("/{id}")

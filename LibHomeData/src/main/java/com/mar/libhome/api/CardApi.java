@@ -15,9 +15,9 @@ import java.util.List;
 
 @FeignClient(
         name = "card-api",
-        url = "${db.card.url}"
+        url = "${db.card.url}",
+        path = "/card"
 )
-@RequestMapping(value = "/card")
 public interface CardApi {
 
     @GetMapping
