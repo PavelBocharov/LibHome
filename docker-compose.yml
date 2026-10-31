@@ -1,11 +1,8 @@
 version: '3'
-name: lib-home
+name: lib-home-idea
 services:
   ui:
-    image: marolok/lib_home:4.2.0
-#    build:
-#      context: LibHomeUI
-#      dockerfile: Dockerfile
+    image: marolok/lib_home:20260910_165158
     env_file:
       - .env
     volumes:
@@ -15,36 +12,59 @@ services:
     networks:
       - bridge
     ports:
-      - '8080:8080'
-  mongo:
-    image: mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - ${MONGO_DIR}:/data/db
-      - ./db_init/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
-      - MONGO_INITDB_DATABASE=admin
-      - MONGO_WORK_DATABASE=libhomedb
-      - MONGO_WORK_USER=mrlk_u
-      - MONGO_WORK_PASSWORD=mrlk_p
-    networks:
-      - mgdb
+      - '8081:8080'
+#  mongo:
+#    image: mongo
+#    ports:
+#      - "27017:27017"
+#    volumes:
+#      - ${MONGO_DIR}:/data/db
+#      - ./db_init:/docker-entrypoint-initdb.d:ro
+#    environment:
+#      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+#      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+#      - MONGO_INITDB_DATABASE=admin
+#      - MONGO_WORK_DATABASE=libhomedb
+#      - MONGO_WORK_USER=mrlk_u
+#      - MONGO_WORK_PASSWORD=mrlk_p
+#    networks:
+#      - mgdb
+#  db_mongo:
+#    image: marolok/lib_home_mongo_db:20260909_164606
+#    env_file:
+#      - .env
+#    tty: true
+#    restart: always
+#    ports:
+#      - '8082:8088'
+#    networks:
+#      - mgdb
+#      - bridge
   db:
-    image: marolok/lib_home_db:1.0.0
-#    build:
-#      context: LibHomeDB
-#      dockerfile: Dockerfile
+    image: marolok/lib_home_postgresql_db:20260910_165158
     env_file:
       - .env
     tty: true
     restart: always
+#    ports:
+#      - '8083:8088'
     networks:
-      - mgdb
+      - bridge
+  postgres:
+    image: postgres:15-alpine
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
       - bridge
 
+volumes:
+#  mongo_data:
+  pg_data:
 
 networks:
   bridge:

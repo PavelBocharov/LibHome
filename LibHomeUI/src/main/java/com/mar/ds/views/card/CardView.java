@@ -9,6 +9,7 @@ import com.mar.ds.views.build.pagination.PaginationGridService;
 import com.mar.ds.views.card.status.CardStatusViewDialog;
 import com.mar.ds.views.card.tags.CardTagsView;
 import com.mar.ds.views.card.type.CardTypeViewDialog;
+import com.mar.libhome.api.data.PageRequest;
 import com.mar.libhome.dto.CardDto;
 import com.mar.libhome.dto.CardTypeTagDto;
 import com.mar.libhome.enums.GameEngine;
@@ -34,11 +35,9 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.vaadin.olli.FileDownloadWrapper;
 
-import java.awt.Color;
+import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +84,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
 @RequiredArgsConstructor
-public class CardView implements ContentView {
+public final class CardView implements ContentView {
 
     public static final int DEFAULT_GRID_ICON_SIZE_INT = 36;
     public static final String DEFAULT_GRID_ICON_SIZE_VAR = "var(--iron-icon-width, "
@@ -131,7 +130,7 @@ public class CardView implements ContentView {
                     }
 
                     String searchText = getTextFieldValue(searchField).orElse("");
-                    Sort sort = Sort.by(data.sortOrders());
+                    PageRequest.Sort sort = data.sortOrders();
                     PageRequest pageRequest = PageRequest.of(data.page(), data.pageSize(), sort);
                     if (isBlank(searchText)) {
                         return mainView.getCardService()

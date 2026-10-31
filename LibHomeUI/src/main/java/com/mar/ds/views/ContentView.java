@@ -3,7 +3,9 @@ package com.mar.ds.views;
 import com.mar.ds.utils.FileUtils;
 import com.vaadin.flow.component.Component;
 
-public interface ContentView {
+import java.io.Serializable;
+
+public interface ContentView extends Serializable {
 
     Component getContent();
 

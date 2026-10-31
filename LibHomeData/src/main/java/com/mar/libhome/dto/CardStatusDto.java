@@ -15,16 +15,16 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardStatusDto implements Serializable, HasId {
+public final class CardStatusDto implements Serializable, HasId {
 
     private UUID id;
     private String title;
-    private String color;
-    private String icon = "BULLSEYE";
-    private Boolean isRate = true;
-    private Boolean hasUpdStatus = false;
+    @Builder.Default private String color = "#177AD1";
+    @Builder.Default private String icon = "BULLSEYE";
+    @Builder.Default private Boolean isRate = Boolean.TRUE;
+    @Builder.Default private Boolean hasUpdStatus = Boolean.FALSE;
     private String tech;
-    private Long order = 0L;
+    @Builder.Default private Long order = 0L;
 
     public Long getLongId() {
         if (id == null) {
@@ -35,6 +35,10 @@ public class CardStatusDto implements Serializable, HasId {
 
     public boolean isTech() {
         return tech != null && !tech.isBlank();
+    }
+
+    public boolean isNotTech() {
+        return !isTech();
     }
 
 }

@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -86,6 +87,30 @@ public class ViewUtils {
 
         Button clsBtn = new Button();
         clsBtn.setIcon(VaadinIcon.CLOSE.create());
+        clsBtn.addClickListener(btnClick -> notification.close());
+
+        layout.add(accordion, clsBtn);
+        layout.setHorizontalComponentAlignment(FlexComponent.Alignment.END, accordion, clsBtn);
+        layout.getStyle().set("padding", "0px");
+
+        notification.add(layout);
+        notification.open();
+    }
+
+    public static void showMsg(String title, String msg, Duration duration) {
+        Notification notification = new Notification();
+        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        notification.setDuration((int) duration.toMillis());
+        notification.setPosition(Notification.Position.TOP_END);
+
+        VerticalLayout layout = new VerticalLayout();
+        Accordion accordion = new Accordion();
+        Label msgLabel = new Label();
+        msgLabel.getElement().setProperty("innerHTML", msg);
+        accordion.add(title, msgLabel);
+        accordion.close();
+
+        Button clsBtn = new Button("Close");
         clsBtn.addClickListener(btnClick -> notification.close());
 
         layout.add(accordion, clsBtn);
@@ -257,7 +282,7 @@ public class ViewUtils {
     }
 
     public static void setCheckbox(Checkbox checkbox, Boolean flag) {
-        checkbox.setValue(flag == Boolean.TRUE);
+        checkbox.setValue(Boolean.TRUE.equals(flag));
     }
 
     public static void setTextFieldValue(TextField field, String text) {
@@ -345,7 +370,11 @@ public class ViewUtils {
     public static Icon getStatusIcon(CardDto card) {
         Icon icon;
 
-        if (card != null && card.getCardStatus() != null && isNotBlank(card.getCardStatus().getColor())) {
+        if (card != null
+                && card.getCardStatus() != null
+                && card.getInfo() != null
+                && isNotBlank(card.getCardStatus().getColor())
+        ) {
             icon = getIconByText(card.getCardStatus().getIcon(), VaadinIcon.BULLSEYE.create());
             icon.setColor(card.getCardStatus().getColor());
             icon.getElement().setAttribute("title", card.getInfo());
@@ -377,7 +406,7 @@ public class ViewUtils {
         try {
             return VaadinIcon.valueOf(iconName.toUpperCase());
         } catch (Exception ex) {
-            log.error("Not find icon by text: {}", iconName);
+            log.error("Not find Vaadin icon by text: {}", iconName);
             return VaadinIcon.BULLSEYE;
         }
     }

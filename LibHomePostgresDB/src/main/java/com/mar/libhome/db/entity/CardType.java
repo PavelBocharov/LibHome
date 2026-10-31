@@ -1,0 +1,34 @@
+package com.mar.libhome.db.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import java.util.UUID;
+
+@Getter
+@Setter
+@Entity
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "card_type")
+public class CardType {
+
+    @Id
+    @GeneratedValue
+    private UUID id;
+
+    @NotBlank
+    @Column(name = "title", nullable = false, unique = true)
+    private String title;
+
+}

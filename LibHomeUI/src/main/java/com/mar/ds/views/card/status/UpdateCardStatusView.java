@@ -17,7 +17,7 @@ import java.awt.Color;
 import static com.mar.ds.utils.ViewUtils.getTextFieldValue;
 import static com.vaadin.flow.component.icon.VaadinIcon.ROTATE_RIGHT;
 
-public class UpdateCardStatusView {
+public final class UpdateCardStatusView {
 
     public UpdateCardStatusView(CardStatusViewDialog cardStatusView, CardStatusDto updatedStatus) {
         Dialog updateDialog = new Dialog();

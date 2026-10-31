@@ -74,7 +74,6 @@
 
 * `DATA_PATH` - mount directory in **IMAGE** (default - `/opt/app/data/`).
 * `VIEW_CONTENT_JSON` - [content.json](../LibHomeUI/content.json) for UI text  (default - `/opt/app/data/content.json`)
-* `DB_FILE_IN_DATA_DIR` - SQLite database file (create in `PC_DB_PATH` & `DATA_PATH`).
 
 6) Start `docker-compose`
    ```bash 

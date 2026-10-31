@@ -28,6 +28,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.server.StreamResource;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -73,7 +74,7 @@ import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
  * Диалоговое окно с информацией о карточке.
  */
 @Slf4j
-public class CardInfoView extends Dialog {
+public final class CardInfoView extends Dialog {
 
     private final MainView mainView;
     private final CardDto card;
@@ -86,6 +87,7 @@ public class CardInfoView extends Dialog {
      * @param card     по какой карточке будет история.
      * @param viewType тип карточки
      */
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CardInfoView(MainView mainView, CardDto card, com.mar.ds.utils.FileUtils.ViewTypeDto viewType) {
         this.mainView = mainView;
         this.card = card;
@@ -110,7 +112,9 @@ public class CardInfoView extends Dialog {
         Map<String, String> titles = com.mar.ds.utils.FileUtils.getTitles(
                 viewType, mainView.getContentJson()
         );
-        assert Objects.nonNull(titles);
+        if (Objects.isNull(titles) || titles.isEmpty()) {
+            throw new RuntimeException("Not find titles by view type = " + viewType);
+        }
 
         HorizontalLayout imageAndTitle = new HorizontalLayout();
         imageAndTitle.setPadding(false);
@@ -338,7 +342,7 @@ public class CardInfoView extends Dialog {
 
             Grid<File> cardFiles = new Grid<>();
             cardFiles.addComponentColumn(this::openFile).setHeader("File path")
-                    .setAutoWidth(true).setSortable(true).setComparator(File::getAbsolutePath);
+                    .setAutoWidth(true).setSortable(true).setComparator(File::getName);
             cardFiles.addColumn(file -> FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(file)))
                     .setHeader("Size").setAutoWidth(true).setFlexGrow(0)
                     .setSortable(true).setComparator(FileUtils::sizeOf);
@@ -421,7 +425,7 @@ public class CardInfoView extends Dialog {
             }
         });
 
-        Anchor link = new Anchor(streamResource, file.getAbsolutePath());
+        Anchor link = new Anchor(streamResource, file.getName());
         link.getElement().setAttribute("download", true);
 
         return link;

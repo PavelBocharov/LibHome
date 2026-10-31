@@ -1,0 +1,9 @@
+**/node_modules
+**/target
+/.mvn
+/.run
+/.idea
+/.git
+*.log
+*.md
+docker-compose.yml

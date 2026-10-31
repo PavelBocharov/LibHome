@@ -16,6 +16,7 @@ import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -40,10 +41,11 @@ import static com.mar.ds.utils.ViewUtils.getValue;
 import static java.util.Objects.nonNull;
 
 @Slf4j
-public class CreateCardView extends CardDialogView {
+public final class CreateCardView extends CardDialogView {
 
     private final Dialog createDialog;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CreateCardView(MainView mainView, FileUtils.ViewTypeDto viewType) {
         this.mainView = mainView;
         this.viewType = viewType;
@@ -101,7 +103,7 @@ public class CreateCardView extends CardDialogView {
         }
         if (nonNull(getTitles().get(GRID_TYPE)) && nonNull(getTitles().get(GRID_TAGS))) {
             components.add(getTypeSelector());
-            components.add(getTagMultiselector());
+            components.add(getTagMultiSelector());
         }
         if (components.size() > 1) {
             createDialog.add(new HorizontalLayout(components.toArray(new Component[0])));

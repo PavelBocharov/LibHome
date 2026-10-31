@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class CreateCardTagsView {
+public final class CreateCardTagsView {
 
     private final MainView mainView;
     private final CardTagsView parentView;

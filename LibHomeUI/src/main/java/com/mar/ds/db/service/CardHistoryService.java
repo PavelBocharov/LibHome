@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-import javax.annotation.Nullable;
-import javax.transaction.Transactional;
 
 import static com.mar.ds.db.diff.DiffCard.CARD_RATE;
 import static java.util.Objects.nonNull;
@@ -23,7 +21,6 @@ import static java.util.Objects.nonNull;
  */
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CardHistoryService {
 
@@ -44,7 +41,7 @@ public class CardHistoryService {
      * @param old    старая версия карточки.
      * @param actual новая версия карточки.
      */
-    public void saveHistory(@Nullable CardDto old, CardDto actual) {
+    public void saveHistory(CardDto old, CardDto actual) {
         assert nonNull(actual);
         log.debug("save/upd card history old: {}, actual: {}", old, actual);
         List<CardHistoryDto> diff = DiffCard.compare(old, actual);

@@ -1,7 +1,9 @@
 package com.mar.ds.views.build.pagination;
 
+import com.mar.ds.data.Page;
 import com.mar.ds.utils.ButtonBuilder;
 import com.mar.ds.utils.ViewUtils;
+import com.mar.libhome.api.data.PageRequest;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
@@ -14,19 +16,21 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 
+import javax.validation.constraints.Min;
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.validation.constraints.Min;
 
 import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_DOUBLE_LEFT;
 import static com.vaadin.flow.component.icon.VaadinIcon.ANGLE_DOUBLE_RIGHT;
@@ -45,7 +49,7 @@ import static com.vaadin.flow.component.icon.VaadinIcon.ELLIPSIS_DOTS_H;
  * @param <T> entity type for grid.
  */
 @Slf4j
-public class PaginationGridService<T> {
+public class PaginationGridService<T> implements Serializable {
 
     public static final String GRID_COLUMN_SORT_ASC_SUFFIX = "-sort-asc";
     public static final String GRID_COLUMN_SORT_DESC_SUFFIX = "-sort-desc";
@@ -61,10 +65,11 @@ public class PaginationGridService<T> {
     /**
      * Constructor.
      *
-     * @param grid            - table.
+     * @param grid            table.
      * @param gridPageSize    count element on page.
      * @param getDataFunction function for loading data.
      */
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public PaginationGridService(Grid<T> grid, int gridPageSize, Function<GetData, Page<T>> getDataFunction) {
         this.grid = grid;
         this.gridPageSize = gridPageSize;
@@ -77,7 +82,7 @@ public class PaginationGridService<T> {
         initGridData(0);
     }
 
-    private Long putOrderSort(String columnId, Sort.Direction sort, String headText, Button headButton) {
+    private Long putOrderSort(String columnId, PageRequest.Sort.Direction sort, String headText, Button headButton) {
         OrderSort orderSort = directionList.stream().filter(os -> os.columnId.equals(columnId))
                 .findFirst().orElse(null);
         if (orderSort == null) {
@@ -109,15 +114,15 @@ public class PaginationGridService<T> {
             String id = icon.getId().orElse("").trim();
             Long order = null;
             if (buttonId.equals(id)) {
-                Icon upIcon = new Icon(ANGLE_UP);
-                upIcon.setId(buttonId + GRID_COLUMN_SORT_ASC_SUFFIX);
-                button.setIcon(upIcon);
-                order = putOrderSort(columnName, Sort.Direction.ASC, text, button);
-            } else if (id.endsWith(GRID_COLUMN_SORT_ASC_SUFFIX)) {
                 Icon downIcon = new Icon(ANGLE_DOWN);
                 downIcon.setId(buttonId + GRID_COLUMN_SORT_DESC_SUFFIX);
                 button.setIcon(downIcon);
-                order = putOrderSort(columnName, Sort.Direction.DESC, text, button);
+                order = putOrderSort(columnName, PageRequest.Sort.Direction.DESC, text, button);
+            } else if (id.endsWith(GRID_COLUMN_SORT_DESC_SUFFIX)) {
+                Icon upIcon = new Icon(ANGLE_UP);
+                upIcon.setId(buttonId + GRID_COLUMN_SORT_ASC_SUFFIX);
+                button.setIcon(upIcon);
+                order = putOrderSort(columnName, PageRequest.Sort.Direction.ASC, text, button);
             } else {
                 removeOrderSort(columnName);
                 button.setIcon(mainIcon);
@@ -251,12 +256,15 @@ public class PaginationGridService<T> {
     }
 
     private void initGridData(@Min(0) int page) {
-        List<Sort.Order> sortOrders = directionList.stream()
+        log.info("Pre mapping column sorted: {}", directionList);
+        LinkedHashMap<String, PageRequest.Sort.Direction> order = new LinkedHashMap<>();
+        directionList.stream()
                 .sorted(Comparator.comparing(OrderSort::getOrder))
-                .map(orderSort -> new Sort.Order(orderSort.getSort(), orderSort.getColumnId()))
-                .toList();
-        Page<T> cardPage = getDataFunction.apply(new GetData(page, gridPageSize, sortOrders));
-        List<T> typeList = cardPage.getContent();
+                .forEachOrdered(orderSort -> order.put(orderSort.getColumnId(), orderSort.getSort()));
+        log.info("Post mapping column sorted: {}", order);
+
+        Page<T> cardPage = getDataFunction.apply(new GetData(page, gridPageSize, new PageRequest.Sort(order)));
+        Collection<T> typeList = cardPage.getContent();
 
         grid.setItems(typeList);
 
@@ -281,14 +289,14 @@ public class PaginationGridService<T> {
 
     @Data
     @AllArgsConstructor
-    static class OrderSort {
+    static class OrderSort implements Serializable {
         Long order;
         String columnId;
-        Sort.Direction sort;
+        PageRequest.Sort.Direction sort;
         String headText;
         Button headButton;
     }
 
-    public record GetData(int page, int pageSize, List<Sort.Order> sortOrders) {
+    public record GetData(int page, int pageSize, PageRequest.Sort sortOrders) {
     }
 }

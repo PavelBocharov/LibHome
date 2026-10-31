@@ -23,16 +23,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+
+import static java.util.Objects.isNull;
 
 @Slf4j
 @Service
@@ -48,8 +54,10 @@ public class CardService {
     private final CardTypeMapper typeMapper;
     private final CardTypeTagMapper tagMapper;
 
+    private final MongoTemplate mongoTemplate;
+
     public List<CardDto> getAll() {
-        return repository.findAll()
+        return repository.findAll(Sort.by(Sort.Direction.ASC, "id"))
                 .parallelStream()
                 .map(mapper::toDto)
                 .toList();
@@ -63,6 +71,28 @@ public class CardService {
                 .total(page.getTotalElements())
                 .cards(page.stream().parallel().map(mapper::toDto).map(this::enrich).toList())
                 .build();
+    }
+
+    public CardRs searchCardWithoutView(CardRq rq) {
+        if (rq.getView() != null) {
+            log.warn("Search card without view - but rq view is {}", rq.getView());
+            rq.setView(null);
+        }
+        Page<Card> page = searchPageCardWithoutView(rq);
+        return CardRs.builder()
+                .page(page.getNumber())
+                .size(page.getSize())
+                .total(page.getTotalElements())
+                .cards(page.stream().parallel().map(mapper::toDto).map(this::enrich).toList())
+                .build();
+    }
+
+    private Page<Card> searchPageCardWithoutView(CardRq rq) {
+        if (rq.getSearchText() != null) {
+            log.debug("Search by text without view. RQ: {}", rq);
+            return searchByText(rq);
+        }
+        return Page.empty();
     }
 
     private Page<Card> searchCards(CardRq rq) {
@@ -89,12 +119,10 @@ public class CardService {
         return repository.findAll(pageRequest);
     }
 
-    private final MongoTemplate mongoTemplate;
-
     private Page<Card> searchByText(CardRq rq) {
         PageRequest pageRequest = getPageRequest(rq);
 
-        MatchOperation preMatch = Aggregation.match(Criteria.where("view_type").is(rq.getView()));
+        MatchOperation preMatch = isNull(rq.getView()) ? null : Aggregation.match(Criteria.where("view_type").is(rq.getView()));
         LookupOperation cardTypeLookup = Aggregation.lookup("card_type", "card_type_id", "_id", "type");
         LookupOperation cardTypeTagLookup = Aggregation.lookup("card_type_tag", "tag_id_list", "_id", "tag");
 
@@ -107,25 +135,21 @@ public class CardService {
                 )
         );
 
-        Aggregation dataPip =
-                Sort.unsorted().equals(pageRequest.getSort())
-                        ?
-                        Aggregation.newAggregation(
-                                preMatch,
-                                cardTypeLookup,
-                                cardTypeTagLookup,
-                                lookupMatch,
-                                Aggregation.skip((long) rq.getPage() * rq.getSize()),
-                                Aggregation.limit(rq.getSize()))
-                        :
-                        Aggregation.newAggregation(
-                                preMatch,
-                                Aggregation.sort(pageRequest.getSort()),
-                                cardTypeLookup,
-                                cardTypeTagLookup,
-                                lookupMatch,
-                                Aggregation.skip((long) rq.getPage() * rq.getSize()),
-                                Aggregation.limit(rq.getSize()));
+        List<AggregationOperation> aggregationOperations = new LinkedList<>();
+        if (Sort.unsorted().equals(pageRequest.getSort())) {
+            aggregationOperations.add(preMatch);
+        } else {
+            aggregationOperations.add(preMatch);
+            aggregationOperations.add(Aggregation.sort(pageRequest.getSort()));
+        }
+        aggregationOperations.add(cardTypeLookup);
+        aggregationOperations.add(cardTypeTagLookup);
+        aggregationOperations.add(lookupMatch);
+        aggregationOperations.add(Aggregation.skip((long) rq.getPage() * rq.getSize()));
+        aggregationOperations.add(Aggregation.limit(rq.getSize()));
+
+        aggregationOperations.removeIf(Objects::isNull);
+        Aggregation dataPip = Aggregation.newAggregation(aggregationOperations);
 
         Aggregation countPip = Aggregation.newAggregation(
                 preMatch, cardTypeLookup, cardTypeTagLookup, lookupMatch,
@@ -137,26 +161,31 @@ public class CardService {
         log.info("Get card by text: {}", res.getMappedResults());
         AggregationResults<CountResult> totalCount = mongoTemplate.aggregate(countPip, "card", CountResult.class);
         log.info("Get count by text: {}", totalCount.getRawResults());
-        long count = totalCount.getUniqueMappedResult() == null ? 0 : totalCount.getUniqueMappedResult().getTotalCount();
-        return new PageImpl<Card>(res.getMappedResults(), pageRequest, count);
+        CountResult countResults = totalCount.getUniqueMappedResult();
+        if (countResults != null) {
+            long total = countResults.getTotalCount() != null ? countResults.getTotalCount() : 0;
+            return new PageImpl<>(res.getMappedResults(), pageRequest, total);
+        }
+        return new PageImpl<>(res.getMappedResults(), pageRequest, 0);
     }
 
+    @Transactional
     public List<CardDto> save(List<CardDto> dtos) {
-        return repository.saveAll(
-                        dtos.parallelStream()
-                                .map(mapper::toEntity)
-                                .toList())
+        repository.saveAll(dtos.parallelStream().map(mapper::toEntity).toList());
+        return repository.findAll(Sort.by(Sort.Direction.ASC, "id"))
                 .parallelStream()
                 .map(mapper::toDto)
                 .toList();
     }
 
+    @Transactional
     public CardDto deleteById(UUID id) {
         Card card = repository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find card with id: " + id));
         repository.delete(card);
         return mapper.toDto(card);
     }
 
+    @Transactional
     public CardDto enrich(CardDto card) {
         card.setCardStatus(statusMapper.toDto(
                 statusRepository.findById(card.getCardStatus().getId()).orElseThrow()
@@ -199,6 +228,7 @@ public class CardService {
                     orders.add(Sort.Order.desc(field));
                 }
             }
+            orders.add(Sort.Order.asc("id"));
             return PageRequest.of(page, size, Sort.by(orders));
         }
     }
